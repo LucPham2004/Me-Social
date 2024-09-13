@@ -22,9 +22,17 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "posts")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,110 +73,4 @@ public class Post {
                 inverseJoinColumns = @JoinColumn(name = "post_id"))
 	private Set<Tag> tags;
 
-    // Constructors
-    public Post(Long id, String content, PostPrivacy privacy, LocalDateTime createdAt, LocalDateTime updatedAt,
-        User user, Group group, Set<Like> likes, Set<Comment> comments, Set<Tag> tags) {
-    this.id = id;
-    this.content = content;
-    this.privacy = privacy;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.user = user;
-    this.group = group;
-    this.likes = likes;
-    this.comments = comments;
-    this.tags = tags;
-    }
-
-    public Post() {
-    }
-
-    @Override
-    public String toString() {
-    return "Post [id=" + id + ", content=" + content + ", privacy=" + privacy + ", createdAt=" + createdAt
-            + ", updatedAt=" + updatedAt + ", user=" + user + ", group=" + group + ", likes=" + likes
-            + ", comments=" + comments + ", tags=" + tags + "]";
-    }
-
-    // Getters & Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public PostPrivacy getPrivacy() {
-        return privacy;
-    }
-
-    public void setPrivacy(PostPrivacy privacy) {
-        this.privacy = privacy;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
-    public Set<Like> getLikes() {
-        return likes;
-    }
-
-    public void setLikes(Set<Like> likes) {
-        this.likes = likes;
-    }
-
-    public Set<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(Set<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public Set<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<Tag> tags) {
-        this.tags = tags;
-    }
 }

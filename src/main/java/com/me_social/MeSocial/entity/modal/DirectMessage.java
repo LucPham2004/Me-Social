@@ -13,9 +13,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "direct_messages")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class DirectMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,74 +46,5 @@ public class DirectMessage {
     @JoinColumn(name = "receiver_id")
     @JsonBackReference(value = "messages_reciever")
     private User receiver;
-
-    // Constructors
-    public DirectMessage(Long id, String content, boolean isRead, LocalDateTime createdAt, User sender, User receiver) {
-        this.id = id;
-        this.content = content;
-        this.isRead = isRead;
-        this.createdAt = createdAt;
-        this.sender = sender;
-        this.receiver = receiver;
-    }
-
-    public DirectMessage() {
-    }
-
-    @Override
-    public String toString() {
-        return "DirectMessage [id=" + id + ", content=" + content + ", isRead=" + isRead + ", createdAt=" + createdAt
-                + ", sender=" + sender + ", receiver=" + receiver + "]";
-    }
-
-    // Getters & Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public boolean isRead() {
-        return isRead;
-    }
-
-    public void setRead(boolean isRead) {
-        this.isRead = isRead;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public User getSender() {
-        return sender;
-    }
-
-    public void setSender(User sender) {
-        this.sender = sender;
-    }
-
-    public User getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(User receiver) {
-        this.receiver = receiver;
-    }
 
 }

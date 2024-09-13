@@ -16,9 +16,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "notifications")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,75 +47,5 @@ public class Notification {
     @JoinColumn(name = "user_id")
     @JsonBackReference(value = "user_notifications")
     private User user;
-
-    // Constructors
-    public Notification(Long id, String content, NotificationType type, boolean isRead, LocalDateTime createdAt,
-        User user) {
-    this.id = id;
-    this.content = content;
-    this.type = type;
-    this.isRead = isRead;
-    this.createdAt = createdAt;
-    this.user = user;
-    }
-
-    public Notification() {
-    }
-
-    @Override
-    public String toString() {
-    return "Notification [id=" + id + ", content=" + content + ", type=" + type + ", isRead=" + isRead
-            + ", createdAt=" + createdAt + ", user=" + user + "]";
-    }
-
-    // Getters & Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public NotificationType getType() {
-        return type;
-    }
-
-    public void setType(NotificationType type) {
-        this.type = type;
-    }
-
-    public boolean isRead() {
-        return isRead;
-    }
-
-    public void setRead(boolean isRead) {
-        this.isRead = isRead;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
 }

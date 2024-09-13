@@ -11,9 +11,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "follows")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Follow {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,56 +37,5 @@ public class Follow {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_id")
     private User following;
-
-    // Constructors
-    public Follow(Long id, LocalDateTime createdAt, User follower, User following) {
-        this.id = id;
-        this.createdAt = createdAt;
-        this.follower = follower;
-        this.following = following;
-    }
-
-    public Follow() {
-    }
-
-    @Override
-    public String toString() {
-        return "Follow [id=" + id + ", createdAt=" + createdAt + ", follower=" + follower + ", following=" + following
-                + "]";
-    }
-
-    // Getters & Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public User getFollower() {
-        return follower;
-    }
-
-    public void setFollower(User follower) {
-        this.follower = follower;
-    }
-
-    public User getFollowing() {
-        return following;
-    }
-
-    public void setFollowing(User following) {
-        this.following = following;
-    }
 
 }

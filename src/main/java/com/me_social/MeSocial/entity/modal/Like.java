@@ -13,9 +13,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "likes")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,65 +46,5 @@ public class Like {
     @JoinColumn(name = "comment_id")
     @JsonBackReference(value = "comment_likes")
     private Comment comment;
-
-    // Contructors
-    public Like(Long id, LocalDateTime createdAt, User user, Post post, Comment comment) {
-        this.id = id;
-        this.createdAt = createdAt;
-        this.user = user;
-        this.post = post;
-        this.comment = comment;
-    }
-
-    public Like() {
-    }
-
-    @Override
-    public String toString() {
-        return "Like [id=" + id + ", createdAt=" + createdAt + ", user=" + user + ", post=" + post + ", comment="
-                + comment + "]";
-    }
-
-    // Getters & Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
-    public Comment getComment() {
-        return comment;
-    }
-
-    public void setComment(Comment comment) {
-        this.comment = comment;
-    }
-
+    
 }

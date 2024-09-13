@@ -9,6 +9,10 @@
 // import jakarta.persistence.Id;
 
 // @Entity
+// @AllArgsConstructor
+// @NoArgsConstructor
+// @Getter
+// @Setter
 // public class GroupMessage {
 //     @Id
 //     @GeneratedValue(strategy = GenerationType.IDENTITY)

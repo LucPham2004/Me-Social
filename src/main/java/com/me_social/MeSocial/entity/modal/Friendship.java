@@ -15,9 +15,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "friendships")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Friendship {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,73 +48,4 @@ public class Friendship {
     @JoinColumn(name = "accepter_id")
     private User accepter;
 
-    // Constructors
-    public Friendship(Long id, FriendshipStatus status, LocalDateTime createdAt, LocalDateTime updatedAt,
-        User requester, User accepter) {
-    this.id = id;
-    this.status = status;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.requester = requester;
-    this.accepter = accepter;
-    }
-
-    public Friendship() {
-    }
-
-    @Override
-    public String toString() {
-    return "Friendship [id=" + id + ", status=" + status + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
-            + ", requester=" + requester + ", accepter=" + accepter + "]";
-    }
-
-    // Getters & Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public FriendshipStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(FriendshipStatus status) {
-        this.status = status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public User getRequester() {
-        return requester;
-    }
-
-    public void setRequester(User requester) {
-        this.requester = requester;
-    }
-
-    public User getAccepter() {
-        return accepter;
-    }
-
-    public void setAccepter(User accepter) {
-        this.accepter = accepter;
-    }
 }
