@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.me_social.MeSocial.enums.Gender;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -53,7 +54,7 @@ public class User {
 
     private Date dob; // date of birth
 
-    private String gender;
+    private Gender gender;
 
     private String bio;
 
@@ -104,16 +105,16 @@ public class User {
 
     // Follows
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<Follow> following;
+    private Set<Follow> followings;
 
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<Follow> follower;
+    private Set<Follow> followers;
 
     // Friendships
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<Friendship> friendRequestsSent;
+    private Set<Friendship> friendRequestSent;
 
     @OneToMany(mappedBy = "accepter", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<Friendship> friendRequestsReceived;
+    private Set<Friendship> friendRequestReceived;
 
 }

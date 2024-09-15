@@ -7,5 +7,5 @@ import com.me_social.MeSocial.entity.modal.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    
+    public boolean existsByUsername(String username);
 }
