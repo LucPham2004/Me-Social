@@ -16,13 +16,13 @@ public enum ErrorCode {
 
     INVALID_KEY(1001, "Uncategorized error", HttpStatus.BAD_REQUEST),
 
-    USER_EXISTED(1002, "User existed!", HttpStatus.BAD_REQUEST),
+    ENTITY_EXISTED(1002, "Entity existed!", HttpStatus.BAD_REQUEST),
 
     USERNAME_INVALID(1003, "Username must be at least 4 characters", HttpStatus.UNAUTHORIZED),
 
     PASSWORD_INVALID(1004, "Password must be at least 8 characters", HttpStatus.UNAUTHORIZED),
 
-    USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
+    ENTITY_NOT_EXISTED(1005, "Entity not existed", HttpStatus.NOT_FOUND),
 
     UNAUTHENTICATED(1006, "User not authenticated", HttpStatus.UNAUTHORIZED), 
 

@@ -17,8 +17,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -67,10 +65,8 @@ public class Post {
     @JsonManagedReference(value = "post_comments")
     private Set<Comment> comments;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-	@JoinTable( name = "posts_tags", 
-                joinColumns = @JoinColumn(name = "tag_id"), 
-                inverseJoinColumns = @JoinColumn(name = "post_id"))
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "post_tags")
 	private Set<Tag> tags;
 
 }

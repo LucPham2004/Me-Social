@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import com.me_social.MeSocial.entity.modal.Tag;
 
 @Repository
-public interface TagRepository extends JpaRepository<Tag, Integer> {
-    
+public interface TagRepository extends JpaRepository<Tag, Long> {
+
+    Tag findByName(String name);
+
 }

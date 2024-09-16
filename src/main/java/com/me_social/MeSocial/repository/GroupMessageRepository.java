@@ -6,6 +6,6 @@
 // import com.me_social.MeSocial.entity.modal.GroupMessage;
 
 // @Repository
-// public interface GroupMessageRepository extends JpaRepository<GroupMessage, Integer> {
+// public interface GroupMessageRepository extends JpaRepository<GroupMessage, Long> {
     
 // }

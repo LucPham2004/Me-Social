@@ -3,7 +3,6 @@ package com.me_social.MeSocial.entity.modal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.me_social.MeSocial.enums.GroupPrivacy;
 
@@ -19,7 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -51,10 +49,11 @@ public class Group {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id")
-    @JsonBackReference(value = "group_admin_user")
-    private User admin;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+	@JoinTable( name = "groups_admins", 
+                joinColumns = @JoinColumn(name = "user_id"), 
+                inverseJoinColumns = @JoinColumn(name = "group_id"))
+    private Set<User> admins;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 	@JoinTable( name = "groups_members", 

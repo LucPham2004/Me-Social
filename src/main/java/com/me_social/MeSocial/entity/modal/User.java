@@ -87,8 +87,7 @@ public class User {
     private Set<Comment> comments;
 
     // Groups
-    @OneToMany(mappedBy = "admin", fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "group_admin_user")
+    @ManyToMany(mappedBy = "admins")
     private Set<Group> adminGroups;
 
     @ManyToMany(mappedBy = "members")

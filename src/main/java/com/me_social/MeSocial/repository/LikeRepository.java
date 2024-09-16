@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.me_social.MeSocial.entity.modal.Like;
 
 @Repository
-public interface LikeRepository extends JpaRepository<Like, Integer> {
+public interface LikeRepository extends JpaRepository<Like, Long> {
     
 }

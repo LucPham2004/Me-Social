@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.me_social.MeSocial.entity.modal.Role;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role, Integer> {
+public interface RoleRepository extends JpaRepository<Role, Long> {
     
 }
