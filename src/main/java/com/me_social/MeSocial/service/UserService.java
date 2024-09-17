@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
+import com.me_social.MeSocial.entity.dto.response.UserCreationResponse;
+import com.me_social.MeSocial.entity.dto.response.UserResponse;
 import com.me_social.MeSocial.entity.modal.Follow;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
@@ -25,7 +27,7 @@ import lombok.experimental.FieldDefaults;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
@@ -38,7 +40,7 @@ public class UserService {
 
     // Get Group members
     public ApiResponse<Page<User>> getGroupMembers(Long groupId, int pageNum) {
-        if(!groupRepository.existsById(groupId)) {
+        if (!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
@@ -56,7 +58,7 @@ public class UserService {
 
     // Get Group admins
     public ApiResponse<Set<User>> getGroupAdmins(Long groupId, int pageNum) {
-        if(!groupRepository.existsById(groupId)) {
+        if (!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
@@ -73,15 +75,15 @@ public class UserService {
 
     // Get User's followers
     public ApiResponse<Page<User>> getFollowers(Long userId, int pageNum) {
-        if(!userRepository.existsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
         // important
         Page<User> followers = followRepository.findByFollower(userRepository.findById(userId), pageable)
-                                                .map(Follow::getFollower);
-        
+                .map(Follow::getFollower);
+
         ApiResponse<Page<User>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
@@ -93,32 +95,57 @@ public class UserService {
 
     // Get User's followers
     public ApiResponse<Page<User>> getFollowings(Long userId, int pageNum) {
-        if(!userRepository.existsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
         // important
         Page<User> followings = followRepository.findByFollowing(userRepository.findById(userId), pageable)
-                                                .map(Follow::getFollowing);
+                .map(Follow::getFollowing);
 
         ApiResponse<Page<User>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
-        apiResponse.setMessage("Get followings successfully");
+        apiResponse.setMessage("Get followers successfully");
         apiResponse.setResult(followings);
 
         return apiResponse;
     }
-    
-    // Demo
-    public User createUser(UserCreationRequest request) {
-        if(!userRepository.existsByUsername(request.getUsername())) {
+
+    // USER CRUD
+
+    public ApiResponse<UserCreationResponse> createUser(UserCreationRequest request) {
+        if (userRepository.existsByUsername(request.getUsername())
+                || userRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.ENTITY_EXISTED);
         }
-
         User user = userMapper.toUser(request);
 
-        return user;
+        userRepository.save(user);
+        UserCreationResponse userResponse = userMapper.toUserCreationResponse(request);
+
+        ApiResponse<UserCreationResponse> apiResponse = new ApiResponse<>();
+
+        apiResponse.setCode(1000);
+        apiResponse.setMessage("Create user successfully");
+        apiResponse.setResult(userResponse);
+
+        return apiResponse;
     }
+
+    // public ApiResponse<UserResponse> getUser(long id) {
+    //     User user = userRepository.findById(id);
+    //     if (user == null) {
+    //         throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+    //     }
+    //     UserResponse userResponse = userMapper.toUserResponse(user);
+    //     ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+
+    //     apiResponse.setCode(1000);
+    //     apiResponse.setMessage("Get user by id successfully");
+    //     apiResponse.setResult(userResponse);
+
+    //     return apiResponse;
+    // }
 }

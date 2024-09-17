@@ -1,6 +1,6 @@
 package com.me_social.MeSocial.entity.dto.request;
 
-import java.util.Date;
+import java.time.Instant;
 
 import com.me_social.MeSocial.enums.Gender;
 import com.me_social.MeSocial.validator.DobConstraint;
@@ -31,7 +31,9 @@ public class UserCreationRequest {
     String phone;
 
     @DobConstraint(min = 16, message = "INVALID_DOB")
-    Date dob;
+    Instant dob;
 
     Gender gender;
+
+    Instant createdAt;
 }

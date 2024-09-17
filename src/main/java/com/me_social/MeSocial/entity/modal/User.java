@@ -1,7 +1,6 @@
 package com.me_social.MeSocial.entity.modal;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -52,7 +51,7 @@ public class User {
 
     private String phone;
 
-    private Date dob; // date of birth
+    private Instant dob; // date of birth
 
     private Gender gender;
 
@@ -60,11 +59,11 @@ public class User {
 
     private String location;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", nullable = true, updatable = true)
+    private Instant createdAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     // Entity Relationships
 
@@ -115,5 +114,14 @@ public class User {
 
     @OneToMany(mappedBy = "accepter", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Friendship> friendRequestReceived;
+
+    // @PrePersist
+    // public void handleBeforeCreate() {
+    //     this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+    //             ? SecurityUtil.getCurrentUserLogin().get()
+    //             : "";
+
+    //     this.createdAt = Instant.now();
+    // }
 
 }
