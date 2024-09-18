@@ -17,8 +17,8 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
 
     boolean existsById(Long id);
 
-    Page<Post> findAllByUserId(Long id, Pageable pageable);
+    Page<Post> findByUserId(Long id, Pageable pageable);
 
-    Page<Post> findAllByGroupId(Long id, Pageable pageable);
+    Page<Post> findByGroupId(Long id, Pageable pageable);
 
 }

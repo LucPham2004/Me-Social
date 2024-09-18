@@ -17,7 +17,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/api/**").permitAll();
 
-                    auth.anyRequest().authenticated();
+                    //auth.anyRequest().authenticated();
                 })
                 // .oauth2ResourceServer((oauth2) -> oauth2
                 //     .jwt(jwtConfigurer -> jwtConfigurer.decoder(JwtDecoder())

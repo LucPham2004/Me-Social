@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.me_social.MeSocial.entity.dto.request.PostCreationRequest;
+import com.me_social.MeSocial.entity.dto.request.PostRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.modal.Post;
 import com.me_social.MeSocial.service.PostService;
@@ -42,7 +42,7 @@ public class PostController {
     // POST
     // Create New Post
     @PostMapping("/new")
-    public ApiResponse<Post> createPost(@RequestBody PostCreationRequest request) {
+    public ApiResponse<Post> createPost(@RequestBody PostRequest request) {
         return postService.createPost(request);
     }
 
@@ -54,7 +54,7 @@ public class PostController {
 
     // Edit Post
     @PutMapping("/edit")
-    public ApiResponse<Post> editPost(@RequestBody PostCreationRequest request) {
+    public ApiResponse<Post> editPost(@RequestBody PostRequest request) {
         
         return postService.editPost(request);
     }

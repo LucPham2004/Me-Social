@@ -1,8 +1,8 @@
 package com.me_social.MeSocial.entity.dto.response;
 
-import com.me_social.MeSocial.enums.Gender;
-
 import java.time.Instant;
+
+import com.me_social.MeSocial.enums.Gender;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,9 +17,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level=AccessLevel.PRIVATE)
 public class UserResponse {
+     Long id;
      String username;
-
-     String password;
      String email;
      String firstName;
      String lastName;

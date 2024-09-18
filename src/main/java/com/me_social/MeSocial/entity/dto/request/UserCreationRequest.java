@@ -35,5 +35,4 @@ public class UserCreationRequest {
 
     Gender gender;
 
-    Instant createdAt;
 }

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
-import com.me_social.MeSocial.entity.dto.response.UserCreationResponse;
 import com.me_social.MeSocial.entity.dto.response.UserResponse;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.service.UserService;
@@ -29,7 +28,7 @@ public class UserController {
     UserService userService;
 
     @PostMapping
-    public ApiResponse<UserCreationResponse> createUser(@RequestBody UserCreationRequest reqUser) {
+    public ApiResponse<UserResponse> createUser(@RequestBody UserCreationRequest reqUser) {
         return userService.createUser(reqUser);
     }
 
