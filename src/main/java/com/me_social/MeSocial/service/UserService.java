@@ -133,18 +133,20 @@ public class UserService {
         return apiResponse;
     }
 
-    // public ApiResponse<UserResponse> getUser(Long id) {
-    //     User user = userRepository.findById(id);
-    //     if (user == null) {
-    //         throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-    //     }
-    //     UserResponse userResponse = userMapper.toUserResponse(user);
-    //     ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+    public ApiResponse<UserResponse> getUser(Long id) {
+        User user = userRepository.findById(id);
+        if (user == null) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
 
-    //     apiResponse.setCode(1000);
-    //     apiResponse.setMessage("Get user by id successfully");
-    //     apiResponse.setResult(userResponse);
+        UserResponse userResponse = userMapper.toUserResponse(user);
+        
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
 
-    //     return apiResponse;
-    // }
+        apiResponse.setCode(1000);
+        apiResponse.setMessage("Get user by id successfully");
+        apiResponse.setResult(userResponse);
+
+        return apiResponse;
+    }
 }

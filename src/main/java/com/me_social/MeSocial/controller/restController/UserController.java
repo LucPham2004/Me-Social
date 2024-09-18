@@ -30,34 +30,35 @@ public class UserController {
     @PostMapping
     public ApiResponse<UserResponse> createUser(@RequestBody UserCreationRequest reqUser) {
         return userService.createUser(reqUser);
-    }
-
-    // @GetMapping("/${id}")
-    // public ApiResponse<UserResponse> getUserById(@PathVariable("id") long id) {
-    //     return userService.getUser(id);
-    // }    
+    }  
 
     // GET
     // Get Group members
-    @GetMapping("/get/group/members/{groupId}-{pageNum}")
+    
+    @GetMapping("/{id}")
+    public ApiResponse<UserResponse> getUserById(@PathVariable Long id) {
+        return userService.getUser(id);
+    }  
+    
+    @GetMapping("/get/group/members/{groupId}/{pageNum}")
     public ApiResponse<Page<User>> getGroupMembers(@PathVariable Long groupId, @PathVariable int pageNum) {
         return userService.getGroupMembers(groupId, pageNum);
     }
 
     // Get Group admins
-    @GetMapping("/get/group/admins/{groupId}-{pageNum}")
+    @GetMapping("/get/group/admins/{groupId}/{pageNum}")
     public ApiResponse<Set<User>> getGroupAdmins(@PathVariable Long groupId, @PathVariable int pageNum) {
         return userService.getGroupAdmins(groupId, pageNum);
     }
 
     // Get User's followers
-    @GetMapping("/get/followers/{userId}-{pageNum}")
+    @GetMapping("/get/followers/{userId}/{pageNum}")
     public ApiResponse<Page<User>> getFollowers(@PathVariable Long userId, @PathVariable int pageNum) {
         return userService.getFollowers(userId, pageNum);
     }
 
     // Get User's followers
-    @GetMapping("/get/followings/{userId}-{pageNum}")
+    @GetMapping("/get/followings/{userId}/{pageNum}")
     public ApiResponse<Page<User>> getFollowings(@PathVariable Long userId, @PathVariable int pageNum) {
         return userService.getFollowings(userId, pageNum);
     }

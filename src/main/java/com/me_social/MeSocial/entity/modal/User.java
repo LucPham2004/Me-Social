@@ -3,6 +3,7 @@ package com.me_social.MeSocial.entity.modal;
 import java.time.Instant;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.me_social.MeSocial.enums.Gender;
 
@@ -87,9 +88,11 @@ public class User {
 
     // Groups
     @ManyToMany(mappedBy = "admins")
+    @JsonBackReference(value = "groups_admins")
     private Set<Group> adminGroups;
 
     @ManyToMany(mappedBy = "members")
+    @JsonBackReference(value = "groups_members")
     private Set<Group> memberGroups;
 
     // Direct Messages
