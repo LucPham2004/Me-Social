@@ -5,6 +5,7 @@ import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
@@ -33,6 +34,7 @@ public class UserService {
     UserMapper userMapper;
     GroupRepository groupRepository;
     FollowRepository followRepository;
+    PasswordEncoder passwordEncoder;
 
     static int USERS_PER_PAGE = 10;
 
@@ -115,11 +117,16 @@ public class UserService {
 
     // USER CRUD
 
+    public User handleGetUserByUsername(String username) {
+        return this.userRepository.findByEmail(username);
+    }
+
     public ApiResponse<UserCreationResponse> createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())
                 || userRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.ENTITY_EXISTED);
         }
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
         User user = userMapper.toUser(request);
 
         userRepository.save(user);
@@ -134,7 +141,7 @@ public class UserService {
         return apiResponse;
     }
 
-    // public ApiResponse<UserResponse> getUser(long id) {
+    // public ApiResponse<UserResponse> getUser(Long id) {
     //     User user = userRepository.findById(id);
     //     if (user == null) {
     //         throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);

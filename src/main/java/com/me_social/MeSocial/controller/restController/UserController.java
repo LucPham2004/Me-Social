@@ -34,9 +34,9 @@ public class UserController {
     }
 
     // @GetMapping("/${id}")
-    // public ApiResponse<UserResponse> getUserById(@PathVariable("id") long id) {
+    // public ApiResponse<UserResponse> getUserById(@PathVariable Long id) {
     //     return userService.getUser(id);
-    // }    
+    // }
 
     // GET
     // Get Group members
