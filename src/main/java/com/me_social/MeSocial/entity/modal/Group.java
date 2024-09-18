@@ -49,16 +49,18 @@ public class Group {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	@JoinTable( name = "groups_admins", 
-                joinColumns = @JoinColumn(name = "user_id"), 
-                inverseJoinColumns = @JoinColumn(name = "group_id"))
+                joinColumns = @JoinColumn(name = "group_id"), 
+                inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @JsonManagedReference(value = "groups_admins")
     private Set<User> admins;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	@JoinTable( name = "groups_members", 
-                joinColumns = @JoinColumn(name = "user_id"), 
-                inverseJoinColumns = @JoinColumn(name = "group_id"))
+                joinColumns = @JoinColumn(name = "group_id"), 
+                inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @JsonManagedReference(value = "groups_members")
 	private Set<User> members;
     
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

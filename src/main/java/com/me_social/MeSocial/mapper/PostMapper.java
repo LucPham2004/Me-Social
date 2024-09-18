@@ -1,8 +1,8 @@
 package com.me_social.MeSocial.mapper;
 
-import org.mapstruct.Mapper;
+import org.springframework.stereotype.Component;
 
-import com.me_social.MeSocial.entity.dto.request.PostCreationRequest;
+import com.me_social.MeSocial.entity.dto.request.PostRequest;
 import com.me_social.MeSocial.entity.modal.Post;
 import com.me_social.MeSocial.repository.GroupRepository;
 import com.me_social.MeSocial.repository.UserRepository;
@@ -10,20 +10,27 @@ import com.me_social.MeSocial.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
-@Mapper(componentModel = "spring")
-@FieldDefaults(level=AccessLevel.PRIVATE)
+@Component
+@FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
 public class PostMapper {
+
+    public PostMapper(UserRepository userRepository, GroupRepository groupRepository) {
+        this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
+    }
 
     UserRepository userRepository;
     GroupRepository groupRepository;
     
-    public Post toPost(PostCreationRequest request) {{
+    public Post toPost(PostRequest request) {{
         Post post = new Post();
         post.setContent(request.getContent());
         post.setPrivacy(request.getPrivacy());
 
         post.setUser(userRepository.findById(request.getUserId()));
-        post.setGroup(groupRepository.findById(request.getGroupId()));
+        
+        if(request.getGroupId() != null)
+            post.setGroup(groupRepository.findById(request.getGroupId()));
 
         return post;
     }}

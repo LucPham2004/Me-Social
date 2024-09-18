@@ -9,7 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.me_social.MeSocial.entity.dto.request.PostCreationRequest;
+import com.me_social.MeSocial.entity.dto.request.PostRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.modal.Post;
 import com.me_social.MeSocial.entity.modal.Tag;
@@ -48,7 +48,7 @@ public class PostService {
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Posts successfully");
-        apiResponse.setResult(postRepository.findAllByUserId(userId, pageable));
+        apiResponse.setResult(postRepository.findByUserId(userId, pageable));
 
         return apiResponse;
     }
@@ -64,23 +64,27 @@ public class PostService {
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Posts successfully");
-        apiResponse.setResult(postRepository.findAllByGroupId(groupId, pageable));
+        apiResponse.setResult(postRepository.findByGroupId(groupId, pageable));
 
         return apiResponse;
     }
 
     // POST
     // Create New Post
-    public ApiResponse<Post> createPost(PostCreationRequest request) {
+    public ApiResponse<Post> createPost(PostRequest request) {
         Post post = postMapper.toPost(request);
 
-        Set<Tag> tags = new HashSet<>();
+        if(request.getNameTag() != null) {
+            Set<Tag> tags = new HashSet<>();
 
-        for(String nameTag: request.getNameTag()) {
-            tags.add(tagService.createTag(nameTag, post));
+            for(String nameTag: request.getNameTag()) {
+                tags.add(tagService.createTag(nameTag, post));
+            }
+    
+            post.setTags(tags);
         }
-
-        post.setTags(tags);
+        
+        post.setUser(userRepository.findById(request.getUserId()));
         post.setCreatedAt(LocalDateTime.now());
         postRepository.save(post);
 
@@ -109,7 +113,7 @@ public class PostService {
     }
 
     // Edit Post
-    public ApiResponse<Post> editPost(PostCreationRequest request) {
+    public ApiResponse<Post> editPost(PostRequest request) {
         if(!postRepository.existsById(request.getId())) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
@@ -117,16 +121,19 @@ public class PostService {
         post.setContent(request.getContent());
         post.setPrivacy(request.getPrivacy());
 
-        for(Tag tag: post.getTags()) {
-            tagService.deleteTag(tag);
+        if(post.getTags() != null) {
+            for(Tag tag: post.getTags()) {
+                tagService.deleteTag(tag);
+            }
+    
+            Set<Tag> tags = new HashSet<>();
+    
+            for(String nameTag: request.getNameTag()) {
+                tags.add(tagService.createTag(nameTag, post));
+            }
+            post.setTags(tags);
         }
-
-        Set<Tag> tags = new HashSet<>();
-
-        for(String nameTag: request.getNameTag()) {
-            tags.add(tagService.createTag(nameTag, post));
-        }
-        post.setTags(tags);
+        
         post.setUpdatedAt(LocalDateTime.now());
         postRepository.save(post);
 

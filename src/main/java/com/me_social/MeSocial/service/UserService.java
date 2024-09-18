@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
-import com.me_social.MeSocial.entity.dto.response.UserCreationResponse;
 import com.me_social.MeSocial.entity.dto.response.UserResponse;
 import com.me_social.MeSocial.entity.modal.Follow;
 import com.me_social.MeSocial.entity.modal.User;
@@ -121,7 +120,7 @@ public class UserService {
         return this.userRepository.findByEmail(username);
     }
 
-    public ApiResponse<UserCreationResponse> createUser(UserCreationRequest request) {
+    public ApiResponse<UserResponse> createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())
                 || userRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.ENTITY_EXISTED);
@@ -130,9 +129,9 @@ public class UserService {
         User user = userMapper.toUser(request);
 
         userRepository.save(user);
-        UserCreationResponse userResponse = userMapper.toUserCreationResponse(request);
+        UserResponse userResponse = userMapper.toUserResponse(user);
 
-        ApiResponse<UserCreationResponse> apiResponse = new ApiResponse<>();
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Create user successfully");
@@ -141,18 +140,20 @@ public class UserService {
         return apiResponse;
     }
 
-    // public ApiResponse<UserResponse> getUser(Long id) {
-    //     User user = userRepository.findById(id);
-    //     if (user == null) {
-    //         throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-    //     }
-    //     UserResponse userResponse = userMapper.toUserResponse(user);
-    //     ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+    public ApiResponse<UserResponse> getUser(Long id) {
+        User user = userRepository.findById(id);
+        if (user == null) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
 
-    //     apiResponse.setCode(1000);
-    //     apiResponse.setMessage("Get user by id successfully");
-    //     apiResponse.setResult(userResponse);
+        UserResponse userResponse = userMapper.toUserResponse(user);
+        
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
 
-    //     return apiResponse;
-    // }
+        apiResponse.setCode(1000);
+        apiResponse.setMessage("Get user by id successfully");
+        apiResponse.setResult(userResponse);
+
+        return apiResponse;
+    }
 }

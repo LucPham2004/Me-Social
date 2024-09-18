@@ -1,6 +1,6 @@
 package com.me_social.MeSocial.entity.dto.request;
 
-import com.me_social.MeSocial.enums.PostPrivacy;
+import com.me_social.MeSocial.enums.GroupPrivacy;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,11 +14,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level=AccessLevel.PRIVATE)
-public class PostCreationRequest {
-    Long id;
-    String content;
-    PostPrivacy privacy;
-    Long userId;
-    Long groupId;
-    String[] nameTag;
+public class GroupCreationRequest {
+    Long adminId;
+    String name;
+    String description;
+    GroupPrivacy privacy;
 }

@@ -1,8 +1,8 @@
 package com.me_social.MeSocial.entity.dto.response;
 
-import com.me_social.MeSocial.enums.Gender;
+import java.time.LocalDateTime;
 
-import java.time.Instant;
+import com.me_social.MeSocial.enums.GroupPrivacy;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,18 +16,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level=AccessLevel.PRIVATE)
-public class UserCreationResponse {
-     String username;
-
-     String password;
-     String email;
-     String firstName;
-     String lastName;
-     String phone;
-     Instant dob;
-
-     Instant createdAt;
-     Instant updatedAt;
-     
-     Gender gender;
+public class GroupResponse {
+    Long id;
+    String name;
+    String description;
+    GroupPrivacy privacy;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
+    int memberNum;
 }
