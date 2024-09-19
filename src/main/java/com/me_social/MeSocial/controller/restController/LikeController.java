@@ -40,7 +40,7 @@ public class LikeController {
     }
 
     // Delete Comment Like
-    @DeleteMapping("/post/remove/{userId}/{commentId}")
+    @DeleteMapping("/comment/remove/{userId}/{commentId}")
     public ApiResponse<String> deleteCommentLike(@PathVariable Long userId, @PathVariable Long commentId) {
         return likeService.deleteCommentLike(userId, commentId);
     }

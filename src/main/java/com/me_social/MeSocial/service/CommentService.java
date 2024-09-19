@@ -1,16 +1,18 @@
-package com.me_social.MeSocial.service;
+// package com.me_social.MeSocial.service;
 
-import org.springframework.stereotype.Service;
+// import org.springframework.stereotype.Service;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+// import com.me_social.MeSocial.repository.CommentRepository;
 
-@Service
-@RequiredArgsConstructor
-@FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
-public class CommentService {
-    //CommentRepository commentRepository;
+// import lombok.AccessLevel;
+// import lombok.RequiredArgsConstructor;
+// import lombok.experimental.FieldDefaults;
 
+// @Service
+// @RequiredArgsConstructor
+// @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
+// public class CommentService {
+//     CommentRepository commentRepository;
 
-}
+    
+// }

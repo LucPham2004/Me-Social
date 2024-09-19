@@ -115,7 +115,7 @@ public class User {
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Friendship> friendRequestSent;
 
-    @OneToMany(mappedBy = "accepter", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "requestReceiver", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Friendship> friendRequestReceived;
 
     // @PrePersist

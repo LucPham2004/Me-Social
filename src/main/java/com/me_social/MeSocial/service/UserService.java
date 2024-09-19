@@ -1,6 +1,8 @@
 package com.me_social.MeSocial.service;
 
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,13 +12,15 @@ import org.springframework.stereotype.Service;
 
 import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
+import com.me_social.MeSocial.entity.dto.response.UserDTO;
 import com.me_social.MeSocial.entity.dto.response.UserResponse;
-import com.me_social.MeSocial.entity.modal.Follow;
+import com.me_social.MeSocial.entity.modal.Friendship;
 import com.me_social.MeSocial.entity.modal.User;
+import com.me_social.MeSocial.enums.FriendshipStatus;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
 import com.me_social.MeSocial.mapper.UserMapper;
-import com.me_social.MeSocial.repository.FollowRepository;
+import com.me_social.MeSocial.repository.FriendShipRepository;
 import com.me_social.MeSocial.repository.GroupRepository;
 import com.me_social.MeSocial.repository.UserRepository;
 import com.me_social.MeSocial.utils.PaginationUtil;
@@ -32,7 +36,8 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     GroupRepository groupRepository;
-    FollowRepository followRepository;
+    //FollowRepository followRepository;
+    FriendShipRepository friendShipRepository;
     PasswordEncoder passwordEncoder;
 
     static int USERS_PER_PAGE = 10;
@@ -40,76 +45,73 @@ public class UserService {
     // GET
 
     // Get Group members
-    public ApiResponse<Page<User>> getGroupMembers(Long groupId, int pageNum) {
+    public ApiResponse<Page<UserDTO>> getGroupMembers(Long groupId, int pageNum) {
         if (!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
-        Page<User> members = PaginationUtil.convertSetToPage(groupRepository.findById(groupId).getMembers(), pageable);
+        Set<User> members = groupRepository.findById(groupId).getMembers();
 
-        ApiResponse<Page<User>> apiResponse = new ApiResponse<>();
+        ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Info successfully");
-        apiResponse.setResult(members);
+        apiResponse.setResult(PaginationUtil.convertSetToPage(members.stream()
+                                        .map(userMapper::toUserDTO)
+                                        .collect(Collectors.toSet()), pageable));
 
         return apiResponse;
     }
 
     // Get Group admins
-    public ApiResponse<Set<User>> getGroupAdmins(Long groupId, int pageNum) {
+    public ApiResponse<Set<UserDTO>> getGroupAdmins(Long groupId, int pageNum) {
         if (!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
         Set<User> admins = groupRepository.findById(groupId).getAdmins();
 
-        ApiResponse<Set<User>> apiResponse = new ApiResponse<>();
+        ApiResponse<Set<UserDTO>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Info successfully");
-        apiResponse.setResult(admins);
+        apiResponse.setResult(admins.stream().map(userMapper::toUserDTO).collect(Collectors.toSet()));
 
         return apiResponse;
     }
 
-    // Get User's followers
-    public ApiResponse<Page<User>> getFollowers(Long userId, int pageNum) {
+    // Get User friends
+    public ApiResponse<Page<UserDTO>> getUserFriends(Long userId, int pageNum) {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
         // important
-        Page<User> followers = followRepository.findByFollower(userRepository.findById(userId), pageable)
-                .map(Follow::getFollower);
+        Set<Friendship> friendshipsRequested = friendShipRepository.findByRequestReceiverId(userId);
+        Set<Friendship> friendshipsReceived = friendShipRepository.findByRequesterId(userId);
 
-        ApiResponse<Page<User>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get followers successfully");
-        apiResponse.setResult(followers);
-
-        return apiResponse;
-    }
-
-    // Get User's followers
-    public ApiResponse<Page<User>> getFollowings(Long userId, int pageNum) {
-        if (!userRepository.existsById(userId)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        Set<User> acceptedFriends = new HashSet<>();
+        
+        for(Friendship friendship: friendshipsRequested) {
+            if(friendship.getStatus().equals(FriendshipStatus.ACCEPTED)) {
+                acceptedFriends.add(friendship.getRequester());
+            }
         }
-        Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
+        for(Friendship friendship: friendshipsReceived) {
+            if(friendship.getStatus().equals(FriendshipStatus.ACCEPTED)) {
+                acceptedFriends.add(friendship.getRequestReceiver());
+            }
+        }
 
-        // important
-        Page<User> followings = followRepository.findByFollowing(userRepository.findById(userId), pageable)
-                .map(Follow::getFollowing);
-
-        ApiResponse<Page<User>> apiResponse = new ApiResponse<>();
+        ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get followers successfully");
-        apiResponse.setResult(followings);
+        apiResponse.setResult(PaginationUtil.convertSetToPage(acceptedFriends.stream()
+                                .map(userMapper::toUserDTO)
+                                .collect(Collectors.toSet()), pageable));
 
         return apiResponse;
     }
@@ -156,4 +158,67 @@ public class UserService {
 
         return apiResponse;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Get User's followers
+    // public ApiResponse<Page<User>> getFollowers(Long userId, int pageNum) {
+    //     if (!userRepository.existsById(userId)) {
+    //         throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+    //     }
+    //     Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
+
+    //     // important
+    //     Page<User> followers = followRepository.findByFollower(userRepository.findById(userId), pageable)
+    //             .map(Follow::getFollower);
+
+    //     ApiResponse<Page<User>> apiResponse = new ApiResponse<>();
+
+    //     apiResponse.setCode(1000);
+    //     apiResponse.setMessage("Get followers successfully");
+    //     apiResponse.setResult(followers);
+
+    //     return apiResponse;
+    // }
+
+    // // Get User's followers
+    // public ApiResponse<Page<User>> getFollowings(Long userId, int pageNum) {
+    //     if (!userRepository.existsById(userId)) {
+    //         throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+    //     }
+    //     Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
+
+    //     // important
+    //     Page<User> followings = followRepository.findByFollowing(userRepository.findById(userId), pageable)
+    //             .map(Follow::getFollowing);
+
+    //     ApiResponse<Page<User>> apiResponse = new ApiResponse<>();
+
+    //     apiResponse.setCode(1000);
+    //     apiResponse.setMessage("Get followers successfully");
+    //     apiResponse.setResult(followings);
+
+    //     return apiResponse;
+    // }
 }

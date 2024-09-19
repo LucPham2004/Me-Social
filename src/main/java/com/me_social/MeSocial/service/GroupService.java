@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.me_social.MeSocial.entity.dto.request.GroupRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
@@ -103,6 +104,7 @@ public class GroupService {
     }
 
     // PUT
+    @Transactional
     public ApiResponse<GroupResponse> editGroup(GroupRequest request) {
         if(!groupRepository.existsById(request.getGroupId())) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
@@ -126,6 +128,7 @@ public class GroupService {
     }
 
     // Add Admin to Group
+    @Transactional
     public ApiResponse<String> addAdminToGroup(Long adminId, Long groupId) {
         if(!groupRepository.existsById(groupId) || !userRepository.existsById(adminId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
@@ -146,6 +149,7 @@ public class GroupService {
     }
 
     // Remove Group Admin
+    @Transactional
     public ApiResponse<String> removeGroupAdmin(Long adminId, Long groupId) {
         if(!groupRepository.existsById(groupId) || !userRepository.existsById(adminId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
@@ -166,6 +170,7 @@ public class GroupService {
     }
 
     // Add member to Group
+    @Transactional
     public ApiResponse<String> addMemberToGroup(Long memberId, Long groupId) {
         if(!groupRepository.existsById(groupId) || !userRepository.existsById(memberId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
@@ -186,6 +191,7 @@ public class GroupService {
     }
 
     // Remove Group member
+    @Transactional
     public ApiResponse<String> removeGroupMember(Long memberId, Long groupId) {
         if(!groupRepository.existsById(groupId) || !userRepository.existsById(memberId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);

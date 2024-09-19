@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
+import com.me_social.MeSocial.entity.dto.response.UserDTO;
 import com.me_social.MeSocial.entity.dto.response.UserResponse;
-import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.service.UserService;
 
 import lombok.AccessLevel;
@@ -41,25 +41,51 @@ public class UserController {
     }  
     
     @GetMapping("/get/group/members/{groupId}/{pageNum}")
-    public ApiResponse<Page<User>> getGroupMembers(@PathVariable Long groupId, @PathVariable int pageNum) {
+    public ApiResponse<Page<UserDTO>> getGroupMembers(@PathVariable Long groupId, @PathVariable int pageNum) {
         return userService.getGroupMembers(groupId, pageNum);
     }
 
     // Get Group admins
     @GetMapping("/get/group/admins/{groupId}/{pageNum}")
-    public ApiResponse<Set<User>> getGroupAdmins(@PathVariable Long groupId, @PathVariable int pageNum) {
+    public ApiResponse<Set<UserDTO>> getGroupAdmins(@PathVariable Long groupId, @PathVariable int pageNum) {
         return userService.getGroupAdmins(groupId, pageNum);
     }
 
-    // Get User's followers
-    @GetMapping("/get/followers/{userId}/{pageNum}")
-    public ApiResponse<Page<User>> getFollowers(@PathVariable Long userId, @PathVariable int pageNum) {
-        return userService.getFollowers(userId, pageNum);
+    @GetMapping("/get/friends/{userId}/{pageNum}")
+    public ApiResponse<Page<UserDTO>> getUserFriends(@PathVariable Long userId, @PathVariable int pageNum) {
+        return userService.getUserFriends(userId, pageNum);
     }
 
-    // Get User's followers
-    @GetMapping("/get/followings/{userId}/{pageNum}")
-    public ApiResponse<Page<User>> getFollowings(@PathVariable Long userId, @PathVariable int pageNum) {
-        return userService.getFollowings(userId, pageNum);
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // // Get User's followers
+    // @GetMapping("/get/followers/{userId}/{pageNum}")
+    // public ApiResponse<Page<User>> getFollowers(@PathVariable Long userId, @PathVariable int pageNum) {
+    //     return userService.getFollowers(userId, pageNum);
+    // }
+
+    // // Get User's followers
+    // @GetMapping("/get/followings/{userId}/{pageNum}")
+    // public ApiResponse<Page<User>> getFollowings(@PathVariable Long userId, @PathVariable int pageNum) {
+    //     return userService.getFollowings(userId, pageNum);
+    // }
 }

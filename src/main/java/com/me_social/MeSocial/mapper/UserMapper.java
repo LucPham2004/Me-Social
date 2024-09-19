@@ -42,7 +42,7 @@ public class UserMapper {
         return userResponse;
     }
 
-    public UserDTO toUserDTO(User user, Long id) {
+    public UserDTO toUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setFirstName(user.getFirstName());

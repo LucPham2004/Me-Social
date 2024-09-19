@@ -60,7 +60,7 @@ public class GroupMapper {
         if(group.getMembers() != null)
             groupResponse.setMemberNum(group.getMembers().size());
         if(group.getAdmins() != null)
-            groupResponse.setMemberNum(group.getAdmins().size());
+            groupResponse.setAdminNum(group.getAdmins().size());
         
         return groupResponse;
     }}

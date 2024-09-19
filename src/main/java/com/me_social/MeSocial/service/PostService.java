@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.me_social.MeSocial.entity.dto.request.PostRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
@@ -113,6 +114,7 @@ public class PostService {
     }
 
     // Edit Post
+    @Transactional
     public ApiResponse<Post> editPost(PostRequest request) {
         if(!postRepository.existsById(request.getId())) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
