@@ -31,7 +31,7 @@ public class AuthController {
      UserService userService;
      SecurityUtils securityUtils;
 
-     @PostMapping("login")
+     @PostMapping("/login")
      public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
 
           UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(

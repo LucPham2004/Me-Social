@@ -1,11 +1,11 @@
 package com.me_social.MeSocial.mapper;
 
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import com.me_social.MeSocial.entity.dto.request.GroupCreationRequest;
+import com.me_social.MeSocial.entity.dto.request.GroupRequest;
 import com.me_social.MeSocial.entity.dto.response.GroupResponse;
 import com.me_social.MeSocial.entity.modal.Group;
 import com.me_social.MeSocial.entity.modal.User;
@@ -24,8 +24,12 @@ public class GroupMapper {
     }
     UserRepository userRepository;
 
-    public Group toGroup(GroupCreationRequest request) {{
+    public Group toGroup(GroupRequest request) {{
         Group group = new Group();
+
+        if(request.getGroupId() != null) {
+            group.setId(request.getGroupId());
+        }
 
         if(!userRepository.existsById(request.getAdminId())) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
@@ -55,6 +59,8 @@ public class GroupMapper {
         groupResponse.setUpdatedAt(group.getUpdatedAt());
         if(group.getMembers() != null)
             groupResponse.setMemberNum(group.getMembers().size());
+        if(group.getAdmins() != null)
+            groupResponse.setMemberNum(group.getAdmins().size());
         
         return groupResponse;
     }}

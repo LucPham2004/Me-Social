@@ -10,6 +10,8 @@ import com.me_social.MeSocial.entity.modal.Group;
 @Repository
 public interface GroupRepository extends PagingAndSortingRepository<Group, Long> {
     Group save(Group group);
+
+    void delete(Group group);
     
     Group findById(Long id);
 

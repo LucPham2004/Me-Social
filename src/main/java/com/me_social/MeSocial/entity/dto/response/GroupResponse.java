@@ -24,4 +24,5 @@ public class GroupResponse {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     int memberNum;
+    int adminNum;
 }

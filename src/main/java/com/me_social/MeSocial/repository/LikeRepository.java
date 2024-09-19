@@ -7,5 +7,7 @@ import com.me_social.MeSocial.entity.modal.Like;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
-    
+    Like findByUserIdAndPostId(Long userId, Long postId);
+
+    Like findByUserIdAndCommentId(Long userId, Long commentId);
 }
