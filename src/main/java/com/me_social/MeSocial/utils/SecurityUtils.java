@@ -1,5 +1,14 @@
 package com.me_social.MeSocial.utils;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -11,6 +20,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Service;
 
@@ -18,15 +28,6 @@ import com.me_social.MeSocial.entity.dto.response.LoginResponse;
 import com.nimbusds.jose.util.Base64;
 
 import lombok.RequiredArgsConstructor;
-
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +52,7 @@ public class SecurityUtils {
                     .macAlgorithm(JWT_ALGORITHM).build();
           try {
                return jwtDecoder.decode(token);
-          } catch (Exception e) {
+          } catch (JwtException e) {
                System.out.println(">>> JWT error: " + e.getMessage());
                throw e;
           }
@@ -67,7 +68,7 @@ public class SecurityUtils {
           Instant validity = now.plus(accessTokenExpiration, ChronoUnit.SECONDS);
 
           // hardcode permission for testing
-          List<String> listAuthority = new ArrayList<String>();
+          List<String> listAuthority = new ArrayList<>();
 
           listAuthority.add("ROLE_USER_CREATE");
           listAuthority.add("ROLE_USER_UPDATE");
