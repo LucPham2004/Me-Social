@@ -36,7 +36,8 @@ public class UserMapper {
         userResponse.setLastName(user.getLastName());
         userResponse.setPhone(user.getPhone());
         userResponse.setDob(user.getDob());
-        userResponse.setCreatedAt(Instant.now());
+        userResponse.setCreatedAt(user.getCreatedAt());
+        userResponse.setUpdatedAt(user.getUpdatedAt());
         userResponse.setGender(user.getGender());
 
         return userResponse;

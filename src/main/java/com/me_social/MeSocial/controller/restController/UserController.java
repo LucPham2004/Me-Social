@@ -6,40 +6,44 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
+import com.me_social.MeSocial.entity.dto.request.UserUpdateRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.dto.response.UserResponse;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.service.UserService;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
 public class UserController {
-    UserService userService;
+    private final UserService userService;
 
     @PostMapping
     public ApiResponse<UserResponse> createUser(@RequestBody UserCreationRequest reqUser) {
         return userService.createUser(reqUser);
-    }  
+    }
 
-    // GET
-    // Get Group members
-    
     @GetMapping("/{id}")
     public ApiResponse<UserResponse> getUserById(@PathVariable Long id) {
         return userService.getUser(id);
-    }  
-    
+    }
+
+    @PutMapping(value = "/updateUser", consumes = "application/json", produces = "application/json")
+    public ApiResponse<UserResponse> updateUser(@RequestBody UserUpdateRequest reqUser) {
+        return userService.updateUser(reqUser);
+    }
+
+    // GET
+    // Get Group members
+
     @GetMapping("/get/group/members/{groupId}/{pageNum}")
     public ApiResponse<Page<User>> getGroupMembers(@PathVariable Long groupId, @PathVariable int pageNum) {
         return userService.getGroupMembers(groupId, pageNum);
