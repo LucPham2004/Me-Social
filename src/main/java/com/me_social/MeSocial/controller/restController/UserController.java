@@ -16,6 +16,7 @@ import com.me_social.MeSocial.entity.dto.response.UserDTO;
 import com.me_social.MeSocial.entity.dto.response.UserResponse;
 import com.me_social.MeSocial.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,18 +29,18 @@ public class UserController {
     UserService userService;
 
     @PostMapping
-    public ApiResponse<UserResponse> createUser(@RequestBody UserCreationRequest reqUser) {
+    public ApiResponse<UserResponse> createUser(@Valid @RequestBody UserCreationRequest reqUser) {
         return userService.createUser(reqUser);
     }  
 
     // GET
-    // Get Group members
     
     @GetMapping("/{id}")
     public ApiResponse<UserResponse> getUserById(@PathVariable Long id) {
         return userService.getUser(id);
     }  
     
+    // Get Group members
     @GetMapping("/get/group/members/{groupId}/{pageNum}")
     public ApiResponse<Page<UserDTO>> getGroupMembers(@PathVariable Long groupId, @PathVariable int pageNum) {
         return userService.getGroupMembers(groupId, pageNum);
@@ -51,6 +52,7 @@ public class UserController {
         return userService.getGroupAdmins(groupId, pageNum);
     }
 
+    // Get User's friends
     @GetMapping("/get/friends/{userId}/{pageNum}")
     public ApiResponse<Page<UserDTO>> getUserFriends(@PathVariable Long userId, @PathVariable int pageNum) {
         return userService.getUserFriends(userId, pageNum);

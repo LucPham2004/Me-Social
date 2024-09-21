@@ -137,6 +137,7 @@ public class GroupService {
 
         Set<User> admins = group.getAdmins();
         admins.add(userRepository.findById(adminId));
+        group.setAdmins(admins);
         groupRepository.save(group);
 
         ApiResponse<String> apiResponse = new ApiResponse<>();
@@ -158,6 +159,7 @@ public class GroupService {
 
         Set<User> admins = group.getAdmins();
         admins.remove(userRepository.findById(adminId));
+        group.setAdmins(admins);
         groupRepository.save(group);
 
         ApiResponse<String> apiResponse = new ApiResponse<>();
@@ -179,6 +181,7 @@ public class GroupService {
 
         Set<User> members = group.getMembers();
         members.add(userRepository.findById(memberId));
+        group.setMembers(members);
         groupRepository.save(group);
 
         ApiResponse<String> apiResponse = new ApiResponse<>();
@@ -200,6 +203,7 @@ public class GroupService {
 
         Set<User> members = group.getMembers();
         members.remove(userRepository.findById(memberId));
+        group.setMembers(members);
         groupRepository.save(group);
 
         ApiResponse<String> apiResponse = new ApiResponse<>();

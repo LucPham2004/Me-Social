@@ -15,6 +15,7 @@ import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.dto.response.GroupResponse;
 import com.me_social.MeSocial.service.GroupService;
 
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -44,7 +45,7 @@ public class GroupController {
 
     // Create Group
     @PostMapping("/new")
-    public ApiResponse<GroupResponse> createGroup(@RequestBody GroupRequest request) {
+    public ApiResponse<GroupResponse> createGroup(@Valid @RequestBody GroupRequest request) {
         return groupService.createGroup(request);
     }
     
@@ -83,7 +84,7 @@ public class GroupController {
     // PUT
 
     @PutMapping
-    public ApiResponse<GroupResponse> editGroup(@RequestBody GroupRequest request) {
+    public ApiResponse<GroupResponse> editGroup(@Valid @RequestBody GroupRequest request) {
         return groupService.editGroup(request);
     }
 
