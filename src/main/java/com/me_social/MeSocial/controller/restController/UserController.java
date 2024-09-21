@@ -6,11 +6,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
+import com.me_social.MeSocial.entity.dto.request.UserUpdateRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.dto.response.UserDTO;
 import com.me_social.MeSocial.entity.dto.response.UserResponse;

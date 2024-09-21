@@ -1,5 +1,7 @@
 package com.me_social.MeSocial.service;
 
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 
 import com.me_social.MeSocial.entity.modal.Post;
@@ -21,7 +23,9 @@ public class TagService {
     public Tag createTag(String nameTag, Post post) {
         Tag tag = new Tag();
         tag.setName(nameTag);
-        tag.setPost(post);
+        Set<Post> posts = tag.getPosts();
+        posts.add(post);
+        tag.setPosts(posts);
         return tagRepository.save(tag);
     }
 

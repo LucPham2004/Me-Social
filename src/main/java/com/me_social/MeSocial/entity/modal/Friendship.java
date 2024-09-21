@@ -45,7 +45,7 @@ public class Friendship {
     private User requester;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "accepter_id")
+    @JoinColumn(name = "request_receiver_id")
     private User requestReceiver;
 
 }

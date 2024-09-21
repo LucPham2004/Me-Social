@@ -1,8 +1,8 @@
 package com.me_social.MeSocial.repository;
 
 import java.util.Optional;
+
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.expression.spel.ast.OpAnd;
 import org.springframework.stereotype.Repository;
 
 import com.me_social.MeSocial.entity.modal.User;
