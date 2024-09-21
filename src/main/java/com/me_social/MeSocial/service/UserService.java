@@ -2,6 +2,8 @@ package com.me_social.MeSocial.service;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.time.Instant;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -11,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
+import com.me_social.MeSocial.entity.dto.request.UserUpdateRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.dto.response.UserDTO;
 import com.me_social.MeSocial.entity.dto.response.UserResponse;
@@ -118,8 +121,27 @@ public class UserService {
 
     // USER CRUD
 
-    public User handleGetUserByUsername(String username) {
-        return this.userRepository.findByEmail(username);
+    public User handleGetUserByUsernameOrEmailOrPhone(String loginInput) {
+        Optional<User> optionalUser = this.userRepository.findByEmail(loginInput);
+        if (optionalUser.isEmpty()) {
+            optionalUser = userRepository.findByUsername(loginInput);
+        }
+        if (optionalUser.isEmpty()) {
+            optionalUser = userRepository.findByPhone(loginInput);
+        }
+        if (optionalUser.isEmpty()) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+
+        return optionalUser.get();
+    }
+
+    public User handleGetUserById(Long id) {
+        Optional<User> optionalUser = Optional.ofNullable(userRepository.findById(id));
+        if (optionalUser == null) {
+            return null;
+        }
+        return optionalUser.get();
     }
 
     public ApiResponse<UserResponse> createUser(UserCreationRequest request) {
@@ -129,7 +151,7 @@ public class UserService {
         }
         request.setPassword(passwordEncoder.encode(request.getPassword()));
         User user = userMapper.toUser(request);
-
+        user.setCreatedAt(Instant.now());
         userRepository.save(user);
         UserResponse userResponse = userMapper.toUserResponse(user);
 
@@ -149,11 +171,35 @@ public class UserService {
         }
 
         UserResponse userResponse = userMapper.toUserResponse(user);
-        
+
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get user by id successfully");
+        apiResponse.setResult(userResponse);
+
+        return apiResponse;
+    }
+
+    public ApiResponse<UserResponse> updateUser(UserUpdateRequest reqUser) {
+        User dbUser = handleGetUserById(reqUser.getId());
+        if (dbUser == null) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+        dbUser.setFirstName(reqUser.getFirstName());
+        dbUser.setLastName(reqUser.getLastName());
+        dbUser.setGender(reqUser.getGender());
+        dbUser.setBio(reqUser.getBio());
+        dbUser.setDob(reqUser.getDob());
+        dbUser.setLocation(reqUser.getLocation());
+        dbUser.setUpdatedAt(Instant.now());
+        userRepository.save(dbUser);
+
+        UserResponse userResponse = userMapper.toUserResponse(dbUser);
+
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setCode(10345300);
+        apiResponse.setMessage("Update User Successfully!");
         apiResponse.setResult(userResponse);
 
         return apiResponse;

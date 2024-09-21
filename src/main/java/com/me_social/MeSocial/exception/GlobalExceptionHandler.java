@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = AppException.class)
-    public ResponseEntity<ApiResponse<String>> handlingRAppException(AppException exception) {
+    public ResponseEntity<ApiResponse<String>> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
         ApiResponse<String> apiResponse = new ApiResponse<>();
 

@@ -3,9 +3,11 @@ package com.me_social.MeSocial.entity.modal;
 import java.time.Instant;
 import java.util.Set;
 
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.me_social.MeSocial.enums.Gender;
+import com.me_social.MeSocial.utils.SecurityUtils;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,6 +20,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -59,6 +62,10 @@ public class User {
     private String bio;
 
     private String location;
+
+    private String createdBy;
+
+    private String updatedBy;
 
     @Column(name = "created_at", nullable = true, updatable = true)
     private Instant createdAt;
@@ -120,8 +127,8 @@ public class User {
 
     // @PrePersist
     // public void handleBeforeCreate() {
-    //     this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
-    //             ? SecurityUtil.getCurrentUserLogin().get()
+    //     this.createdBy = SecurityUtils.getCurrentUserLogin().isPresent() == true
+    //             ? SecurityUtils.getCurrentUserLogin().get()
     //             : "";
 
     //     this.createdAt = Instant.now();

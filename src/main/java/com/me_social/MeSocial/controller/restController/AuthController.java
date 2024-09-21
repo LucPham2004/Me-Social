@@ -20,11 +20,16 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+
+import org.hibernate.validator.internal.util.logging.LoggerFactory;
+import org.slf4j.Logger;
 
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthController {
 
      AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -42,10 +47,11 @@ public class AuthController {
           // create a token
           // nạp thông tin (nếu xử lý thành công) vào SecurityContext
           SecurityContextHolder.getContext().setAuthentication(authentication);
+          log.info("authentication: ", authentication);
 
           LoginResponse loginResponse = new LoginResponse();
 
-          User currentUserDB = userService.handleGetUserByUsername(loginRequest.getUsername());
+          User currentUserDB = userService.handleGetUserByUsernameOrEmailOrPhone(loginRequest.getUsername());
 
           if (currentUserDB != null) {
                LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
@@ -61,7 +67,7 @@ public class AuthController {
 
           ApiResponse<LoginResponse> apiResponse = new ApiResponse<>();
           apiResponse.setCode(1000);
-          apiResponse.setMessage("Create user successfully");
+          apiResponse.setMessage("Login successfully");
           apiResponse.setResult(loginResponse);
 
           return apiResponse;

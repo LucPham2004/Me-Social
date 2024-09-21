@@ -17,16 +17,13 @@ import com.me_social.MeSocial.entity.dto.response.UserResponse;
 import com.me_social.MeSocial.service.UserService;
 
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
 public class UserController {
-    UserService userService;
+    private final UserService userService;
 
     @PostMapping
     public ApiResponse<UserResponse> createUser(@Valid @RequestBody UserCreationRequest reqUser) {
@@ -38,9 +35,16 @@ public class UserController {
     @GetMapping("/{id}")
     public ApiResponse<UserResponse> getUserById(@PathVariable Long id) {
         return userService.getUser(id);
-    }  
-    
+    }
+
+    @PutMapping(value = "/updateUser", consumes = "application/json", produces = "application/json")
+    public ApiResponse<UserResponse> updateUser(@RequestBody UserUpdateRequest reqUser) {
+        return userService.updateUser(reqUser);
+    }
+
+    // GET
     // Get Group members
+
     @GetMapping("/get/group/members/{groupId}/{pageNum}")
     public ApiResponse<Page<UserDTO>> getGroupMembers(@PathVariable Long groupId, @PathVariable int pageNum) {
         return userService.getGroupMembers(groupId, pageNum);
