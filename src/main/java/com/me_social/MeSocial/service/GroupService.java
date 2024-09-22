@@ -87,6 +87,50 @@ public class GroupService {
         return apiResponse;
     }
 
+    // Add Admin to Group
+    @Transactional
+    public ApiResponse<String> addAdminToGroup(Long adminId, Long groupId) {
+        if(!groupRepository.existsById(groupId) || !userRepository.existsById(adminId)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+        Group group = groupRepository.findById(groupId);
+
+        Set<User> admins = group.getAdmins();
+        admins.add(userRepository.findById(adminId));
+        group.setAdmins(admins);
+        groupRepository.save(group);
+
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+
+        apiResponse.setCode(1000);
+        apiResponse.setMessage("Add admin to group successfully");
+        apiResponse.setResult("");
+
+        return apiResponse;
+    }
+
+    // Add member to Group
+    @Transactional
+    public ApiResponse<String> addMemberToGroup(Long memberId, Long groupId) {
+        if(!groupRepository.existsById(groupId) || !userRepository.existsById(memberId)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+        Group group = groupRepository.findById(groupId);
+
+        Set<User> members = group.getMembers();
+        members.add(userRepository.findById(memberId));
+        group.setMembers(members);
+        groupRepository.save(group);
+
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+
+        apiResponse.setCode(1000);
+        apiResponse.setMessage("Add member to group successfully");
+        apiResponse.setResult("");
+
+        return apiResponse;
+    }
+    
     // DELETE
     public ApiResponse<String> deleteGroup(Long groupId) {
         if(!groupRepository.existsById(groupId)) {
@@ -127,67 +171,32 @@ public class GroupService {
         return apiResponse;
     }
 
-    // Add Admin to Group
-    @Transactional
-    public ApiResponse<String> addAdminToGroup(Long adminId, Long groupId) {
-        if(!groupRepository.existsById(groupId) || !userRepository.existsById(adminId)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        Group group = groupRepository.findById(groupId);
-
-        Set<User> admins = group.getAdmins();
-        admins.add(userRepository.findById(adminId));
-        group.setAdmins(admins);
-        groupRepository.save(group);
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Add admin to group successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
-    }
-
     // Remove Group Admin
     @Transactional
     public ApiResponse<String> removeGroupAdmin(Long adminId, Long groupId) {
         if(!groupRepository.existsById(groupId) || !userRepository.existsById(adminId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
+        
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+
         Group group = groupRepository.findById(groupId);
 
         Set<User> admins = group.getAdmins();
+
+        if(admins.size() < 2) {
+            apiResponse.setCode(1000);
+            apiResponse.setMessage("Can NOT remove admin when there is 1 admin left!");
+
+            return apiResponse;
+        }
+
         admins.remove(userRepository.findById(adminId));
         group.setAdmins(admins);
         groupRepository.save(group);
 
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
         apiResponse.setCode(1000);
         apiResponse.setMessage("Remove group Admin successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
-    }
-
-    // Add member to Group
-    @Transactional
-    public ApiResponse<String> addMemberToGroup(Long memberId, Long groupId) {
-        if(!groupRepository.existsById(groupId) || !userRepository.existsById(memberId)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        Group group = groupRepository.findById(groupId);
-
-        Set<User> members = group.getMembers();
-        members.add(userRepository.findById(memberId));
-        group.setMembers(members);
-        groupRepository.save(group);
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Add member to group successfully");
         apiResponse.setResult("");
 
         return apiResponse;

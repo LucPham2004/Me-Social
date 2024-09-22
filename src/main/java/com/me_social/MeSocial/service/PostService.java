@@ -19,6 +19,7 @@ import com.me_social.MeSocial.exception.ErrorCode;
 import com.me_social.MeSocial.mapper.PostMapper;
 import com.me_social.MeSocial.repository.GroupRepository;
 import com.me_social.MeSocial.repository.PostRepository;
+import com.me_social.MeSocial.repository.TagRepository;
 import com.me_social.MeSocial.repository.UserRepository;
 
 import lombok.AccessLevel;
@@ -32,6 +33,7 @@ public class PostService {
     PostRepository postRepository;
     UserRepository userRepository;
     GroupRepository groupRepository;
+    TagRepository tagRepository;
     PostMapper postMapper;
     TagService tagService;
 
@@ -66,6 +68,22 @@ public class PostService {
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Posts successfully");
         apiResponse.setResult(postRepository.findByGroupId(groupId, pageable));
+
+        return apiResponse;
+    }
+
+    // Get Posts By Group
+    public ApiResponse<Page<Post>> getPostsByTag(Long tagId, int pageNum) {
+        if(!tagRepository.existsById(tagId)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+        Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
+
+        ApiResponse<Page<Post>> apiResponse = new ApiResponse<>();
+
+        apiResponse.setCode(1000);
+        apiResponse.setMessage("Get Posts successfully");
+        apiResponse.setResult(postRepository.findByTagsId(tagId, pageable));
 
         return apiResponse;
     }

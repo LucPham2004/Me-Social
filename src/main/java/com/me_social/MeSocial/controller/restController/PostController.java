@@ -29,15 +29,21 @@ public class PostController {
 
     // GET
     // Get Posts By User
-    @GetMapping("/get/byUser/{userId}/{pageNum}")
+    @GetMapping("/user/{userId}/{pageNum}")
     public ApiResponse<Page<Post>> getPostsByUser(@PathVariable Long userId, @PathVariable int pageNum) {
         return postService.getPostsByUser(userId, pageNum);
     }
     
     // Get Posts By Group
-    @GetMapping("/get/byGroup/{groupId}/{pageNum}")
+    @GetMapping("/group/{groupId}/{pageNum}")
     public ApiResponse<Page<Post>> getPostsByGroup(@PathVariable Long groupId, @PathVariable int pageNum) {
         return postService.getPostsByGroup(groupId, pageNum);
+    }
+
+    // Get Posts By Tag
+    @GetMapping("/tag/{tagId}/{pageNum}")
+    public ApiResponse<Page<Post>> getPostsByTag(@PathVariable Long tagId, @PathVariable int pageNum) {
+        return postService.getPostsByTag(tagId, pageNum);
     }
 
     // POST

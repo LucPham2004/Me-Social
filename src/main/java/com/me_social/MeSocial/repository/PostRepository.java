@@ -21,4 +21,6 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
 
     Page<Post> findByGroupId(Long id, Pageable pageable);
 
+    Page<Post> findByTagsId(Long id, Pageable pageable);
+
 }
