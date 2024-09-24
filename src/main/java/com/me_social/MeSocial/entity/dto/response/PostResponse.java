@@ -18,6 +18,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level=AccessLevel.PRIVATE)
 public class PostResponse {
     Long id;
+    Long userId;
+    Long groupId;
     String content;
     PostPrivacy privacy;
     LocalDateTime createdAt;

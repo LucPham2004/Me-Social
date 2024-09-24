@@ -2,7 +2,7 @@ package com.me_social.MeSocial.entity.dto.request;
 
 import com.me_social.MeSocial.enums.GroupPrivacy;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ import lombok.experimental.FieldDefaults;
 public class GroupRequest {
     Long groupId;
     
-    @NotBlank
+    @NotNull
     Long adminId;
 
     @Size(min=8, message="Group name must be at least 8 charactors")
@@ -27,6 +27,6 @@ public class GroupRequest {
 
     String description;
 
-    @NotBlank
+    @NotNull
     GroupPrivacy privacy;
 }

@@ -3,6 +3,7 @@ package com.me_social.MeSocial.service;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.me_social.MeSocial.entity.dto.request.PostRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
+import com.me_social.MeSocial.entity.dto.response.PostResponse;
 import com.me_social.MeSocial.entity.modal.Post;
 import com.me_social.MeSocial.entity.modal.Tag;
 import com.me_social.MeSocial.exception.AppException;
@@ -21,6 +23,7 @@ import com.me_social.MeSocial.repository.GroupRepository;
 import com.me_social.MeSocial.repository.PostRepository;
 import com.me_social.MeSocial.repository.TagRepository;
 import com.me_social.MeSocial.repository.UserRepository;
+import com.me_social.MeSocial.utils.PaginationUtil;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -41,63 +44,74 @@ public class PostService {
 
     // GET
     // Get Posts By User
-    public ApiResponse<Page<Post>> getPostsByUser(Long userId, int pageNum) {
+    public ApiResponse<Page<PostResponse>> getPostsByUser(Long userId, int pageNum) {
         if(!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
 
-        ApiResponse<Page<Post>> apiResponse = new ApiResponse<>();
+        ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Posts successfully");
-        apiResponse.setResult(postRepository.findByUserId(userId, pageable));
+        apiResponse.setResult(PaginationUtil.convertSetToPage(postRepository.findByUserId(userId).stream()
+            .map(postMapper::toPostResponse)
+            .collect(Collectors.toSet()), pageable));
 
         return apiResponse;
     }
     
     // Get Posts By Group
-    public ApiResponse<Page<Post>> getPostsByGroup(Long groupId, int pageNum) {
+    public ApiResponse<Page<PostResponse>> getPostsByGroup(Long groupId, int pageNum) {
         if(!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
 
-        ApiResponse<Page<Post>> apiResponse = new ApiResponse<>();
+        ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Posts successfully");
-        apiResponse.setResult(postRepository.findByGroupId(groupId, pageable));
+        apiResponse.setResult(PaginationUtil.convertSetToPage(postRepository.findByGroupId(groupId).stream()
+            .map(postMapper::toPostResponse)
+            .collect(Collectors.toSet()), pageable));
 
         return apiResponse;
     }
 
     // Get Posts By Group
-    public ApiResponse<Page<Post>> getPostsByTag(Long tagId, int pageNum) {
+    public ApiResponse<Page<PostResponse>> getPostsByTag(Long tagId, int pageNum) {
         if(!tagRepository.existsById(tagId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
 
-        ApiResponse<Page<Post>> apiResponse = new ApiResponse<>();
+        ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Posts successfully");
-        apiResponse.setResult(postRepository.findByTagsId(tagId, pageable));
+        apiResponse.setResult(PaginationUtil.convertSetToPage(postRepository.findByTagsId(tagId).stream()
+            .map(postMapper::toPostResponse)
+            .collect(Collectors.toSet()), pageable));
 
         return apiResponse;
     }
 
     // POST
     // Create New Post
-    public ApiResponse<Post> createPost(PostRequest request) {
+    public ApiResponse<PostResponse> createPost(PostRequest request) {
         Post post = postMapper.toPost(request);
 
         if(request.getNameTag() != null) {
+            
             Set<Tag> tags = new HashSet<>();
 
             for(String nameTag: request.getNameTag()) {
-                tags.add(tagService.createTag(nameTag, post));
+                Tag tag = tagRepository.findByName(nameTag);
+                if(tag != null) 
+                    tags.add(tag);
+                else
+                    tags.add(tagService.createTag(nameTag));
             }
     
             post.setTags(tags);
@@ -107,11 +121,11 @@ public class PostService {
         post.setCreatedAt(LocalDateTime.now());
         postRepository.save(post);
 
-        ApiResponse<Post> apiResponse = new ApiResponse<>();
+        ApiResponse<PostResponse> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Post created successfully");
-        apiResponse.setResult(post);
+        apiResponse.setResult(postMapper.toPostResponse(post));
 
         return apiResponse;
     }
@@ -133,7 +147,7 @@ public class PostService {
 
     // Edit Post
     @Transactional
-    public ApiResponse<Post> editPost(PostRequest request) {
+    public ApiResponse<PostResponse> editPost(PostRequest request) {
         if(!postRepository.existsById(request.getId())) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
@@ -149,7 +163,11 @@ public class PostService {
             Set<Tag> tags = new HashSet<>();
     
             for(String nameTag: request.getNameTag()) {
-                tags.add(tagService.createTag(nameTag, post));
+                Tag tag = tagRepository.findByName(nameTag);
+                if(tag != null) 
+                    tags.add(tag);
+                else
+                    tags.add(tagService.createTag(nameTag));
             }
             post.setTags(tags);
         }
@@ -157,11 +175,11 @@ public class PostService {
         post.setUpdatedAt(LocalDateTime.now());
         postRepository.save(post);
 
-        ApiResponse<Post> apiResponse = new ApiResponse<>();
+        ApiResponse<PostResponse> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Post edited successfully");
-        apiResponse.setResult(post);
+        apiResponse.setResult(postMapper.toPostResponse(post));
 
         return apiResponse;
     }

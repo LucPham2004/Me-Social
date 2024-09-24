@@ -1,10 +1,7 @@
 package com.me_social.MeSocial.service;
 
-import java.util.Set;
-
 import org.springframework.stereotype.Service;
 
-import com.me_social.MeSocial.entity.modal.Post;
 import com.me_social.MeSocial.entity.modal.Tag;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
@@ -20,12 +17,9 @@ import lombok.experimental.FieldDefaults;
 public class TagService {
     TagRepository tagRepository;
     
-    public Tag createTag(String nameTag, Post post) {
+    public Tag createTag(String nameTag) {
         Tag tag = new Tag();
         tag.setName(nameTag);
-        Set<Post> posts = tag.getPosts();
-        posts.add(post);
-        tag.setPosts(posts);
         return tagRepository.save(tag);
     }
 

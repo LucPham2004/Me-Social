@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.me_social.MeSocial.entity.dto.request.PostRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
-import com.me_social.MeSocial.entity.modal.Post;
+import com.me_social.MeSocial.entity.dto.response.PostResponse;
 import com.me_social.MeSocial.service.PostService;
 
 import jakarta.validation.Valid;
@@ -30,26 +30,26 @@ public class PostController {
     // GET
     // Get Posts By User
     @GetMapping("/user/{userId}/{pageNum}")
-    public ApiResponse<Page<Post>> getPostsByUser(@PathVariable Long userId, @PathVariable int pageNum) {
+    public ApiResponse<Page<PostResponse>> getPostsByUser(@PathVariable Long userId, @PathVariable int pageNum) {
         return postService.getPostsByUser(userId, pageNum);
     }
     
     // Get Posts By Group
     @GetMapping("/group/{groupId}/{pageNum}")
-    public ApiResponse<Page<Post>> getPostsByGroup(@PathVariable Long groupId, @PathVariable int pageNum) {
+    public ApiResponse<Page<PostResponse>> getPostsByGroup(@PathVariable Long groupId, @PathVariable int pageNum) {
         return postService.getPostsByGroup(groupId, pageNum);
     }
 
     // Get Posts By Tag
     @GetMapping("/tag/{tagId}/{pageNum}")
-    public ApiResponse<Page<Post>> getPostsByTag(@PathVariable Long tagId, @PathVariable int pageNum) {
+    public ApiResponse<Page<PostResponse>> getPostsByTag(@PathVariable Long tagId, @PathVariable int pageNum) {
         return postService.getPostsByTag(tagId, pageNum);
     }
 
     // POST
     // Create New Post
     @PostMapping("/new")
-    public ApiResponse<Post> createPost(@Valid @RequestBody PostRequest request) {
+    public ApiResponse<PostResponse> createPost(@Valid @RequestBody PostRequest request) {
         return postService.createPost(request);
     }
 
@@ -61,7 +61,7 @@ public class PostController {
 
     // Edit Post
     @PutMapping("/edit")
-    public ApiResponse<Post> editPost(@Valid @RequestBody PostRequest request) {
+    public ApiResponse<PostResponse> editPost(@Valid @RequestBody PostRequest request) {
         
         return postService.editPost(request);
     }

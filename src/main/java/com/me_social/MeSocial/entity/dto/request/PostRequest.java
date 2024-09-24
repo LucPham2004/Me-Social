@@ -2,7 +2,7 @@ package com.me_social.MeSocial.entity.dto.request;
 
 import com.me_social.MeSocial.enums.PostPrivacy;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,13 +17,14 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level=AccessLevel.PRIVATE)
 public class PostRequest {
     Long id;
-    String content;
-    
-    @NotBlank
-    PostPrivacy privacy;
-    
-    @NotBlank
+
+    @NotNull
     Long userId;
     Long groupId;
+    String content;
+    
+    @NotNull
+    PostPrivacy privacy;
+    
     String[] nameTag;
 }

@@ -59,8 +59,13 @@ public class GroupMapper {
         groupResponse.setUpdatedAt(group.getUpdatedAt());
         if(group.getMembers() != null)
             groupResponse.setMemberNum(group.getMembers().size());
+        else
+            groupResponse.setMemberNum(0);
+        
         if(group.getAdmins() != null)
             groupResponse.setAdminNum(group.getAdmins().size());
+        else
+            groupResponse.setAdminNum(0);
         
         return groupResponse;
     }}

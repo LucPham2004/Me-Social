@@ -3,6 +3,7 @@ package com.me_social.MeSocial.mapper;
 import org.springframework.stereotype.Component;
 
 import com.me_social.MeSocial.entity.dto.request.PostRequest;
+import com.me_social.MeSocial.entity.dto.response.PostResponse;
 import com.me_social.MeSocial.entity.modal.Post;
 import com.me_social.MeSocial.repository.GroupRepository;
 import com.me_social.MeSocial.repository.UserRepository;
@@ -34,4 +35,28 @@ public class PostMapper {
 
         return post;
     }}
+
+    public PostResponse toPostResponse(Post post) {
+        PostResponse response = new PostResponse();
+
+        response.setId(post.getId());
+        response.setUserId(post.getUser().getId());
+        if(post.getGroup() != null)
+            response.setGroupId(post.getGroup().getId());
+        response.setContent(post.getContent());
+        response.setPrivacy(post.getPrivacy());
+        response.setCreatedAt(post.getCreatedAt());
+        response.setUpdatedAt(post.getUpdatedAt());
+        if(post.getLikes() != null)
+            response.setLikeNum(post.getLikes().size());
+        else
+            response.setLikeNum(0);
+        
+        if(post.getComments() != null)
+            response.setCommentNum(post.getComments().size());
+        else
+            response.setCommentNum(0);
+        
+        return response;
+    }
 }
