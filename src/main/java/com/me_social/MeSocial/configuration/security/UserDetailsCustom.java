@@ -1,8 +1,8 @@
 package com.me_social.MeSocial.configuration.security;
 
 import java.util.Collections;
-
 import java.util.Optional;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.repository.UserRepository;
-import com.me_social.MeSocial.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserDetailsCustom implements UserDetailsService {
 
-     private final UserService userService;
+     //private final UserService userService;
      private final UserRepository userRepository;
 
      @Override
