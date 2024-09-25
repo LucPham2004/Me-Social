@@ -61,10 +61,10 @@ public class GroupService {
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get user's groups successfully");
-        apiResponse.setResult(PaginationUtil.convertSetToPage(groupRepository.findByMembersIdOrAdminsId(userId, userId, pageable)
-                    .stream()
-                    .map(groupMapper::toGroupResponse)
-                    .collect(Collectors.toSet()), pageable));
+        apiResponse.setResult(PaginationUtil.convertSetToPage(groupRepository.findByMembersIdOrAdminsId(userId, userId)
+            .stream()
+            .map(groupMapper::toGroupResponse)
+            .collect(Collectors.toSet()), pageable));
 
         return apiResponse;
     }

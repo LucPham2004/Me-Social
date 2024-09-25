@@ -1,6 +1,4 @@
-package com.me_social.MeSocial.entity.dto.response;
-
-import java.time.LocalDateTime;
+package com.me_social.MeSocial.entity.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,10 +12,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level=AccessLevel.PRIVATE)
-public class CommentResponse {
+public class CommentRequest {
     Long id;
+    Long userId;
+    Long postId;
     String content;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
-    int likeNum;
 }

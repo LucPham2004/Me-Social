@@ -1,7 +1,7 @@
 package com.me_social.MeSocial.repository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.Set;
+
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,5 +17,5 @@ public interface GroupRepository extends PagingAndSortingRepository<Group, Long>
 
     boolean existsById(Long id);
     
-    Page<Group> findByMembersIdOrAdminsId(Long adminId, Long memberId, Pageable pageable);
+    Set<Group> findByMembersIdOrAdminsId(Long adminId, Long memberId);
 }
