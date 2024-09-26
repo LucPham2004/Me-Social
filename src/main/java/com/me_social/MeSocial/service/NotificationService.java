@@ -29,7 +29,7 @@ public class NotificationService {
     NotificationRepository notificationRepository;
     UserRepository userRepository;
 
-    static int NOTIFY_PER_PAGE = 8;
+    static int NOTIFY_PER_PAGE = 10;
 
     public ApiResponse<Page<Notification>> getUserNotifications(Long userId, int pageNum) {
         if(!userRepository.existsById(userId)) {

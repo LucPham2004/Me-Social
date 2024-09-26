@@ -18,15 +18,19 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level=AccessLevel.PRIVATE)
 public class UserResponse {
      Long id;
+
      String username;
      String email;
      String firstName;
      String lastName;
      String phone;
-     Instant dob;
 
+     Instant dob;
      Instant createdAt;
      Instant updatedAt;
      
      Gender gender;
+
+     int groupNum;
+     int friendNum;
 }

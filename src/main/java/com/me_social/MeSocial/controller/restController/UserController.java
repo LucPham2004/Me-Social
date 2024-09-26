@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
     private final UserService userService;
 
+    // POST
     @PostMapping
     public ApiResponse<UserResponse> createUser(@Valid @RequestBody UserCreationRequest reqUser) {
         return userService.createUser(reqUser);
@@ -39,14 +40,7 @@ public class UserController {
         return userService.getUser(id);
     }
 
-    @PutMapping(value = "/updateUser", consumes = "application/json", produces = "application/json")
-    public ApiResponse<UserResponse> updateUser(@RequestBody UserUpdateRequest reqUser) {
-        return userService.updateUser(reqUser);
-    }
-
-    // GET
     // Get Group members
-
     @GetMapping("/get/group/members/{groupId}/{pageNum}")
     public ApiResponse<Page<UserDTO>> getGroupMembers(@PathVariable Long groupId, @PathVariable int pageNum) {
         return userService.getGroupMembers(groupId, pageNum);
@@ -64,36 +58,10 @@ public class UserController {
         return userService.getUserFriends(userId, pageNum);
     }
 
+    // PUT
+    @PutMapping(value = "/updateUser", consumes = "application/json", produces = "application/json")
+    public ApiResponse<UserResponse> updateUser(@RequestBody UserUpdateRequest reqUser) {
+        return userService.updateUser(reqUser);
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // // Get User's followers
-    // @GetMapping("/get/followers/{userId}/{pageNum}")
-    // public ApiResponse<Page<User>> getFollowers(@PathVariable Long userId, @PathVariable int pageNum) {
-    //     return userService.getFollowers(userId, pageNum);
-    // }
-
-    // // Get User's followers
-    // @GetMapping("/get/followings/{userId}/{pageNum}")
-    // public ApiResponse<Page<User>> getFollowings(@PathVariable Long userId, @PathVariable int pageNum) {
-    //     return userService.getFollowings(userId, pageNum);
-    // }
 }

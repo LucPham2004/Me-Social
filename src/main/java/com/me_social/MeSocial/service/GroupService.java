@@ -34,7 +34,7 @@ public class GroupService {
     UserRepository userRepository;
     GroupMapper groupMapper;
 
-    static int GROUPS_PER_PAGE = 5;
+    static int GROUPS_PER_PAGE = 20;
 
     // GET
     // Get group by id

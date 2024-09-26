@@ -40,7 +40,7 @@ public class PostService {
     PostMapper postMapper;
     TagService tagService;
 
-    static int POSTS_PER_PAGE = 5;
+    static int POSTS_PER_PAGE = 10;
 
     // GET
     // Get Posts By User

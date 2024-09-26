@@ -1,9 +1,9 @@
 package com.me_social.MeSocial.service;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -39,11 +39,10 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     GroupRepository groupRepository;
-    //FollowRepository followRepository;
     FriendShipRepository friendShipRepository;
     PasswordEncoder passwordEncoder;
 
-    static int USERS_PER_PAGE = 10;
+    static int USERS_PER_PAGE = 20;
 
     // GET
 
@@ -171,6 +170,8 @@ public class UserService {
         }
 
         UserResponse userResponse = userMapper.toUserResponse(user);
+        userResponse.setGroupNum(getUserGroupNum(id));
+        userResponse.setFriendNum(getUserFriendNum(id));
 
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
 
@@ -205,66 +206,44 @@ public class UserService {
         return apiResponse;
     }
 
+    public int getUserFriendNum(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+        Set<Friendship> friendshipsRequested = friendShipRepository.findByRequestReceiverId(userId);
+        Set<Friendship> friendshipsReceived = friendShipRepository.findByRequesterId(userId);
 
+        int totalFriends = 0;
+        
+        for(Friendship friendship: friendshipsRequested) {
+            if(friendship.getStatus().equals(FriendshipStatus.ACCEPTED)) {
+                totalFriends++;
+            }
+        }
+        for(Friendship friendship: friendshipsReceived) {
+            if(friendship.getStatus().equals(FriendshipStatus.ACCEPTED)) {
+                totalFriends++;
+            }
+        }
 
+        return totalFriends;
+    }
 
+    public int getUserGroupNum(Long userId) {
+        User user = userRepository.findById(userId);
+        if (user == null) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
 
+        int totalGroups = 0;
+        if(user.getAdminGroups() != null) {
+            totalGroups += user.getAdminGroups().size();
+        }
+        if(user.getAdminGroups() != null) {
+            totalGroups += user.getMemberGroups().size();
+        }
 
+        return totalGroups;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Get User's followers
-    // public ApiResponse<Page<User>> getFollowers(Long userId, int pageNum) {
-    //     if (!userRepository.existsById(userId)) {
-    //         throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-    //     }
-    //     Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
-
-    //     // important
-    //     Page<User> followers = followRepository.findByFollower(userRepository.findById(userId), pageable)
-    //             .map(Follow::getFollower);
-
-    //     ApiResponse<Page<User>> apiResponse = new ApiResponse<>();
-
-    //     apiResponse.setCode(1000);
-    //     apiResponse.setMessage("Get followers successfully");
-    //     apiResponse.setResult(followers);
-
-    //     return apiResponse;
-    // }
-
-    // // Get User's followers
-    // public ApiResponse<Page<User>> getFollowings(Long userId, int pageNum) {
-    //     if (!userRepository.existsById(userId)) {
-    //         throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-    //     }
-    //     Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
-
-    //     // important
-    //     Page<User> followings = followRepository.findByFollowing(userRepository.findById(userId), pageable)
-    //             .map(Follow::getFollowing);
-
-    //     ApiResponse<Page<User>> apiResponse = new ApiResponse<>();
-
-    //     apiResponse.setCode(1000);
-    //     apiResponse.setMessage("Get followers successfully");
-    //     apiResponse.setResult(followings);
-
-    //     return apiResponse;
-    // }
 }
