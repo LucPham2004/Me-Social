@@ -53,32 +53,31 @@ public class UserService {
         }
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
-        Set<User> members = groupRepository.findById(groupId).get().getMembers();
+        Page<User> members = groupRepository.findMembersById(groupId, pageable);
 
         ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Info successfully");
-        apiResponse.setResult(PaginationUtil.convertSetToPage(members.stream()
-                                        .map(userMapper::toUserDTO)
-                                        .collect(Collectors.toSet()), pageable));
+        apiResponse.setResult(members.map(userMapper::toUserDTO));
 
         return apiResponse;
     }
 
     // Get Group admins
-    public ApiResponse<Set<UserDTO>> getGroupAdmins(Long groupId, int pageNum) {
+    public ApiResponse<Page<UserDTO>> getGroupAdmins(Long groupId, int pageNum) {
         if (!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
+        Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
-        Set<User> admins = groupRepository.findById(groupId).get().getAdmins();
+        Page<User> admins = groupRepository.findAdminsById(groupId, pageable);
 
-        ApiResponse<Set<UserDTO>> apiResponse = new ApiResponse<>();
+        ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Info successfully");
-        apiResponse.setResult(admins.stream().map(userMapper::toUserDTO).collect(Collectors.toSet()));
+        apiResponse.setResult(admins.map(userMapper::toUserDTO));
 
         return apiResponse;
     }
@@ -91,19 +90,13 @@ public class UserService {
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
         // important
-        Set<Friendship> friendshipsRequested = friendShipRepository.findByRequestReceiverId(userId);
-        Set<Friendship> friendshipsReceived = friendShipRepository.findByRequesterId(userId);
+        Page<Friendship> friendshipsRequested = friendShipRepository.findByRequesterIdOrRequestReceiverId(userId, pageable);
 
         Set<User> acceptedFriends = new HashSet<>();
         
         for(Friendship friendship: friendshipsRequested) {
             if(friendship.getStatus().equals(FriendshipStatus.ACCEPTED)) {
                 acceptedFriends.add(friendship.getRequester());
-            }
-        }
-        for(Friendship friendship: friendshipsReceived) {
-            if(friendship.getStatus().equals(FriendshipStatus.ACCEPTED)) {
-                acceptedFriends.add(friendship.getRequestReceiver());
             }
         }
 

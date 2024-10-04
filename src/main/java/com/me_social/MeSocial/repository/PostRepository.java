@@ -1,7 +1,7 @@
 package com.me_social.MeSocial.repository;
 
-import java.util.Set;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,11 +17,11 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
 
     boolean existsById(Long id);
 
-    Set<Post> findByUserId(Long id);
+    Page<Post> findByUserId(Long id, Pageable pageable);
 
-    Set<Post> findByGroupId(Long id);
+    Page<Post> findByGroupId(Long id, Pageable pageable);
 
-    Set<Post> findByTagsId(Long id);
+    Page<Post> findByTagsId(Long id, Pageable pageable);
 
     int countByGroupId(Long id);
 

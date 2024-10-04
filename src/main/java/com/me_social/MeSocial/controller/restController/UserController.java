@@ -1,6 +1,5 @@
 package com.me_social.MeSocial.controller.restController;
 
-import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,7 +47,7 @@ public class UserController {
 
     // Get Group admins
     @GetMapping("/get/group/admins/{groupId}/{pageNum}")
-    public ApiResponse<Set<UserDTO>> getGroupAdmins(@PathVariable Long groupId, @PathVariable int pageNum) {
+    public ApiResponse<Page<UserDTO>> getGroupAdmins(@PathVariable Long groupId, @PathVariable int pageNum) {
         return userService.getGroupAdmins(groupId, pageNum);
     }
 

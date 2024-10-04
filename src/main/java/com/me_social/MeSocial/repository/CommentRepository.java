@@ -1,7 +1,7 @@
 package com.me_social.MeSocial.repository;
 
-import java.util.Set;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,9 +17,9 @@ public interface CommentRepository extends PagingAndSortingRepository<Comment, L
 
     boolean existsById(Long id);
 
-    Set<Comment> findByPostId(Long id);
+    Page<Comment> findByPostId(Long id, Pageable pageable);
 
-    Set<Comment> findByUserId(Long id);
+    Page<Comment> findByUserId(Long id, Pageable pageable);
 
     int countByPostId(Long id);
 

@@ -3,7 +3,6 @@ package com.me_social.MeSocial.service;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +22,6 @@ import com.me_social.MeSocial.repository.GroupRepository;
 import com.me_social.MeSocial.repository.PostRepository;
 import com.me_social.MeSocial.repository.TagRepository;
 import com.me_social.MeSocial.repository.UserRepository;
-import com.me_social.MeSocial.utils.PaginationUtil;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -50,13 +48,13 @@ public class PostService {
         }
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
 
+        Page<Post> postPage = postRepository.findByUserId(userId, pageable);
+
         ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Posts successfully");
-        apiResponse.setResult(PaginationUtil.convertSetToPage(postRepository.findByUserId(userId).stream()
-            .map(postMapper::toPostResponse)
-            .collect(Collectors.toSet()), pageable));
+        apiResponse.setResult(postPage.map(postMapper::toPostResponse));
 
         return apiResponse;
     }
@@ -66,33 +64,34 @@ public class PostService {
         if(!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
+        
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
-
+    
+        Page<Post> postPage = postRepository.findByGroupId(groupId, pageable);
+    
         ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
-
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Posts successfully");
-        apiResponse.setResult(PaginationUtil.convertSetToPage(postRepository.findByGroupId(groupId).stream()
-            .map(postMapper::toPostResponse)
-            .collect(Collectors.toSet()), pageable));
-
+        apiResponse.setResult(postPage.map(postMapper::toPostResponse));
+    
         return apiResponse;
     }
+    
 
-    // Get Posts By Group
+    // Get Posts By Tag
     public ApiResponse<Page<PostResponse>> getPostsByTag(Long tagId, int pageNum) {
         if(!tagRepository.existsById(tagId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
+        
+        Page<Post> postPage = postRepository.findByTagsId(tagId, pageable);
 
         ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Posts successfully");
-        apiResponse.setResult(PaginationUtil.convertSetToPage(postRepository.findByTagsId(tagId).stream()
-            .map(postMapper::toPostResponse)
-            .collect(Collectors.toSet()), pageable));
+        apiResponse.setResult(postPage.map(postMapper::toPostResponse));
 
         return apiResponse;
     }

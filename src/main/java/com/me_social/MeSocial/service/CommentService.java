@@ -1,7 +1,6 @@
 package com.me_social.MeSocial.service;
 
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +18,6 @@ import com.me_social.MeSocial.mapper.CommentMapper;
 import com.me_social.MeSocial.repository.CommentRepository;
 import com.me_social.MeSocial.repository.PostRepository;
 import com.me_social.MeSocial.repository.UserRepository;
-import com.me_social.MeSocial.utils.PaginationUtil;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -57,14 +55,13 @@ public class CommentService {
         }
         Pageable pageable = PageRequest.of(pageNum, COMMENTS_PER_PAGE);
 
+        Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
+
         ApiResponse<Page<CommentResponse>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get comments successfully");
-        apiResponse.setResult(PaginationUtil.convertSetToPage(commentRepository.findByPostId(postId)
-            .stream()
-            .map(mapper::toCommentResponse)
-            .collect(Collectors.toSet()), pageable));
+        apiResponse.setResult(commentPage.map(mapper::toCommentResponse));
 
         return apiResponse;
     }
@@ -76,14 +73,13 @@ public class CommentService {
         }
         Pageable pageable = PageRequest.of(pageNum, COMMENTS_PER_PAGE);
 
+        Page<Comment> commentPage = commentRepository.findByUserId(userId, pageable);
+
         ApiResponse<Page<CommentResponse>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get comments successfully");
-        apiResponse.setResult(PaginationUtil.convertSetToPage(commentRepository.findByUserId(userId)
-            .stream()
-            .map(mapper::toCommentResponse)
-            .collect(Collectors.toSet()), pageable));
+        apiResponse.setResult(commentPage.map(mapper::toCommentResponse));
 
         return apiResponse;
     }

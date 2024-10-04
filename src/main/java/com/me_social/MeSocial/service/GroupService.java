@@ -2,7 +2,6 @@ package com.me_social.MeSocial.service;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +19,6 @@ import com.me_social.MeSocial.exception.ErrorCode;
 import com.me_social.MeSocial.mapper.GroupMapper;
 import com.me_social.MeSocial.repository.GroupRepository;
 import com.me_social.MeSocial.repository.UserRepository;
-import com.me_social.MeSocial.utils.PaginationUtil;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -57,14 +55,14 @@ public class GroupService {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, GROUPS_PER_PAGE);
+
+        Page<Group> groupPage = groupRepository.findByMembersIdOrAdminsId(userId, userId, pageable);
+
         ApiResponse<Page<GroupResponse>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get user's groups successfully");
-        apiResponse.setResult(PaginationUtil.convertSetToPage(groupRepository.findByMembersIdOrAdminsId(userId, userId)
-            .stream()
-            .map(groupMapper::toGroupResponse)
-            .collect(Collectors.toSet()), pageable));
+        apiResponse.setResult(groupPage.map(groupMapper::toGroupResponse));
 
         return apiResponse;
     }
