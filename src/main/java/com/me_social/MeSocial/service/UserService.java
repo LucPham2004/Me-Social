@@ -53,7 +53,7 @@ public class UserService {
         }
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
-        Set<User> members = groupRepository.findById(groupId).getMembers();
+        Set<User> members = groupRepository.findById(groupId).get().getMembers();
 
         ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
 
@@ -72,7 +72,7 @@ public class UserService {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
-        Set<User> admins = groupRepository.findById(groupId).getAdmins();
+        Set<User> admins = groupRepository.findById(groupId).get().getAdmins();
 
         ApiResponse<Set<UserDTO>> apiResponse = new ApiResponse<>();
 
@@ -152,13 +152,12 @@ public class UserService {
         User user = userMapper.toUser(request);
         user.setCreatedAt(Instant.now());
         userRepository.save(user);
-        UserResponse userResponse = userMapper.toUserResponse(user);
 
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Create user successfully");
-        apiResponse.setResult(userResponse);
+        apiResponse.setResult(userMapper.toUserResponse(user));
 
         return apiResponse;
     }
@@ -169,15 +168,11 @@ public class UserService {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
-        UserResponse userResponse = userMapper.toUserResponse(user);
-        userResponse.setGroupNum(getUserGroupNum(id));
-        userResponse.setFriendNum(getUserFriendNum(id));
-
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get user by id successfully");
-        apiResponse.setResult(userResponse);
+        apiResponse.setResult(userMapper.toUserResponse(user));
 
         return apiResponse;
     }
@@ -196,54 +191,12 @@ public class UserService {
         dbUser.setUpdatedAt(Instant.now());
         userRepository.save(dbUser);
 
-        UserResponse userResponse = userMapper.toUserResponse(dbUser);
-
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setCode(10345300);
         apiResponse.setMessage("Update User Successfully!");
-        apiResponse.setResult(userResponse);
+        apiResponse.setResult(userMapper.toUserResponse(dbUser));
 
         return apiResponse;
-    }
-
-    public int getUserFriendNum(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        Set<Friendship> friendshipsRequested = friendShipRepository.findByRequestReceiverId(userId);
-        Set<Friendship> friendshipsReceived = friendShipRepository.findByRequesterId(userId);
-
-        int totalFriends = 0;
-        
-        for(Friendship friendship: friendshipsRequested) {
-            if(friendship.getStatus().equals(FriendshipStatus.ACCEPTED)) {
-                totalFriends++;
-            }
-        }
-        for(Friendship friendship: friendshipsReceived) {
-            if(friendship.getStatus().equals(FriendshipStatus.ACCEPTED)) {
-                totalFriends++;
-            }
-        }
-
-        return totalFriends;
-    }
-
-    public int getUserGroupNum(Long userId) {
-        User user = userRepository.findById(userId);
-        if (user == null) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-
-        int totalGroups = 0;
-        if(user.getAdminGroups() != null) {
-            totalGroups += user.getAdminGroups().size();
-        }
-        if(user.getAdminGroups() != null) {
-            totalGroups += user.getMemberGroups().size();
-        }
-
-        return totalGroups;
     }
 
 }

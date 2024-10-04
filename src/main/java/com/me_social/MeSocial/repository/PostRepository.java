@@ -23,4 +23,11 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
 
     Set<Post> findByTagsId(Long id);
 
+    int countByGroupId(Long id);
+
+    int countByUserId(Long id);
+
+    int countByUserIdAndGroupId(Long userId, Long groupId);
+
+    int countByTagsId(Long id);
 }

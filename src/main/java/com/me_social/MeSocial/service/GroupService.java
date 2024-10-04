@@ -46,7 +46,7 @@ public class GroupService {
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get group by id successfully");
-        apiResponse.setResult(groupMapper.toGroupResponse(groupRepository.findById(id)));
+        apiResponse.setResult(groupMapper.toGroupResponse(groupRepository.findById(id).get()));
 
         return apiResponse;
     }
@@ -93,7 +93,7 @@ public class GroupService {
         if(!groupRepository.existsById(groupId) || !userRepository.existsById(adminId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        Group group = groupRepository.findById(groupId);
+        Group group = groupRepository.findById(groupId).get();
 
         Set<User> admins = group.getAdmins();
         admins.add(userRepository.findById(adminId));
@@ -115,7 +115,7 @@ public class GroupService {
         if(!groupRepository.existsById(groupId) || !userRepository.existsById(memberId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        Group group = groupRepository.findById(groupId);
+        Group group = groupRepository.findById(groupId).get();
 
         Set<User> members = group.getMembers();
         members.add(userRepository.findById(memberId));
@@ -136,7 +136,7 @@ public class GroupService {
         if(!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        groupRepository.delete(groupRepository.findById(groupId));
+        groupRepository.delete(groupRepository.findById(groupId).get());
 
         ApiResponse<String> apiResponse = new ApiResponse<>();
 
@@ -154,7 +154,7 @@ public class GroupService {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         
-        Group group = groupRepository.findById(request.getGroupId());
+        Group group = groupRepository.findById(request.getGroupId()).get();
         group.setName(request.getName());
         group.setDescription(request.getDescription());
         group.setPrivacy(request.getPrivacy());
@@ -180,7 +180,7 @@ public class GroupService {
         
         ApiResponse<String> apiResponse = new ApiResponse<>();
 
-        Group group = groupRepository.findById(groupId);
+        Group group = groupRepository.findById(groupId).get();
 
         Set<User> admins = group.getAdmins();
 
@@ -208,7 +208,7 @@ public class GroupService {
         if(!groupRepository.existsById(groupId) || !userRepository.existsById(memberId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        Group group = groupRepository.findById(groupId);
+        Group group = groupRepository.findById(groupId).get();
 
         Set<User> members = group.getMembers();
         members.remove(userRepository.findById(memberId));

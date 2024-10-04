@@ -18,4 +18,5 @@ public class UserDTO {
     String lastName;
     String locantion;
     boolean isFriend;
+    int friendNum;
 }

@@ -18,4 +18,7 @@ public interface DirectMessageRepository extends PagingAndSortingRepository<Dire
     boolean existsById(Long id);
 
     Page<DirectMessage> findBySenderIdAndReceiverId(Long senderId, Long receiverId, Pageable pageable);
+
+    int countBySenderIdAndReceiverId(Long senderId, Long receiverId);
+
 }

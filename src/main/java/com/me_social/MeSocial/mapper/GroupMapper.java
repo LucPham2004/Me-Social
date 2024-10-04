@@ -11,6 +11,7 @@ import com.me_social.MeSocial.entity.modal.Group;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
+import com.me_social.MeSocial.repository.GroupRepository;
 import com.me_social.MeSocial.repository.UserRepository;
 
 import lombok.AccessLevel;
@@ -19,10 +20,12 @@ import lombok.experimental.FieldDefaults;
 @Component
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
 public class GroupMapper {
-    public GroupMapper(UserRepository userRepository) {
+    public GroupMapper(UserRepository userRepository, GroupRepository groupRepository) {
         this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
     }
     UserRepository userRepository;
+    GroupRepository groupRepository;
 
     public Group toGroup(GroupRequest request) {{
         Group group = new Group();
@@ -57,15 +60,8 @@ public class GroupMapper {
         groupResponse.setPrivacy(group.getPrivacy());
         groupResponse.setCreatedAt(group.getCreatedAt());
         groupResponse.setUpdatedAt(group.getUpdatedAt());
-        if(group.getMembers() != null)
-            groupResponse.setMemberNum(group.getMembers().size());
-        else
-            groupResponse.setMemberNum(0);
-        
-        if(group.getAdmins() != null)
-            groupResponse.setAdminNum(group.getAdmins().size());
-        else
-            groupResponse.setAdminNum(0);
+        groupResponse.setMemberNum(groupRepository.countMembersById(group.getId()));
+        groupResponse.setAdminNum(groupRepository.countAdminsById(group.getId()));
         
         return groupResponse;
     }}

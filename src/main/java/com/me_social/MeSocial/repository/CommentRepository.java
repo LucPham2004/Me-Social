@@ -20,4 +20,8 @@ public interface CommentRepository extends PagingAndSortingRepository<Comment, L
     Set<Comment> findByPostId(Long id);
 
     Set<Comment> findByUserId(Long id);
+
+    int countByPostId(Long id);
+
+    int countByUserId(Long id);
 }

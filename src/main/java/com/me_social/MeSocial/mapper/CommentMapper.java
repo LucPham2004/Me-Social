@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.me_social.MeSocial.entity.dto.request.CommentRequest;
 import com.me_social.MeSocial.entity.dto.response.CommentResponse;
 import com.me_social.MeSocial.entity.modal.Comment;
+import com.me_social.MeSocial.repository.LikeRepository;
 import com.me_social.MeSocial.repository.PostRepository;
 import com.me_social.MeSocial.repository.UserRepository;
 
@@ -14,13 +15,16 @@ import lombok.experimental.FieldDefaults;
 @Component
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
 public class CommentMapper {
-    public CommentMapper(UserRepository userRepository, PostRepository postRepository) {
+
+    public CommentMapper(UserRepository userRepository, PostRepository postRepository, LikeRepository likeRepository) {
         this.userRepository = userRepository;
         this.postRepository = postRepository;
+        this.likeRepository = likeRepository;
     }
 
     UserRepository userRepository;
     PostRepository postRepository;
+    LikeRepository likeRepository;
 
     public Comment toComment(CommentRequest request) {
         Comment comment = new Comment();
@@ -40,10 +44,7 @@ public class CommentMapper {
         response.setCreatedAt(comment.getCreatedAt());
         response.setId(comment.getId());
         response.setUpdatedAt(comment.getUpdatedAt());
-        if(comment.getLikes() != null)
-            response.setLikeNum(comment.getLikes().size());
-        else
-            response.setLikeNum(0);
+        response.setLikeNum(likeRepository.countByCommentId(comment.getId()));
         
         return response;
     }
