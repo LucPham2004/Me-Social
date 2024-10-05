@@ -27,4 +27,6 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
     Optional<User> findByPhone(String phoneNumber);
 
+    void deleteById(Long id);
+
 }

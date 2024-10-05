@@ -90,12 +90,13 @@ public class UserService {
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
         // important
-        Page<Friendship> friendshipsRequested = friendShipRepository.findByRequesterIdOrRequestReceiverId(userId, pageable);
+        Page<Friendship> friendshipsRequested = friendShipRepository.findByRequesterIdOrRequestReceiverId(userId,
+                pageable);
 
         Set<User> acceptedFriends = new HashSet<>();
-        
-        for(Friendship friendship: friendshipsRequested) {
-            if(friendship.getStatus().equals(FriendshipStatus.ACCEPTED)) {
+
+        for (Friendship friendship : friendshipsRequested) {
+            if (friendship.getStatus().equals(FriendshipStatus.ACCEPTED)) {
                 acceptedFriends.add(friendship.getRequester());
             }
         }
@@ -105,8 +106,8 @@ public class UserService {
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get followers successfully");
         apiResponse.setResult(PaginationUtil.convertSetToPage(acceptedFriends.stream()
-                                .map(userMapper::toUserDTO)
-                                .collect(Collectors.toSet()), pageable));
+                .map(userMapper::toUserDTO)
+                .collect(Collectors.toSet()), pageable));
 
         return apiResponse;
     }
@@ -185,9 +186,37 @@ public class UserService {
         userRepository.save(dbUser);
 
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(10345300);
+        apiResponse.setCode(1000);
         apiResponse.setMessage("Update User Successfully!");
         apiResponse.setResult(userMapper.toUserResponse(dbUser));
+
+        return apiResponse;
+    }
+
+    public ApiResponse<String> deleteUserById(Long id) {
+        User user = handleGetUserById(id);
+        if (user == null) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+
+        userRepository.deleteById(id);
+
+        ApiResponse<String> apiResponse = new ApiResponse<>();
+        apiResponse.setCode(1000);
+        apiResponse.setMessage("User deleted successfully");
+        apiResponse.setResult("User with ID: " + id + " has been deleted.");
+
+        return apiResponse;
+    }
+
+    public ApiResponse<Page<UserDTO>> getAllUsers(int pageNum, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNum, pageSize);
+        Page<User> users = userRepository.findAll(pageable);
+
+        ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
+        apiResponse.setCode(1000);
+        apiResponse.setMessage("Fetched users successfully");
+        apiResponse.setResult(users.map(userMapper::toUserDTO));
 
         return apiResponse;
     }
