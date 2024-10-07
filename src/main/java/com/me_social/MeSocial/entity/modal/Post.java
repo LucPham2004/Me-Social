@@ -71,7 +71,7 @@ public class Post {
     @JoinTable( name = "posts_tags", 
                 joinColumns = @JoinColumn(name = "post_id"), 
                 inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    @JsonManagedReference(value = "post_tags")
+    @JsonManagedReference(value = "posts_tags")
 	private Set<Tag> tags;
 
 }

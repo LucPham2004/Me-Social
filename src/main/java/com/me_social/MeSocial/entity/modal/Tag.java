@@ -31,5 +31,9 @@ public class Tag {
     @ManyToMany(mappedBy="tags")
     @JsonBackReference(value = "posts_tags")
 	private Set<Post> posts;
+
+    @ManyToMany(mappedBy="tags")
+    @JsonBackReference(value = "reels_tags")
+	private Set<Reel> reel;
     
 }
