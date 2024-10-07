@@ -48,6 +48,11 @@ public class Like {
     private Reel reel;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "story_id")
+    @JsonBackReference(value = "story_likes")
+    private Story story;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
     @JsonBackReference(value = "comment_likes")
     private Comment comment;

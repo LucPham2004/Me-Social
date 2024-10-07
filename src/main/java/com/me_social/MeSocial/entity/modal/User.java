@@ -87,6 +87,10 @@ public class User {
     private Set<Reel> reels;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "user_stories")
+    private Set<Story> stories;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "user_likes")
     private Set<Like> likes;
 

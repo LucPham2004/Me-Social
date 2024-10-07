@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
 public class PostController {

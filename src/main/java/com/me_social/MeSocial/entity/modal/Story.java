@@ -14,8 +14,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -25,17 +23,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "reels")
+@Table(name = "stories")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Reel {
+public class Story {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-
-    private String content;
 
     @Column(name = "created_at", nullable = true, updatable = true)
     private Instant createdAt;
@@ -45,21 +41,10 @@ public class Reel {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonBackReference(value = "user_reels")
+    @JsonBackReference(value = "user_stories")
     private User user;
 
-    @OneToMany(mappedBy = "reel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "reel_likes")
+    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "story_likes")
     private Set<Like> likes;
-
-    @OneToMany(mappedBy = "reel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "reel_comments")
-    private Set<Comment> comments;
-
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinTable( name = "reels_tags", 
-                joinColumns = @JoinColumn(name = "reel_id"), 
-                inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    @JsonManagedReference(value = "reels_tags")
-	private Set<Tag> tags;
 }
