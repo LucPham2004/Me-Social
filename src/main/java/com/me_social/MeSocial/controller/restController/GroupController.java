@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.me_social.MeSocial.entity.dto.request.GroupRequest;
@@ -37,7 +38,9 @@ public class GroupController {
 
     // Get group by user
     @GetMapping("/{userId}/{pageNum}")
-    public ApiResponse<Page<GroupResponse>> getGroupByUserId(@PathVariable Long userId, @PathVariable int pageNum) {
+    public ApiResponse<Page<GroupResponse>> getGroupByUserId(
+        @RequestParam Long userId, 
+        @RequestParam(defaultValue = "0") int pageNum) {
         return groupService.getGroupByUserId(userId, pageNum);
     }
 

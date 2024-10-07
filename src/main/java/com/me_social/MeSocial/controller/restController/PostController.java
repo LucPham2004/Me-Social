@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.me_social.MeSocial.entity.dto.request.PostRequest;
@@ -30,19 +31,25 @@ public class PostController {
     // GET
     // Get Posts By User
     @GetMapping("/user/{userId}/{pageNum}")
-    public ApiResponse<Page<PostResponse>> getPostsByUser(@PathVariable Long userId, @PathVariable int pageNum) {
+    public ApiResponse<Page<PostResponse>> getPostsByUser(
+        @RequestParam Long userId, 
+        @RequestParam(defaultValue = "0") int pageNum) {
         return postService.getPostsByUser(userId, pageNum);
     }
     
     // Get Posts By Group
     @GetMapping("/group/{groupId}/{pageNum}")
-    public ApiResponse<Page<PostResponse>> getPostsByGroup(@PathVariable Long groupId, @PathVariable int pageNum) {
+    public ApiResponse<Page<PostResponse>> getPostsByGroup(
+        @RequestParam Long groupId, 
+        @RequestParam(defaultValue = "0") int pageNum) {
         return postService.getPostsByGroup(groupId, pageNum);
     }
 
     // Get Posts By Tag
     @GetMapping("/tag/{tagId}/{pageNum}")
-    public ApiResponse<Page<PostResponse>> getPostsByTag(@PathVariable Long tagId, @PathVariable int pageNum) {
+    public ApiResponse<Page<PostResponse>> getPostsByTag(
+        @RequestParam Long tagId, 
+        @RequestParam(defaultValue = "0") int pageNum) {
         return postService.getPostsByTag(tagId, pageNum);
     }
 

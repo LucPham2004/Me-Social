@@ -12,43 +12,41 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.api.services.youtube.model.Video;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
-import com.me_social.MeSocial.entity.modal.Reel;
-import com.me_social.MeSocial.service.ReelService;
+import com.me_social.MeSocial.entity.modal.Story;
+import com.me_social.MeSocial.service.StoryService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @RestController
-@RequestMapping("/api/reels")
+@RequestMapping("/api/stories")
 @RequiredArgsConstructor
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
-public class ReelController {
-    
-    ReelService reelService;
+public class StoryController {
+    StoryService storyService;
 
     @PostMapping("/upload-video")
-    public ApiResponse<Reel> createReel(@RequestParam("file") MultipartFile file,
+    public ApiResponse<Story> createStory(@RequestParam("file") MultipartFile file,
                                 @RequestParam Long userId,
                                 @RequestParam String content) {
-        return reelService.createReel(userId, file, content);
+        return storyService.createStory(userId, file, content);
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Video> getReelById(@PathVariable String id) {
-        return reelService.GetReelById(id);
+    public ApiResponse<Video> getVStoryById(@PathVariable String id) {
+        return storyService.GetStoryById(id);
     }
 
     @GetMapping("/user")
-    public ApiResponse<Page<Reel>> GetReelsByUserId(
+    public ApiResponse<Page<Story>> GetStorysByUserId(
         @RequestParam Long userId, 
         @RequestParam(defaultValue = "0") int pageNum) {
-        return reelService.GetReelsByUserId(userId, pageNum);
+        return storyService.GetStorysByUserId(userId, pageNum);
     }
 
     @DeleteMapping("/delete/{id}")
-    public ApiResponse<String> deleteReel(@PathVariable String id) {
-        return reelService.deleteReel(id);
+    public ApiResponse<String> deleteStory(@PathVariable String id) {
+        return storyService.deleteStory(id);
     }
 }
-

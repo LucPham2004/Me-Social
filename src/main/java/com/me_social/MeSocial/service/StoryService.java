@@ -12,11 +12,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.google.api.services.youtube.model.Video;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
-import com.me_social.MeSocial.entity.modal.Reel;
+import com.me_social.MeSocial.entity.modal.Story;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
-import com.me_social.MeSocial.repository.ReelRepository;
+import com.me_social.MeSocial.repository.StoryRepository;
 import com.me_social.MeSocial.repository.UserRepository;
 
 import lombok.AccessLevel;
@@ -26,52 +26,51 @@ import lombok.experimental.FieldDefaults;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ReelService {
-    ReelRepository reelRepository;
+public class StoryService {
+    StoryRepository storyRepository;
     UserRepository userRepository;
     YouTubeService youTubeService;
     
-    static int REELS_PER_PAGE = 10;
+    static int STORIES_PER_PAGE = 10;
 
-    // Create Reel
-    public ApiResponse<Reel> createReel(Long userId, MultipartFile file, String content) {
+    // Create story
+    public ApiResponse<Story> createStory(Long userId, MultipartFile file, String content) {
         User user = userRepository.findById(userId);
         if (user == null) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
-        Reel reel = new Reel();
+        Story story = new Story();
         try {
-            reel.setId(youTubeService.uploadVideo(file, user.getFirstName(), content));
+            story.setId(youTubeService.uploadVideo(file, user.getFirstName(), content));
         } catch (IOException ex) {
             System.out.println(Arrays.toString(ex.getStackTrace()));
         }
-        reel.setContent(content);
-        reel.setUser(user);
-        reel.setCreatedAt(Instant.now());
+        story.setUser(user);
+        story.setCreatedAt(Instant.now());
 
-        ApiResponse<Reel> apiResponse = new ApiResponse<>();
+        ApiResponse<Story> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
-        apiResponse.setMessage("Created Reel successfully");
-        apiResponse.setResult(reelRepository.save(reel));
+        apiResponse.setMessage("Created story successfully");
+        apiResponse.setResult(storyRepository.save(story));
 
         return apiResponse;
     }
 
     // Get by id
-    public ApiResponse<Video> GetReelById(String Id) {
-        Reel reel = reelRepository.findById(Id);
-        if (reel == null) {
+    public ApiResponse<Video> GetStoryById(String id) {
+        Story story = storyRepository.findById(id);
+        if (story == null) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
         ApiResponse<Video> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
-        apiResponse.setMessage("Get Reel successfully");
+        apiResponse.setMessage("Get story successfully");
         try {
-            apiResponse.setResult(youTubeService.getVideoById(Id));
+            apiResponse.setResult(youTubeService.getVideoById(id));
         } catch (IOException ex) {
             System.out.println(Arrays.toString(ex.getStackTrace()));
         }
@@ -79,32 +78,32 @@ public class ReelService {
         return apiResponse;
     }
 
-    //  Get all reels paginated
-    public ApiResponse<Page<Reel>> GetReelsByUserId(Long userId, int pageNum) {
+    //  Get all stories paginated
+    public ApiResponse<Page<Story>> GetStorysByUserId(Long userId, int pageNum) {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        Pageable pageable = PageRequest.of(pageNum, REELS_PER_PAGE);
+        Pageable pageable = PageRequest.of(pageNum, STORIES_PER_PAGE);
 
-        ApiResponse<Page<Reel>> apiResponse = new ApiResponse<>();
+        ApiResponse<Page<Story>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
-        apiResponse.setMessage("Get Reels by user successfully");
-        apiResponse.setResult(reelRepository.findAllByUserId(userId, pageable));
+        apiResponse.setMessage("Get storys by user successfully");
+        apiResponse.setResult(storyRepository.findAllByUserId(userId, pageable));
 
         return apiResponse;
     }
 
-    public ApiResponse<String> deleteReel(String id) {
-        if (reelRepository.existsById(id)) {
+    public ApiResponse<String> deleteStory(String id) {
+        if (storyRepository.existsById(id)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
-        reelRepository.deleteById(id);
+        storyRepository.deleteById(id);
         ApiResponse<String> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
-        apiResponse.setMessage("Delete Reel successfully");
+        apiResponse.setMessage("Delete story successfully");
         apiResponse.setResult("");
 
         return apiResponse;

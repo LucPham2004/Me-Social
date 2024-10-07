@@ -6,6 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
@@ -25,7 +26,9 @@ public class NotificationController {
     NotificationService notificationService;
 
     @GetMapping("/{userId}/{pageNum}")
-    public ApiResponse<Page<Notification>> getUserNotifications(@PathVariable Long userId, @PathVariable int pageNum) {
+    public ApiResponse<Page<Notification>> getUserNotifications(
+        @RequestParam Long userId, 
+        @RequestParam(defaultValue = "0") int pageNum) {
         return notificationService.getUserNotifications(userId, pageNum);
     }
 

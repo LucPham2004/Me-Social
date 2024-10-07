@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.me_social.MeSocial.entity.dto.request.CommentRequest;
@@ -35,13 +36,17 @@ public class CommentRestController {
 
     // Get comments by post
     @GetMapping("/post/{postId}/{pageNum}")
-    public ApiResponse<Page<CommentResponse>> getCommentsByPost(@PathVariable Long postId, @PathVariable int pageNum) {
+    public ApiResponse<Page<CommentResponse>> getCommentsByPost(
+        @RequestParam Long postId, 
+        @RequestParam(defaultValue = "0") int pageNum) {
         return commentService.getCommentsByPost(postId, pageNum);
     }
 
     // Get comments by user
     @GetMapping("/user/{userId}/{pageNum}")
-    public ApiResponse<Page<CommentResponse>> getCommentsByUser(@PathVariable Long userId, @PathVariable int pageNum) {
+    public ApiResponse<Page<CommentResponse>> getCommentsByUser(
+        @RequestParam Long userId, 
+        @RequestParam(defaultValue = "0") int pageNum) {
         return commentService.getCommentsByUser(userId, pageNum);
     }
 

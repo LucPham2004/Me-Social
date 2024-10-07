@@ -42,19 +42,25 @@ public class UserController {
 
     // Get Group members
     @GetMapping("/get/group/members/{groupId}/{pageNum}")
-    public ApiResponse<Page<UserDTO>> getGroupMembers(@PathVariable Long groupId, @PathVariable int pageNum) {
+    public ApiResponse<Page<UserDTO>> getGroupMembers(
+        @RequestParam Long groupId, 
+        @RequestParam(defaultValue = "0") int pageNum) {
         return userService.getGroupMembers(groupId, pageNum);
     }
 
     // Get Group admins
     @GetMapping("/get/group/admins/{groupId}/{pageNum}")
-    public ApiResponse<Page<UserDTO>> getGroupAdmins(@PathVariable Long groupId, @PathVariable int pageNum) {
+    public ApiResponse<Page<UserDTO>> getGroupAdmins(
+        @RequestParam Long groupId, 
+        @RequestParam(defaultValue = "0") int pageNum) {
         return userService.getGroupAdmins(groupId, pageNum);
     }
 
     // Get User's friends
     @GetMapping("/get/friends/{userId}/{pageNum}")
-    public ApiResponse<Page<UserDTO>> getUserFriends(@PathVariable Long userId, @PathVariable int pageNum) {
+    public ApiResponse<Page<UserDTO>> getUserFriends(
+        @RequestParam Long userId, 
+        @RequestParam(defaultValue = "0") int pageNum) {
         return userService.getUserFriends(userId, pageNum);
     }
 
