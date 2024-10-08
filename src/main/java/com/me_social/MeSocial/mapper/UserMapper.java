@@ -8,8 +8,8 @@ import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
 import com.me_social.MeSocial.entity.dto.response.UserDTO;
 import com.me_social.MeSocial.entity.dto.response.UserResponse;
 import com.me_social.MeSocial.entity.modal.User;
-import com.me_social.MeSocial.repository.FriendShipRepository;
 import com.me_social.MeSocial.repository.GroupRepository;
+import com.me_social.MeSocial.repository.UserRepository;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -18,12 +18,12 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
 public class UserMapper {
 
-    public UserMapper(FriendShipRepository friendShipRepository, GroupRepository groupRepository) {
-        this.friendShipRepository = friendShipRepository;
+    public UserMapper(UserRepository userRepository, GroupRepository groupRepository) {
+        this.userRepository = userRepository;
         this.groupRepository = groupRepository;
     }
 
-    FriendShipRepository friendShipRepository;
+    UserRepository userRepository;
     GroupRepository groupRepository;
 
     public User toUser(UserCreationRequest request) {
@@ -54,7 +54,7 @@ public class UserMapper {
         userResponse.setUpdatedAt(user.getUpdatedAt());
         userResponse.setGender(user.getGender());
         userResponse.setGroupNum(groupRepository.countGroupsByUserId(user.getId()));
-        userResponse.setFriendNum(friendShipRepository.countAcceptedFriendshipsByUserId(user.getId()));
+        userResponse.setFriendNum(userRepository.countFriends(user.getId()));
 
         return userResponse;
     }
@@ -65,7 +65,7 @@ public class UserMapper {
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
         userDTO.setLocantion(user.getLocation());
-        userDTO.setFriendNum(friendShipRepository.countAcceptedFriendshipsByUserId(user.getId()));
+        userDTO.setFriendNum(userRepository.countFriends(user.getId()));
 
         return userDTO;
     }

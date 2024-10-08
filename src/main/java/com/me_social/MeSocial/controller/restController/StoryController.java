@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.api.services.youtube.model.Video;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.modal.Story;
 import com.me_social.MeSocial.service.StoryService;
@@ -34,7 +33,7 @@ public class StoryController {
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<Video> getVStoryById(@PathVariable String id) {
+    public ApiResponse<String> getVStoryById(@PathVariable String id) {
         return storyService.GetStoryById(id);
     }
 

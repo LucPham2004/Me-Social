@@ -33,4 +33,5 @@ public class UserResponse {
 
      int groupNum;
      int friendNum;
+     Long mutualFriendsNum;
 }

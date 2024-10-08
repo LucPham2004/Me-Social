@@ -1,8 +1,6 @@
 package com.me_social.MeSocial.service;
 
-import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.api.services.youtube.model.Video;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.modal.Reel;
 import com.me_social.MeSocial.entity.modal.User;
@@ -29,7 +26,6 @@ import lombok.experimental.FieldDefaults;
 public class ReelService {
     ReelRepository reelRepository;
     UserRepository userRepository;
-    YouTubeService youTubeService;
     
     static int REELS_PER_PAGE = 10;
 
@@ -41,11 +37,7 @@ public class ReelService {
         }
 
         Reel reel = new Reel();
-        try {
-            reel.setId(youTubeService.uploadVideo(file, user.getFirstName(), content));
-        } catch (IOException ex) {
-            System.out.println(Arrays.toString(ex.getStackTrace()));
-        }
+        //  More handling
         reel.setContent(content);
         reel.setUser(user);
         reel.setCreatedAt(Instant.now());
@@ -60,21 +52,17 @@ public class ReelService {
     }
 
     // Get by id
-    public ApiResponse<Video> GetReelById(String Id) {
+    public ApiResponse<String> GetReelById(String Id) {
         Reel reel = reelRepository.findById(Id);
         if (reel == null) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
-        ApiResponse<Video> apiResponse = new ApiResponse<>();
+        ApiResponse<String> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
         apiResponse.setMessage("Get Reel successfully");
-        try {
-            apiResponse.setResult(youTubeService.getVideoById(Id));
-        } catch (IOException ex) {
-            System.out.println(Arrays.toString(ex.getStackTrace()));
-        }
+        apiResponse.setResult(null);
 
         return apiResponse;
     }
