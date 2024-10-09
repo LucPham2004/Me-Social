@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.yaml.snakeyaml.tokens.CommentToken;
 
 import com.me_social.MeSocial.entity.dto.request.CommentRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
@@ -25,7 +26,7 @@ import lombok.experimental.FieldDefaults;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommentService {
     CommentRepository commentRepository;
     UserRepository userRepository;
@@ -35,106 +36,63 @@ public class CommentService {
     static int COMMENTS_PER_PAGE = 20;
 
     // Get by id
-    public ApiResponse<CommentResponse> getCommentById(Long id) {
-        if(!commentRepository.existsById(id)) {
+    public Comment getCommentById(Long id) {
+        if (!commentRepository.existsById(id)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        ApiResponse<CommentResponse> apiResponse = new ApiResponse<>();
 
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get comment by id successfully");
-        apiResponse.setResult(mapper.toCommentResponse(commentRepository.findById(id)));
-
-        return apiResponse;
+        return commentRepository.findById(id);
     }
 
     // Get comments by post
-    public ApiResponse<Page<CommentResponse>> getCommentsByPost(Long postId, int pageNum) {
-        if(!postRepository.existsById(postId)) {
+    public Page<Comment> getCommentsByPost(Long postId, int pageNum) {
+        if (!postRepository.existsById(postId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, COMMENTS_PER_PAGE);
 
-        Page<Comment> commentPage = commentRepository.findByPostId(postId, pageable);
-
-        ApiResponse<Page<CommentResponse>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get comments successfully");
-        apiResponse.setResult(commentPage.map(mapper::toCommentResponse));
-
-        return apiResponse;
+        return commentRepository.findByPostId(postId, pageable);
     }
 
     // Get comments by user
-    public ApiResponse<Page<CommentResponse>> getCommentsByUser(Long userId, int pageNum) {
-        if(!userRepository.existsById(userId)) {
+    public Page<Comment> getCommentsByUser(Long userId, int pageNum) {
+        if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, COMMENTS_PER_PAGE);
 
-        Page<Comment> commentPage = commentRepository.findByUserId(userId, pageable);
-
-        ApiResponse<Page<CommentResponse>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get comments successfully");
-        apiResponse.setResult(commentPage.map(mapper::toCommentResponse));
-
-        return apiResponse;
+        return commentRepository.findByUserId(userId, pageable);
     }
 
     // POST
     // Not in real-time update yet
-    public ApiResponse<CommentResponse> createcomment(CommentRequest request) {
-        if(!userRepository.existsById(request.getUserId()) || !postRepository.existsById(request.getPostId())) {
+    public Comment createcomment(CommentRequest request) {
+        if (!userRepository.existsById(request.getUserId()) || !postRepository.existsById(request.getPostId())) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Comment comment = mapper.toComment(request);
-        comment.setCreatedAt(LocalDateTime.now());
 
-        ApiResponse<CommentResponse> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Comment created successfully");
-        apiResponse.setResult(mapper.toCommentResponse(commentRepository.save(comment)));
-
-        return apiResponse;
+        return commentRepository.save(comment);
     }
 
     // DELETE
-    public ApiResponse<String> deleteComment(Long commentId) {
-        if(!commentRepository.existsById(commentId)) {
+    public void deleteComment(Long commentId) {
+        if (!commentRepository.existsById(commentId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         commentRepository.delete(commentRepository.findById(commentId));
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Delete comment successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
     }
 
-     // PUT
+    // PUT
     @Transactional
-    public ApiResponse<CommentResponse> editcomment(CommentRequest request) {
-        if(!commentRepository.existsById(request.getId())) {
+    public Comment editcomment(CommentRequest request) {
+        if (!commentRepository.existsById(request.getId())) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        
+
         Comment comment = commentRepository.findById(request.getId());
         comment.setContent(request.getContent());
-        comment.setUpdatedAt(LocalDateTime.now());
 
-        ApiResponse<CommentResponse> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Edit comment successfully");
-        apiResponse.setResult(mapper.toCommentResponse(commentRepository.save(comment)));
-
-        return apiResponse;
+        return commentRepository.save(comment);
     }
 }

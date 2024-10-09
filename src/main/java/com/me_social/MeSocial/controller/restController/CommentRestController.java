@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.me_social.MeSocial.entity.dto.request.CommentRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.dto.response.CommentResponse;
+import com.me_social.MeSocial.mapper.CommentMapper;
 import com.me_social.MeSocial.service.CommentService;
 
 import lombok.AccessLevel;
@@ -23,49 +24,79 @@ import lombok.experimental.FieldDefaults;
 @RestController
 @RequestMapping("/api/comments")
 @RequiredArgsConstructor
-@FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommentRestController {
 
     CommentService commentService;
+    CommentMapper mapper;
 
     // Get by id
     @GetMapping("/{id}")
     public ApiResponse<CommentResponse> getCommentById(@PathVariable Long id) {
-        return commentService.getCommentById(id);
+        var comment = commentService.getCommentById(id);
+        return ApiResponse.<CommentResponse>builder()
+                .code(1000)
+                .message("Get comment with ID " + id + " successfully!")
+                .result(mapper.toCommentResponse(comment))
+                .build();
     }
 
     // Get comments by post
     @GetMapping("/post")
     public ApiResponse<Page<CommentResponse>> getCommentsByPost(
-        @RequestParam Long postId, 
-        @RequestParam(defaultValue = "0") int pageNum) {
-        return commentService.getCommentsByPost(postId, pageNum);
+            @RequestParam Long postId,
+            @RequestParam(defaultValue = "0") int pageNum) {
+        var comments = commentService.getCommentsByPost(postId, pageNum);
+        return ApiResponse.<Page<CommentResponse>>builder()
+                .code(1000)
+                .message("Get comments of the post with ID " + postId + " successfully!")
+                .result(comments.map(mapper::toCommentResponse))
+                .build();
     }
 
     // Get comments by user
     @GetMapping("/user")
     public ApiResponse<Page<CommentResponse>> getCommentsByUser(
-        @RequestParam Long userId, 
-        @RequestParam(defaultValue = "0") int pageNum) {
-        return commentService.getCommentsByUser(userId, pageNum);
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "0") int pageNum) {
+        var comments = commentService.getCommentsByUser(userId, pageNum);
+        return ApiResponse.<Page<CommentResponse>>builder()
+                .code(1000)
+                .message("Get comments of the user with ID " + userId + " successfully!")
+                .result(comments.map(mapper::toCommentResponse))
+                .build();
     }
 
     // POST
     // Not in real-time update yet
     @PostMapping("/new")
     public ApiResponse<CommentResponse> createcomment(@RequestBody CommentRequest request) {
-        return commentService.createcomment(request);
+        var comment = commentService.createcomment(request);
+        return ApiResponse.<CommentResponse>builder()
+                .code(1000)
+                .message("Create a new comment successfully!")
+                .result(mapper.toCommentResponse(comment))
+                .build();
     }
 
     // DELETE
     @DeleteMapping("/{commentId}")
-    public ApiResponse<String> deleteComment(@PathVariable Long commentId) {
-        return commentService.deleteComment(commentId);
+    public ApiResponse<Void> deleteComment(@PathVariable Long commentId) {
+        commentService.deleteComment(commentId);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Delete comment with ID " + commentId + " successfully!")
+                .build();
     }
 
     // PUT
-    @PutMapping("/edit") 
+    @PutMapping("/edit")
     public ApiResponse<CommentResponse> editcomment(@RequestBody CommentRequest request) {
-        return commentService.editcomment(request);
+        var comment = commentService.editcomment(request);
+        return ApiResponse.<CommentResponse>builder()
+                .code(1000)
+                .message("Update comment with ID" + request.getId() + " successfully!")
+                .result(mapper.toCommentResponse(comment))
+                .build();
     }
 }

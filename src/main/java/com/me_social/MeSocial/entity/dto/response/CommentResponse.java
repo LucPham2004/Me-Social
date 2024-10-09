@@ -1,6 +1,6 @@
 package com.me_social.MeSocial.entity.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import lombok.experimental.FieldDefaults;
 public class CommentResponse {
     Long id;
     String content;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
+    Instant createdAt;
+    Instant updatedAt;
     int likeNum;
 }
