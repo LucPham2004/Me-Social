@@ -37,7 +37,7 @@ public class GroupController {
     }
 
     // Get group by user
-    @GetMapping("/{userId}/{pageNum}")
+    @GetMapping("/")
     public ApiResponse<Page<GroupResponse>> getGroupByUserId(
         @RequestParam Long userId, 
         @RequestParam(defaultValue = "0") int pageNum) {

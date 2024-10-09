@@ -43,6 +43,9 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private PostPrivacy privacy;
 
+    @Column(name = "is_read", columnDefinition = "BIT")
+    private Boolean isRead = false;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

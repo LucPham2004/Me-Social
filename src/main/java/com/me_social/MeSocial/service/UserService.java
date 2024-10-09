@@ -78,13 +78,13 @@ public class UserService {
     }
 
     // Get mutual friends
-    public ApiResponse<Page<UserDTO>> getMutualFriends(Long meId, Long otherUserId, int pageNum) {
-        if (!userRepository.existsById(meId) || !userRepository.existsById(otherUserId)) {
+    public ApiResponse<Page<UserDTO>> getMutualFriends(Long meId, Long youId, int pageNum) {
+        if (!userRepository.existsById(meId) || !userRepository.existsById(youId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
-        Page<User> mutualFriends = userRepository.findMutualFriends(meId, otherUserId, pageable);
+        Page<User> mutualFriends = userRepository.findMutualFriends(meId, youId, pageable);
 
         ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
 
@@ -166,6 +166,7 @@ public class UserService {
 
     // Other methods
 
+    // Map to DTO with mutual friends count for many users
     private Page<UserDTO> getUsersWithMutualFriendsCount(Long userId, Page<User> users) {
         List<Long> userIds = users.getContent().stream().map(User::getId).collect(Collectors.toList());
         Map<Long, Long> mutualFriendsCount = userRepository.countMutualFriendsForUsers(userId, userIds);

@@ -42,6 +42,41 @@ public class PostService {
     static int POSTS_PER_PAGE = 10;
 
     // GET
+
+    // Get Posts for NewsFeed
+    public ApiResponse<Page<PostResponse>> getPostsForNewsFeed(Long userId, int pageNum) {
+        if(!userRepository.existsById(userId)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+        Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
+
+        Page<Post> postPage = postRepository.findNewsfeedPosts(userId, pageable);
+
+        ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setCode(1000);
+        apiResponse.setMessage("Get Posts for NewsFeed successfully");
+        apiResponse.setResult(postPage.map(postMapper::toPostResponse));
+
+        return apiResponse;
+    }
+
+    // Get Posts for Group Activities 
+    public ApiResponse<Page<PostResponse>> getPostsForUserJoinedGroupNewsFeed(Long userId, int pageNum) {
+        if(!userRepository.existsById(userId)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+        Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
+
+        Page<Post> postPage = postRepository.findUnreadPublicGroupPosts(userId, pageable);
+
+        ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setCode(1000);
+        apiResponse.setMessage("Get Posts for Group Activities successfully");
+        apiResponse.setResult(postPage.map(postMapper::toPostResponse));
+
+        return apiResponse;
+    }
+
     // Get Posts By User
     public ApiResponse<Page<PostResponse>> getPostsByUser(Long userId, int pageNum) {
         if(!userRepository.existsById(userId)) {
@@ -54,7 +89,7 @@ public class PostService {
         ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
-        apiResponse.setMessage("Get Posts successfully");
+        apiResponse.setMessage("Get Posts by User successfully");
         apiResponse.setResult(postPage.map(postMapper::toPostResponse));
 
         return apiResponse;
@@ -68,11 +103,11 @@ public class PostService {
         
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
     
-        Page<Post> postPage = postRepository.findByGroupId(groupId, pageable);
+        Page<Post> postPage = postRepository.findByGroupIdOrderByCreatedAtDesc(groupId, pageable);
     
         ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
         apiResponse.setCode(1000);
-        apiResponse.setMessage("Get Posts successfully");
+        apiResponse.setMessage("Get Posts by Group successfully");
         apiResponse.setResult(postPage.map(postMapper::toPostResponse));
     
         return apiResponse;
@@ -91,7 +126,7 @@ public class PostService {
         ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
 
         apiResponse.setCode(1000);
-        apiResponse.setMessage("Get Posts successfully");
+        apiResponse.setMessage("Get Posts by Tag successfully");
         apiResponse.setResult(postPage.map(postMapper::toPostResponse));
 
         return apiResponse;

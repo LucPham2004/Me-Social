@@ -35,7 +35,7 @@ public class CommentRestController {
     }
 
     // Get comments by post
-    @GetMapping("/post/{postId}/{pageNum}")
+    @GetMapping("/post")
     public ApiResponse<Page<CommentResponse>> getCommentsByPost(
         @RequestParam Long postId, 
         @RequestParam(defaultValue = "0") int pageNum) {
@@ -43,7 +43,7 @@ public class CommentRestController {
     }
 
     // Get comments by user
-    @GetMapping("/user/{userId}/{pageNum}")
+    @GetMapping("/user")
     public ApiResponse<Page<CommentResponse>> getCommentsByUser(
         @RequestParam Long userId, 
         @RequestParam(defaultValue = "0") int pageNum) {

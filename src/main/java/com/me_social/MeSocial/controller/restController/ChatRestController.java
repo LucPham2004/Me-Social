@@ -23,7 +23,7 @@ public class ChatRestController {
     DirectMessageService service;
     
     // Get messages
-    @GetMapping("/{userId}/{pageNum}")
+    @GetMapping("/")
     public ApiResponse<Page<DirectMessage>> getUserDirectMessages(Long senderId, Long receiverId, int pageNum) {
         return service.getUserDirectMessages(senderId, receiverId, pageNum);
     }
