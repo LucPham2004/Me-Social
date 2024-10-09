@@ -29,6 +29,23 @@ public class PostController {
     PostService postService;
 
     // GET
+
+    // Get Posts for NewsFeed
+    @GetMapping("/newsfeed")
+    public ApiResponse<Page<PostResponse>> getPostsForNewsFeed(
+        @RequestParam Long userId, 
+        @RequestParam(defaultValue = "0") int pageNum) {
+        return postService.getPostsForNewsFeed(userId, pageNum);
+    }
+
+    // Get Posts for Group Activities 
+    @GetMapping("/newsfeed/groups")
+    public ApiResponse<Page<PostResponse>> getPostsForUserJoinedGroupNewsFeed(
+        @RequestParam Long userId, 
+        @RequestParam(defaultValue = "0") int pageNum) {
+        return postService.getPostsForUserJoinedGroupNewsFeed(userId, pageNum);
+    }
+
     // Get Posts By User
     @GetMapping("/user")
     public ApiResponse<Page<PostResponse>> getPostsByUser(
