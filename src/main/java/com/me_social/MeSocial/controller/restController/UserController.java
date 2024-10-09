@@ -41,7 +41,7 @@ public class UserController {
     }
 
     // Get Group members
-    @GetMapping("/get/group/members/{groupId}/{pageNum}")
+    @GetMapping("/get/group/members")
     public ApiResponse<Page<UserDTO>> getGroupMembers(
         @RequestParam Long groupId, 
         @RequestParam(defaultValue = "0") int pageNum) {
@@ -49,7 +49,7 @@ public class UserController {
     }
 
     // Get Group admins
-    @GetMapping("/get/group/admins/{groupId}/{pageNum}")
+    @GetMapping("/get/group/admins")
     public ApiResponse<Page<UserDTO>> getGroupAdmins(
         @RequestParam Long groupId, 
         @RequestParam(defaultValue = "0") int pageNum) {
@@ -57,11 +57,20 @@ public class UserController {
     }
 
     // Get User's friends
-    @GetMapping("/get/friends/{userId}/{pageNum}")
+    @GetMapping("/get/friends")
     public ApiResponse<Page<UserDTO>> getUserFriends(
         @RequestParam Long userId, 
         @RequestParam(defaultValue = "0") int pageNum) {
         return userService.getUserFriends(userId, pageNum);
+    }
+
+    // Get mutual friends
+    @GetMapping("/get/mutualFriends")
+    public ApiResponse<Page<UserDTO>> getMutualFriends(
+        @RequestParam Long meId, 
+        @RequestParam Long youId,
+        @RequestParam(defaultValue = "0") int pageNum) {
+        return userService.getMutualFriends(meId, youId, pageNum);
     }
 
     // PUT

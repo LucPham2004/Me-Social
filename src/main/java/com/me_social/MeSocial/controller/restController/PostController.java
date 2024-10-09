@@ -30,7 +30,7 @@ public class PostController {
 
     // GET
     // Get Posts By User
-    @GetMapping("/user/{userId}/{pageNum}")
+    @GetMapping("/user")
     public ApiResponse<Page<PostResponse>> getPostsByUser(
         @RequestParam Long userId, 
         @RequestParam(defaultValue = "0") int pageNum) {
@@ -38,7 +38,7 @@ public class PostController {
     }
     
     // Get Posts By Group
-    @GetMapping("/group/{groupId}/{pageNum}")
+    @GetMapping("/group")
     public ApiResponse<Page<PostResponse>> getPostsByGroup(
         @RequestParam Long groupId, 
         @RequestParam(defaultValue = "0") int pageNum) {
@@ -46,7 +46,7 @@ public class PostController {
     }
 
     // Get Posts By Tag
-    @GetMapping("/tag/{tagId}/{pageNum}")
+    @GetMapping("/tag")
     public ApiResponse<Page<PostResponse>> getPostsByTag(
         @RequestParam Long tagId, 
         @RequestParam(defaultValue = "0") int pageNum) {

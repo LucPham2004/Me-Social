@@ -6,6 +6,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @RestController
+@RequestMapping("/api/notify")
 @RequiredArgsConstructor
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
 public class NotificationController {
@@ -25,7 +27,7 @@ public class NotificationController {
     SimpMessagingTemplate messagingTemplate;
     NotificationService notificationService;
 
-    @GetMapping("/{userId}/{pageNum}")
+    @GetMapping("/")
     public ApiResponse<Page<Notification>> getUserNotifications(
         @RequestParam Long userId, 
         @RequestParam(defaultValue = "0") int pageNum) {
