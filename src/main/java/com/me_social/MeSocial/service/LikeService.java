@@ -24,6 +24,7 @@ public class LikeService {
 
     LikeRepository likeRepository;
     UserRepository userRepository;
+    UserService userService;
     PostRepository postRepository;
     CommentRepository commentRepository;
 
@@ -36,7 +37,7 @@ public class LikeService {
         Like like = likeRepository.findByUserIdAndPostId(userId, postId);
         if(like == null) {
             like = new Like();
-            like.setUser(userRepository.findById(userId));
+            like.setUser(userService.findById(userId).get());
 
             if(postRepository.existsById(postId)) {
                 like.setPost(postRepository.findById(postId));
@@ -65,7 +66,7 @@ public class LikeService {
         Like like = likeRepository.findByUserIdAndCommentId(userId, commentId);
         if(like == null) {
             like = new Like();
-            like.setUser(userRepository.findById(userId));
+            like.setUser(userService.findById(userId).get());
 
             if(commentRepository.existsById(commentId)) {
                 like.setComment(commentRepository.findById(commentId));

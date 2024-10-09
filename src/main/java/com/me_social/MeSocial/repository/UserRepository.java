@@ -25,7 +25,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
     boolean existsByEmail(String email);
 
-    User findById(long id);
+    Optional<User> findById(long id);
 
     Optional<User> findByUsername(String username);
 
@@ -79,6 +79,8 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
        "OR f.requestReceiver.id = :userId AND f.requester.id IN :memberIds) " +
        "GROUP BY u.id")
     Map<Long, Long> countMutualFriendsForUsers(@Param("userId") Long userId, @Param("memberIds") List<Long> memberIds);
+
+boolean existsByPhone(String phone);
 
 
 }

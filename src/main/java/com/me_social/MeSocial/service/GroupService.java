@@ -30,6 +30,7 @@ import lombok.experimental.FieldDefaults;
 public class GroupService {
     GroupRepository groupRepository;
     UserRepository userRepository;
+    UserService userService;
     GroupMapper groupMapper;
 
     static int GROUPS_PER_PAGE = 20;
@@ -94,7 +95,7 @@ public class GroupService {
         Group group = groupRepository.findById(groupId).get();
 
         Set<User> admins = group.getAdmins();
-        admins.add(userRepository.findById(adminId));
+        admins.add(userService.findById(adminId).get());
         group.setAdmins(admins);
         groupRepository.save(group);
 
@@ -116,7 +117,7 @@ public class GroupService {
         Group group = groupRepository.findById(groupId).get();
 
         Set<User> members = group.getMembers();
-        members.add(userRepository.findById(memberId));
+        members.add(userService.findById(memberId).get());
         group.setMembers(members);
         groupRepository.save(group);
 
@@ -189,7 +190,7 @@ public class GroupService {
             return apiResponse;
         }
 
-        admins.remove(userRepository.findById(adminId));
+        admins.remove(userService.findById(adminId).get());
         group.setAdmins(admins);
         groupRepository.save(group);
 
@@ -209,7 +210,7 @@ public class GroupService {
         Group group = groupRepository.findById(groupId).get();
 
         Set<User> members = group.getMembers();
-        members.remove(userRepository.findById(memberId));
+        members.remove(userService.findById(memberId).get());
         group.setMembers(members);
         groupRepository.save(group);
 

@@ -12,16 +12,18 @@ import com.me_social.MeSocial.repository.GroupRepository;
 import com.me_social.MeSocial.repository.UserRepository;
 
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Component
+@RequiredArgsConstructor
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
 public class UserMapper {
 
-    public UserMapper(UserRepository userRepository, GroupRepository groupRepository) {
-        this.userRepository = userRepository;
-        this.groupRepository = groupRepository;
-    }
+    // public UserMapper(UserRepository userRepository, GroupRepository groupRepository) {
+    //     this.userRepository = userRepository;
+    //     this.groupRepository = groupRepository;
+    // }
 
     UserRepository userRepository;
     GroupRepository groupRepository;
@@ -29,13 +31,11 @@ public class UserMapper {
     public User toUser(UserCreationRequest request) {
         User user = new User();
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
         user.setEmail(request.getEmail());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setPhone(request.getPhone());
         user.setDob(request.getDob());
-        user.setCreatedAt(Instant.now());
         user.setGender(request.getGender());
 
         return user;
@@ -64,7 +64,7 @@ public class UserMapper {
         userDTO.setId(user.getId());
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
-        userDTO.setLocantion(user.getLocation());
+        userDTO.setLocation(user.getLocation());
         userDTO.setFriendNum(userRepository.countFriends(user.getId()));
 
         return userDTO;

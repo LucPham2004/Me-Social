@@ -42,7 +42,7 @@ public class UserService {
     // GET
 
     // Get Group members
-    public ApiResponse<Page<UserDTO>> getGroupMembers(Long groupId, int pageNum) {
+    public Page<User> getGroupMembers(Long groupId, int pageNum) {
         if (!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
@@ -50,17 +50,11 @@ public class UserService {
 
         Page<User> members = groupRepository.findMembersById(groupId, pageable);
 
-        ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get group Members successfully");
-        apiResponse.setResult(members.map(userMapper::toUserDTO));
-
-        return apiResponse;
+        return members;
     }
 
     // Get Group admins
-    public ApiResponse<Page<UserDTO>> getGroupAdmins(Long groupId, int pageNum) {
+    public Page<User> getGroupAdmins(Long groupId, int pageNum) {
         if (!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
@@ -68,31 +62,19 @@ public class UserService {
 
         Page<User> admins = groupRepository.findAdminsById(groupId, pageable);
 
-        ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get group Admins successfully");
-        apiResponse.setResult(admins.map(userMapper::toUserDTO));
-
-        return apiResponse;
+        return admins;
     }
 
     // Get User friends
-    public ApiResponse<Page<UserDTO>> getUserFriends(Long userId, int pageNum) {
+    public Page<User> getUserFriends(Long userId, int pageNum) {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
         Page<User> friends = userRepository.findFriends(userId, pageable);
-        
-        ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
 
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get friends successfully");
-        apiResponse.setResult(getUsersWithMutualFriendsCount(userId, friends));
-
-        return apiResponse;
+        return friends;
     }
 
     // Get mutual friends
@@ -130,98 +112,57 @@ public class UserService {
         return optionalUser.get();
     }
 
-    public User handleGetUserById(Long id) {
-        Optional<User> optionalUser = Optional.ofNullable(userRepository.findById(id));
-        if (optionalUser == null) {
-            return null;
+    public Optional<User> findById(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        return optionalUser.get();
+        return optionalUser;
     }
 
-    public ApiResponse<UserResponse> createUser(UserCreationRequest request) {
+    public User createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())
-                || userRepository.existsByEmail(request.getEmail())) {
+                || userRepository.existsByEmail(request.getEmail())
+                || userRepository.existsByPhone(request.getPhone())) {
             throw new AppException(ErrorCode.ENTITY_EXISTED);
         }
-        request.setPassword(passwordEncoder.encode(request.getPassword()));
         User user = userMapper.toUser(request);
-        user.setCreatedAt(Instant.now());
-        userRepository.save(user);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Create user successfully");
-        apiResponse.setResult(userMapper.toUserResponse(user));
-
-        return apiResponse;
+        return userRepository.save(user);
     }
 
-    public ApiResponse<UserResponse> getUser(Long id) {
-        User user = userRepository.findById(id);
-        if (user == null) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
+    public User getUser(Long id) {
+        User dbUser = userRepository.findById(id).get();
 
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get user by id successfully");
-        apiResponse.setResult(userMapper.toUserResponse(user));
-
-        return apiResponse;
+        return dbUser;
     }
 
-    public ApiResponse<UserResponse> updateUser(UserUpdateRequest reqUser) {
-        User dbUser = handleGetUserById(reqUser.getId());
-        if (dbUser == null) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
+    public User updateUser(UserUpdateRequest reqUser) {
+        var dbUser = this.findById(reqUser.getId()).get();
+
         dbUser.setFirstName(reqUser.getFirstName());
         dbUser.setLastName(reqUser.getLastName());
         dbUser.setGender(reqUser.getGender());
         dbUser.setBio(reqUser.getBio());
         dbUser.setDob(reqUser.getDob());
         dbUser.setLocation(reqUser.getLocation());
-        dbUser.setUpdatedAt(Instant.now());
-        userRepository.save(dbUser);
 
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Update User Successfully!");
-        apiResponse.setResult(userMapper.toUserResponse(dbUser));
-
-        return apiResponse;
+        return this.userRepository.save(dbUser);
     }
 
-    public ApiResponse<String> deleteUserById(Long id) {
-        User user = handleGetUserById(id);
-        if (user == null) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
+    public void deleteUserById(Long id) {
+        User dbUser = this.findById(id).get();
 
-        userRepository.deleteById(id);
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("User deleted successfully");
-        apiResponse.setResult("User with ID: " + id + " has been deleted.");
-
-        return apiResponse;
+        userRepository.delete(dbUser);
     }
 
-    public ApiResponse<Page<UserDTO>> getAllUsers(int pageNum, int pageSize) {
+    public Page<User> getAllUsers(int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         Page<User> users = userRepository.findAll(pageable);
 
-        ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Fetched users successfully");
-        apiResponse.setResult(users.map(userMapper::toUserDTO));
-
-        return apiResponse;
+        return users;
     }
-
 
     // Other methods
 

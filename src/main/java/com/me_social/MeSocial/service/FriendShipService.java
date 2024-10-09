@@ -22,6 +22,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FriendShipService {
     FriendShipRepository friendShipRepository;
+    UserService userService;
     UserRepository userRepository;
 
     public ApiResponse<String> createFriendShip(Long requesterId, Long receiverId) {
@@ -29,8 +30,8 @@ public class FriendShipService {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Friendship friendship = new Friendship();
-        friendship.setRequester(userRepository.findById(requesterId));
-        friendship.setRequestReceiver(userRepository.findById(receiverId));
+        friendship.setRequester(userService.findById(requesterId).get());
+        friendship.setRequestReceiver(userService.findById(receiverId).get());
         friendship.setStatus(FriendshipStatus.PENDING);
         friendship.setCreatedAt(LocalDateTime.now());
 

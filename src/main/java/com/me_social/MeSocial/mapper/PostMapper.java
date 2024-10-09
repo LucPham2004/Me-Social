@@ -9,23 +9,26 @@ import com.me_social.MeSocial.repository.CommentRepository;
 import com.me_social.MeSocial.repository.GroupRepository;
 import com.me_social.MeSocial.repository.LikeRepository;
 import com.me_social.MeSocial.repository.UserRepository;
+import com.me_social.MeSocial.service.UserService;
 
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Component
+@RequiredArgsConstructor
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
 public class PostMapper {
 
-    public PostMapper(UserRepository userRepository, GroupRepository groupRepository, LikeRepository likeRepository,
-            CommentRepository commentRepository) {
-        this.userRepository = userRepository;
-        this.groupRepository = groupRepository;
-        this.likeRepository = likeRepository;
-        this.commentRepository = commentRepository;
-    }
+    // public PostMapper(UserRepository userRepository, GroupRepository groupRepository, LikeRepository likeRepository,
+    //         CommentRepository commentRepository) {
+    //     this.userRepository = userRepository;
+    //     this.groupRepository = groupRepository;
+    //     this.likeRepository = likeRepository;
+    //     this.commentRepository = commentRepository;
+    // }
 
-    UserRepository userRepository;
+    UserService userService;
     GroupRepository groupRepository;
     LikeRepository likeRepository;
     CommentRepository commentRepository;
@@ -35,7 +38,7 @@ public class PostMapper {
         post.setContent(request.getContent());
         post.setPrivacy(request.getPrivacy());
 
-        post.setUser(userRepository.findById(request.getUserId()));
+        post.setUser(userService.findById(request.getUserId()).get());
         
         if(request.getGroupId() != null)
             post.setGroup(groupRepository.findById(request.getGroupId()).get());

@@ -33,6 +33,7 @@ import lombok.experimental.FieldDefaults;
 public class PostService {
     PostRepository postRepository;
     UserRepository userRepository;
+    UserService userService;
     GroupRepository groupRepository;
     TagRepository tagRepository;
     PostMapper postMapper;
@@ -116,7 +117,7 @@ public class PostService {
             post.setTags(tags);
         }
         
-        post.setUser(userRepository.findById(request.getUserId()));
+        post.setUser(userService.findById(request.getUserId()).get());
         post.setCreatedAt(LocalDateTime.now());
         postRepository.save(post);
 

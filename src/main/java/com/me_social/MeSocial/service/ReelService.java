@@ -31,7 +31,7 @@ public class ReelService {
 
     // Create Reel
     public ApiResponse<Reel> createReel(Long userId, MultipartFile file, String content) {
-        User user = userRepository.findById(userId);
+        User user = userRepository.findById(userId).get();
         if (user == null) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }

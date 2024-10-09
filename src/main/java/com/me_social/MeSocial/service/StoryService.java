@@ -26,15 +26,13 @@ import lombok.experimental.FieldDefaults;
 public class StoryService {
     StoryRepository storyRepository;
     UserRepository userRepository;
+    UserService userService;
     
     static int STORIES_PER_PAGE = 10;
 
     // Create story
     public ApiResponse<Story> createStory(Long userId, MultipartFile file, String content) {
-        User user = userRepository.findById(userId);
-        if (user == null) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
+        User user = userService.findById(userId).get();
 
         Story story = new Story();
         //  More handling

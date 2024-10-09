@@ -13,18 +13,22 @@ import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
 import com.me_social.MeSocial.repository.GroupRepository;
 import com.me_social.MeSocial.repository.UserRepository;
+import com.me_social.MeSocial.service.UserService;
 
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Component
+@RequiredArgsConstructor
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
 public class GroupMapper {
-    public GroupMapper(UserRepository userRepository, GroupRepository groupRepository) {
-        this.userRepository = userRepository;
-        this.groupRepository = groupRepository;
-    }
+    // public GroupMapper(UserRepository userRepository, GroupRepository groupRepository) {
+    //     this.userRepository = userRepository;
+    //     this.groupRepository = groupRepository;
+    // }
     UserRepository userRepository;
+    UserService userService;
     GroupRepository groupRepository;
 
     public Group toGroup(GroupRequest request) {{
@@ -40,7 +44,7 @@ public class GroupMapper {
             Set<User> admin = new HashSet<>();
             if(group.getAdmins() != null) 
                 admin = group.getAdmins();
-            admin.add(userRepository.findById(request.getAdminId()));
+            admin.add(userService.findById(request.getAdminId()).get());
             group.setAdmins(admin);
         }
 

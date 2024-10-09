@@ -8,21 +8,25 @@ import com.me_social.MeSocial.entity.modal.Comment;
 import com.me_social.MeSocial.repository.LikeRepository;
 import com.me_social.MeSocial.repository.PostRepository;
 import com.me_social.MeSocial.repository.UserRepository;
+import com.me_social.MeSocial.service.UserService;
 
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Component
+@RequiredArgsConstructor
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
 public class CommentMapper {
 
-    public CommentMapper(UserRepository userRepository, PostRepository postRepository, LikeRepository likeRepository) {
-        this.userRepository = userRepository;
-        this.postRepository = postRepository;
-        this.likeRepository = likeRepository;
-    }
+    // public CommentMapper(UserRepository userRepository, PostRepository postRepository, LikeRepository likeRepository) {
+    //     this.userRepository = userRepository;
+    //     this.postRepository = postRepository;
+    //     this.likeRepository = likeRepository;
+    // }
 
     UserRepository userRepository;
+    UserService userService;
     PostRepository postRepository;
     LikeRepository likeRepository;
 
@@ -31,7 +35,7 @@ public class CommentMapper {
 
         comment.setContent(request.getContent());
         comment.setId(request.getId());
-        comment.setUser(userRepository.findById(request.getUserId()));
+        comment.setUser(userService.findById(request.getUserId()).get());
         comment.setPost(postRepository.findById(request.getPostId()));
         
         return comment;
