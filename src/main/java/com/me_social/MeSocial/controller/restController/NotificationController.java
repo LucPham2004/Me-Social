@@ -27,11 +27,17 @@ public class NotificationController {
     SimpMessagingTemplate messagingTemplate;
     NotificationService notificationService;
 
+    // Get User Notifications
     @GetMapping("/")
     public ApiResponse<Page<Notification>> getUserNotifications(
-        @RequestParam Long userId, 
-        @RequestParam(defaultValue = "0") int pageNum) {
-        return notificationService.getUserNotifications(userId, pageNum);
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "0") int pageNum) {
+        Page<Notification> notifications = notificationService.getUserNotifications(userId, pageNum);
+        return ApiResponse.<Page<Notification>>builder()
+            .code(1000)
+            .message("Get notifications successfully")
+            .result(notifications)
+            .build();
     }
 
     @MessageMapping("/send-notification")
@@ -40,8 +46,14 @@ public class NotificationController {
         messagingTemplate.convertAndSendToUser(username, "/queue/notifications", notification);
     }
 
+    // Delete Notification
     @DeleteMapping("/{notifyId}")
     public ApiResponse<String> deleteNotify(@PathVariable Long notifyId) {
-        return notificationService.deleteNotify(notifyId);
+        notificationService.deleteNotify(notifyId);
+        return ApiResponse.<String>builder()
+            .code(1000)
+            .message("Delete notification successfully")
+            .result("")
+            .build();
     }
 }

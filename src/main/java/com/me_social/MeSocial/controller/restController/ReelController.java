@@ -26,28 +26,53 @@ public class ReelController {
     
     ReelService reelService;
 
+    // Create Reel
     @PostMapping("/upload-video")
-    public ApiResponse<Reel> createReel(@RequestParam("file") MultipartFile file,
-                                @RequestParam Long userId,
-                                @RequestParam String content) {
-        return reelService.createReel(userId, file, content);
+    public ApiResponse<Reel> createReel(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam Long userId,
+            @RequestParam String content) {
+        Reel reel = reelService.createReel(userId, file, content);
+        return ApiResponse.<Reel>builder()
+            .code(1000)
+            .message("Created Reel successfully")
+            .result(reel)
+            .build();
     }
 
+    // Get Reel by id
     @GetMapping("/{id}")
-    public ApiResponse<String> getReelById(@PathVariable String id) {
-        return reelService.GetReelById(id);
+    public ApiResponse<Reel> getReelById(@PathVariable String id) {
+        Reel reel = reelService.getReelById(id);
+        return ApiResponse.<Reel>builder()
+            .code(1000)
+            .message("Get Reel successfully")
+            .result(reel)
+            .build();
     }
 
+    // Get all reels by user
     @GetMapping("/user")
-    public ApiResponse<Page<Reel>> GetReelsByUserId(
-        @RequestParam Long userId, 
-        @RequestParam(defaultValue = "0") int pageNum) {
-        return reelService.GetReelsByUserId(userId, pageNum);
+    public ApiResponse<Page<Reel>> getReelsByUserId(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "0") int pageNum) {
+        Page<Reel> reels = reelService.getReelsByUserId(userId, pageNum);
+        return ApiResponse.<Page<Reel>>builder()
+            .code(1000)
+            .message("Get Reels by user successfully")
+            .result(reels)
+            .build();
     }
 
+    // Delete Reel
     @DeleteMapping("/delete/{id}")
     public ApiResponse<String> deleteReel(@PathVariable String id) {
-        return reelService.deleteReel(id);
+        reelService.deleteReel(id);
+        return ApiResponse.<String>builder()
+            .code(1000)
+            .message("Delete Reel successfully")
+            .result("")
+            .build();
     }
 }
 
