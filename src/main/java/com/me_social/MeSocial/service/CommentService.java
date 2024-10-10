@@ -1,17 +1,12 @@
 package com.me_social.MeSocial.service;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.yaml.snakeyaml.tokens.CommentToken;
 
 import com.me_social.MeSocial.entity.dto.request.CommentRequest;
-import com.me_social.MeSocial.entity.dto.response.ApiResponse;
-import com.me_social.MeSocial.entity.dto.response.CommentResponse;
 import com.me_social.MeSocial.entity.modal.Comment;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
@@ -37,11 +32,8 @@ public class CommentService {
 
     // Get by id
     public Comment getCommentById(Long id) {
-        if (!commentRepository.existsById(id)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-
-        return commentRepository.findById(id);
+        return commentRepository.findById(id)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
     }
 
     // Get comments by post
@@ -77,20 +69,15 @@ public class CommentService {
 
     // DELETE
     public void deleteComment(Long commentId) {
-        if (!commentRepository.existsById(commentId)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        commentRepository.delete(commentRepository.findById(commentId));
+        commentRepository.delete(commentRepository.findById(commentId)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED)));
     }
 
     // PUT
     @Transactional
     public Comment editcomment(CommentRequest request) {
-        if (!commentRepository.existsById(request.getId())) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-
-        Comment comment = commentRepository.findById(request.getId());
+        Comment comment = commentRepository.findById(request.getId())
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
         comment.setContent(request.getContent());
 
         return commentRepository.save(comment);

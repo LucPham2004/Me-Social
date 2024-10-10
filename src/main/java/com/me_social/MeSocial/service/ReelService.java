@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.modal.Reel;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
@@ -27,74 +26,43 @@ public class ReelService {
     ReelRepository reelRepository;
     UserRepository userRepository;
     
-    static int REELS_PER_PAGE = 10;
+    static int REELS_PER_PAGE = 5;
 
     // Create Reel
-    public ApiResponse<Reel> createReel(Long userId, MultipartFile file, String content) {
-        User user = userRepository.findById(userId).get();
-        if (user == null) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
+    public Reel createReel(Long userId, MultipartFile file, String content) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
 
         Reel reel = new Reel();
-        //  More handling
+        // More handling for the file can be done here
         reel.setContent(content);
         reel.setUser(user);
         reel.setCreatedAt(Instant.now());
 
-        ApiResponse<Reel> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Created Reel successfully");
-        apiResponse.setResult(reelRepository.save(reel));
-
-        return apiResponse;
+        return reelRepository.save(reel);
     }
 
     // Get by id
-    public ApiResponse<String> GetReelById(String Id) {
-        Reel reel = reelRepository.findById(Id);
-        if (reel == null) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get Reel successfully");
-        apiResponse.setResult(null);
-
-        return apiResponse;
+    public Reel getReelById(String id) {
+        return reelRepository.findById(id)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
     }
 
-    //  Get all reels paginated
-    public ApiResponse<Page<Reel>> GetReelsByUserId(Long userId, int pageNum) {
+    // Get all reels paginated
+    public Page<Reel> getReelsByUserId(Long userId, int pageNum) {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, REELS_PER_PAGE);
-
-        ApiResponse<Page<Reel>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get Reels by user successfully");
-        apiResponse.setResult(reelRepository.findAllByUserId(userId, pageable));
-
-        return apiResponse;
+        return reelRepository.findAllByUserId(userId, pageable);
     }
 
-    public ApiResponse<String> deleteReel(String id) {
-        if (reelRepository.existsById(id)) {
+    // Delete Reel
+    public void deleteReel(String id) {
+        if (!reelRepository.existsById(id)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-
         reelRepository.deleteById(id);
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Delete Reel successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
     }
+
 }

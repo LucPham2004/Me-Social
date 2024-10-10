@@ -1,11 +1,8 @@
 package com.me_social.MeSocial.service;
 
-import java.time.LocalDateTime;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Optional;
-import com.me_social.MeSocial.entity.dto.response.ApiResponse;
+
 import com.me_social.MeSocial.entity.modal.Friendship;
 import com.me_social.MeSocial.enums.FriendshipStatus;
 import com.me_social.MeSocial.exception.AppException;
@@ -23,30 +20,38 @@ import lombok.experimental.FieldDefaults;
 public class FriendShipService {
     FriendShipRepository friendShipRepository;
     UserService userService;
-
-    public Optional<Friendship> findById(Long id) {
-        var optionalFriendShip = this.friendShipRepository.findById(id);
-        if (optionalFriendShip.isEmpty()) {
+    UserRepository userRepository;
+    public Friendship getFriendStatus(Long requesterId, Long receiverId) {
+        if (!userRepository.existsById(requesterId) || !userRepository.existsById(receiverId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        return optionalFriendShip;
+        Friendship friendship = friendShipRepository.findBy2UserIds(requesterId, receiverId);
+
+        return friendship;
     }
 
-    public Friendship createFriendShip(Long requesterId, Long receiverId) {
-        var requester = this.userService.findById(requesterId).get();
-        var receiver = this.userService.findById(receiverId).get();
-
-        Friendship friendship = new Friendship();
-        friendship.setRequester(requester);
-        friendship.setRequestReceiver(receiver);
+    public Friendship sendFriendRequest(Long requesterId, Long receiverId) {
+        if (!userRepository.existsById(requesterId) || !userRepository.existsById(receiverId)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+        Friendship friendship = friendShipRepository.findBy2UserIds(requesterId, receiverId);
+        if(friendship != null) {
+            return friendship;
+        }
+        friendship = new Friendship();
+        friendship.setRequester(userService.findById(requesterId).get());
+        friendship.setRequestReceiver(userService.findById(receiverId).get());
         friendship.setStatus(FriendshipStatus.PENDING);
 
         return friendShipRepository.save(friendship);
     }
 
     public void deleteFriendShip(Long id) {
-        var friendShip = this.findById(id).get();
-        this.friendShipRepository.delete(friendShip);
+        if (!friendShipRepository.existsById(id)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+
+        friendShipRepository.delete(friendShipRepository.findById(id).get());
     }
 
     @Transactional

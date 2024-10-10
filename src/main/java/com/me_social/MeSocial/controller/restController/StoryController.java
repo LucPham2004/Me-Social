@@ -25,27 +25,52 @@ import lombok.experimental.FieldDefaults;
 public class StoryController {
     StoryService storyService;
 
+    // Create story
     @PostMapping("/upload-video")
-    public ApiResponse<Story> createStory(@RequestParam("file") MultipartFile file,
-                                @RequestParam Long userId,
-                                @RequestParam String content) {
-        return storyService.createStory(userId, file, content);
+    public ApiResponse<Story> createStory(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam Long userId,
+            @RequestParam String content) {
+        Story story = storyService.createStory(userId, file, content);
+        return ApiResponse.<Story>builder()
+            .code(1000)
+            .message("Created story successfully")
+            .result(story)
+            .build();
     }
 
+    // Get story by id
     @GetMapping("/{id}")
-    public ApiResponse<String> getVStoryById(@PathVariable String id) {
-        return storyService.GetStoryById(id);
+    public ApiResponse<Story> getStoryById(@PathVariable String id) {
+        Story story = storyService.getStoryById(id);
+        return ApiResponse.<Story>builder()
+            .code(1000)
+            .message("Get story successfully")
+            .result(story)
+            .build();
     }
 
+    // Get all stories by user
     @GetMapping("/user")
-    public ApiResponse<Page<Story>> GetStorysByUserId(
-        @RequestParam Long userId, 
-        @RequestParam(defaultValue = "0") int pageNum) {
-        return storyService.GetStorysByUserId(userId, pageNum);
+    public ApiResponse<Page<Story>> getStoriesByUserId(
+            @RequestParam Long userId,
+            @RequestParam(defaultValue = "0") int pageNum) {
+        Page<Story> stories = storyService.getStoriesByUserId(userId, pageNum);
+        return ApiResponse.<Page<Story>>builder()
+            .code(1000)
+            .message("Get stories by user successfully")
+            .result(stories)
+            .build();
     }
 
+    // Delete story
     @DeleteMapping("/delete/{id}")
     public ApiResponse<String> deleteStory(@PathVariable String id) {
-        return storyService.deleteStory(id);
+        storyService.deleteStory(id);
+        return ApiResponse.<String>builder()
+            .code(1000)
+            .message("Delete story successfully")
+            .result("")
+            .build();
     }
 }

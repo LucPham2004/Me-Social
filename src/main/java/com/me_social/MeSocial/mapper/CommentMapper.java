@@ -7,7 +7,6 @@ import com.me_social.MeSocial.entity.dto.response.CommentResponse;
 import com.me_social.MeSocial.entity.modal.Comment;
 import com.me_social.MeSocial.repository.LikeRepository;
 import com.me_social.MeSocial.repository.PostRepository;
-import com.me_social.MeSocial.repository.UserRepository;
 import com.me_social.MeSocial.service.UserService;
 
 import lombok.AccessLevel;
@@ -29,8 +28,8 @@ public class CommentMapper {
         comment.setContent(request.getContent());
         comment.setId(request.getId());
         comment.setUser(userService.findById(request.getUserId()).get());
-        comment.setPost(postRepository.findById(request.getPostId()));
-
+        comment.setPost(postRepository.findById(request.getPostId()).get());
+        
         return comment;
     }
 

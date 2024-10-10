@@ -12,6 +12,8 @@ public interface NotificationRepository extends PagingAndSortingRepository<Notif
     Notification save(Notification notification);
 
     void delete(Notification notification);
+
+    void deleteById(Long id);
     
     Notification findById(Long id);
 

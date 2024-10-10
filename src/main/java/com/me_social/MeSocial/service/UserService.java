@@ -1,6 +1,5 @@
 package com.me_social.MeSocial.service;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,12 +10,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
 import com.me_social.MeSocial.entity.dto.request.UserUpdateRequest;
-import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.dto.response.UserDTO;
-import com.me_social.MeSocial.entity.dto.response.UserResponse;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
@@ -48,9 +46,7 @@ public class UserService {
         }
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
-        Page<User> members = groupRepository.findMembersById(groupId, pageable);
-
-        return members;
+        return groupRepository.findMembersById(groupId, pageable);
     }
 
     // Get Group admins
@@ -60,13 +56,11 @@ public class UserService {
         }
         Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
-        Page<User> admins = groupRepository.findAdminsById(groupId, pageable);
-
-        return admins;
+        return groupRepository.findAdminsById(groupId, pageable);
     }
 
     // Get User friends
-    public Page<User> getUserFriends(Long userId, int pageNum) {
+    public Page<UserDTO> getUserFriends(Long userId, int pageNum) {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
@@ -74,11 +68,11 @@ public class UserService {
 
         Page<User> friends = userRepository.findFriends(userId, pageable);
 
-        return friends;
+        return getUsersWithMutualFriendsCount(userId, friends);
     }
 
     // Get mutual friends
-    public ApiResponse<Page<UserDTO>> getMutualFriends(Long meId, Long youId, int pageNum) {
+    public Page<UserDTO> getMutualFriends(Long meId, Long youId, int pageNum) {
         if (!userRepository.existsById(meId) || !userRepository.existsById(youId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
@@ -86,17 +80,31 @@ public class UserService {
 
         Page<User> mutualFriends = userRepository.findMutualFriends(meId, youId, pageable);
 
-        ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get mutual friends successfully");
-        apiResponse.setResult(getUsersWithMutualFriendsCount(meId, mutualFriends));
-
-        return apiResponse;
+        return getUsersWithMutualFriendsCount(meId, mutualFriends);
     }
 
-    // USER CRUD
+    // Get User by Id
+    public Optional<User> findById(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isEmpty()) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+        return optionalUser;
+    }
 
+    public User getUser(Long id) {
+        return userRepository.findById(id)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+    }
+
+    // Get all Users
+    public Page<User> getAllUsers(int pageNum, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNum, pageSize);
+
+        return userRepository.findAll(pageable);
+    }
+
+    // Get User by username/email/phone
     public User handleGetUserByUsernameOrEmailOrPhone(String loginInput) {
         Optional<User> optionalUser = this.userRepository.findByEmail(loginInput);
         if (optionalUser.isEmpty()) {
@@ -112,14 +120,8 @@ public class UserService {
         return optionalUser.get();
     }
 
-    public Optional<User> findById(Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if (optionalUser.isEmpty()) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        return optionalUser;
-    }
-
+    // POST
+    // Create user
     public User createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())
                 || userRepository.existsByEmail(request.getEmail())
@@ -132,36 +134,51 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User getUser(Long id) {
-        User dbUser = userRepository.findById(id).get();
-
-        return dbUser;
-    }
-
+    // PUT
+    // Edit user info
+    @Transactional
     public User updateUser(UserUpdateRequest reqUser) {
-        var dbUser = this.findById(reqUser.getId()).get();
+        User dbUser = this.findById(reqUser.getId()).orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
 
-        dbUser.setFirstName(reqUser.getFirstName());
-        dbUser.setLastName(reqUser.getLastName());
-        dbUser.setGender(reqUser.getGender());
-        dbUser.setBio(reqUser.getBio());
-        dbUser.setDob(reqUser.getDob());
-        dbUser.setLocation(reqUser.getLocation());
+        if (reqUser.getFirstName() != null && !reqUser.getFirstName().isEmpty() 
+            && !reqUser.getFirstName().equals(dbUser.getFirstName())) {
+            dbUser.setFirstName(reqUser.getFirstName());
+        }
+        
+        if (reqUser.getLastName() != null && !reqUser.getLastName().isEmpty() 
+            && !reqUser.getLastName().equals(dbUser.getLastName())) {
+            dbUser.setLastName(reqUser.getLastName());
+        }
+        
+        if (reqUser.getGender() != null && !reqUser.getGender().equals(dbUser.getGender())) {
+            dbUser.setGender(reqUser.getGender());
+        }
+        
+        if (reqUser.getBio() != null && !reqUser.getBio().isEmpty() 
+            && !reqUser.getBio().equals(dbUser.getBio())) {
+            dbUser.setBio(reqUser.getBio());
+        }
+        
+        if (reqUser.getDob() != null && !reqUser.getDob().equals(dbUser.getDob())) {
+            dbUser.setDob(reqUser.getDob());
+        }
+        
+        if (reqUser.getLocation() != null && !reqUser.getLocation().isEmpty() 
+            && !reqUser.getLocation().equals(dbUser.getLocation())) {
+            dbUser.setLocation(reqUser.getLocation());
+        }
 
         return this.userRepository.save(dbUser);
     }
 
+
+
+    // DELETE
     public void deleteUserById(Long id) {
-        User dbUser = this.findById(id).get();
+        User dbUser = this.findById(id)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
 
         userRepository.delete(dbUser);
-    }
-
-    public Page<User> getAllUsers(int pageNum, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNum, pageSize);
-        Page<User> users = userRepository.findAll(pageable);
-
-        return users;
     }
 
     // Other methods

@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
-import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.modal.Like;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
@@ -29,99 +28,66 @@ public class LikeService {
     CommentRepository commentRepository;
 
     // Create Post Like
-    public ApiResponse<Like> createPostLike(Long userId, Long postId) {
-        if(!userRepository.existsById(userId)) {
+    public Like createPostLike(Long userId, Long postId) {
+        if (!userRepository.existsById(userId) || !postRepository.existsById(postId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
         Like like = likeRepository.findByUserIdAndPostId(userId, postId);
-        if(like == null) {
+        if (like == null) {
             like = new Like();
             like.setUser(userService.findById(userId).get());
-
-            if(postRepository.existsById(postId)) {
-                like.setPost(postRepository.findById(postId));
-            }
-
+            like.setPost(postRepository.findById(postId).get());
             like.setCreatedAt(LocalDateTime.now());
-
-            ApiResponse<Like> apiResponse = new ApiResponse<>();
-
-            apiResponse.setCode(1000);
-            apiResponse.setMessage("Create like successfully");
-            apiResponse.setResult(likeRepository.save(like));
-
-            return apiResponse;
+            return likeRepository.save(like);
+        } else {
+            throw new AppException(ErrorCode.ENTITY_EXISTED);
         }
-        else throw new AppException(ErrorCode.ENTITY_EXISTED);
-        
     }
 
     // Create Comment Like
-    public ApiResponse<Like> createCommentLike(Long userId, Long commentId) {
-        if(!userRepository.existsById(userId)) {
+    public Like createCommentLike(Long userId, Long commentId) {
+        if (!userRepository.existsById(userId) || !commentRepository.existsById(commentId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
         Like like = likeRepository.findByUserIdAndCommentId(userId, commentId);
-        if(like == null) {
+        if (like == null) {
             like = new Like();
             like.setUser(userService.findById(userId).get());
-
-            if(commentRepository.existsById(commentId)) {
-                like.setComment(commentRepository.findById(commentId));
-            }
-
+            like.setComment(commentRepository.findById(commentId).get());
             like.setCreatedAt(LocalDateTime.now());
-
-            ApiResponse<Like> apiResponse = new ApiResponse<>();
-
-            apiResponse.setCode(1000);
-            apiResponse.setMessage("Create like successfully");
-            apiResponse.setResult(likeRepository.save(like));
-
-            return apiResponse;
+            return likeRepository.save(like);
+        } else {
+            throw new AppException(ErrorCode.ENTITY_EXISTED);
         }
-        else throw new AppException(ErrorCode.ENTITY_EXISTED);
     }
 
     // Delete Post Like
-    public ApiResponse<String> deletePostLike(Long userId, Long postId) {
-        if(!postRepository.existsById(postId) || !userRepository.existsById(userId)) {
+    public void deletePostLike(Long userId, Long postId) {
+        if (!postRepository.existsById(postId) || !userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
         Like like = likeRepository.findByUserIdAndPostId(userId, postId);
-        if(like != null)
+        if (like != null) {
             likeRepository.delete(like);
-        else throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Delete like successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
+        } else {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
     }
 
     // Delete Comment Like
-    public ApiResponse<String> deleteCommentLike(Long userId, Long commentId) {
-        if(!commentRepository.existsById(commentId) || !userRepository.existsById(userId)) {
+    public void deleteCommentLike(Long userId, Long commentId) {
+        if (!commentRepository.existsById(commentId) || !userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
         Like like = likeRepository.findByUserIdAndCommentId(userId, commentId);
-        if(like != null)
+        if (like != null) {
             likeRepository.delete(like);
-        else throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Delete like successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
+        } else {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
     }
 }

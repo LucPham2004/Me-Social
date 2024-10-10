@@ -8,8 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.modal.Notification;
+import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.enums.NotificationType;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
@@ -31,54 +31,36 @@ public class NotificationService {
 
     static int NOTIFY_PER_PAGE = 10;
 
-    public ApiResponse<Page<Notification>> getUserNotifications(Long userId, int pageNum) {
-        if(!userRepository.existsById(userId)) {
+    // Get User Notifications
+    public Page<Notification> getUserNotifications(Long userId, int pageNum) {
+        if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, NOTIFY_PER_PAGE);
-
-        ApiResponse<Page<Notification>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get notifications successfully");
-        apiResponse.setResult(notificationRepository.findByUserId(userId, pageable));
-
-        return apiResponse;
+        return notificationRepository.findByUserId(userId, pageable);
     }
 
-    // Create notification
-    public ApiResponse<Notification> notifyUser(String username, String message, NotificationType type) {
+    // Create Notification
+    public Notification notifyUser(String username, String message, NotificationType type) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+
         Notification notification = new Notification();
-        notification.setUser(userRepository.findByUsername(username).get());
+        notification.setUser(user);
         notification.setContent(message);
         notification.setType(type);
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
 
         messagingTemplate.convertAndSendToUser(username, "/queue/notifications", notification);
-        
-        ApiResponse<Notification> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get notifications successfully");
-        apiResponse.setResult(notificationRepository.save(notification));
-
-        return apiResponse;
+        return notificationRepository.save(notification);
     }
 
-    // Delete notification
-    public ApiResponse<String> deleteNotify(Long notifyId) {
-        if(!notificationRepository.existsById(notifyId)) {
+    // Delete Notification
+    public void deleteNotify(Long notifyId) {
+        if (!notificationRepository.existsById(notifyId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        notificationRepository.delete(notificationRepository.findById(notifyId));
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get notifications successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
+        notificationRepository.deleteById(notifyId);
     }
 }

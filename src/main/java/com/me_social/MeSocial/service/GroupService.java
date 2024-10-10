@@ -1,7 +1,6 @@
 package com.me_social.MeSocial.service;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.me_social.MeSocial.entity.dto.request.GroupRequest;
-import com.me_social.MeSocial.entity.dto.response.ApiResponse;
-import com.me_social.MeSocial.entity.dto.response.GroupResponse;
 import com.me_social.MeSocial.entity.modal.Group;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
@@ -30,197 +27,103 @@ import lombok.experimental.FieldDefaults;
 public class GroupService {
     GroupRepository groupRepository;
     UserRepository userRepository;
-    UserService userService;
     GroupMapper groupMapper;
 
     static int GROUPS_PER_PAGE = 20;
 
     // GET
+
     // Get group by id
-    public ApiResponse<GroupResponse> getGroupById(Long id) {
-        if(!groupRepository.existsById(id)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        ApiResponse<GroupResponse> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get group by id successfully");
-        apiResponse.setResult(groupMapper.toGroupResponse(groupRepository.findById(id).get()));
-
-        return apiResponse;
+    public Group getGroupById(Long id) {
+        return groupRepository.findById(id)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
     }
 
     // Get groups by user
-    public ApiResponse<Page<GroupResponse>> getGroupByUserId(Long userId, int pageNum) {
-        if(!userRepository.existsById(userId)) {
+    public Page<Group> getGroupsByUserId(Long userId, int pageNum) {
+        if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, GROUPS_PER_PAGE);
-
-        Page<Group> groupPage = groupRepository.findByMembersIdOrAdminsId(userId, userId, pageable);
-
-        ApiResponse<Page<GroupResponse>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get user's groups successfully");
-        apiResponse.setResult(groupPage.map(groupMapper::toGroupResponse));
-
-        return apiResponse;
+        return groupRepository.findByMembersIdOrAdminsId(userId, userId, pageable);
     }
 
     // POST
+
     // Create Group
-    public ApiResponse<GroupResponse> createGroup(GroupRequest request) {
-        if(!userRepository.existsById(request.getAdminId())) {
+    public Group createGroup(GroupRequest request) {
+        if (!userRepository.existsById(request.getAdminId())) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Group group = groupMapper.toGroup(request);
         group.setCreatedAt(LocalDateTime.now());
-
-        ApiResponse<GroupResponse> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Group created successfully");
-        apiResponse.setResult(groupMapper.toGroupResponse(groupRepository.save(group)));
-
-        return apiResponse;
+        return groupRepository.save(group);
     }
 
-    // Add Admin to Group
+    // POST: Add Admin to Group
     @Transactional
-    public ApiResponse<String> addAdminToGroup(Long adminId, Long groupId) {
-        if(!groupRepository.existsById(groupId) || !userRepository.existsById(adminId)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        Group group = groupRepository.findById(groupId).get();
-
-        Set<User> admins = group.getAdmins();
-        admins.add(userService.findById(adminId).get());
-        group.setAdmins(admins);
+    public void addAdminToGroup(Long adminId, Long groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+        group.getAdmins().add(admin);
         groupRepository.save(group);
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Add admin to group successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
     }
 
-    // Add member to Group
+    // POST: Add Member to Group
     @Transactional
-    public ApiResponse<String> addMemberToGroup(Long memberId, Long groupId) {
-        if(!groupRepository.existsById(groupId) || !userRepository.existsById(memberId)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        Group group = groupRepository.findById(groupId).get();
-
-        Set<User> members = group.getMembers();
-        members.add(userService.findById(memberId).get());
-        group.setMembers(members);
+    public void addMemberToGroup(Long memberId, Long groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+        User member = userRepository.findById(memberId)
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+        group.getMembers().add(member);
         groupRepository.save(group);
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Add member to group successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
     }
     
-    // DELETE
-    public ApiResponse<String> deleteGroup(Long groupId) {
-        if(!groupRepository.existsById(groupId)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        groupRepository.delete(groupRepository.findById(groupId).get());
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Delete group successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
-    }
-
-    // PUT
+    // PUT: Edit Group
     @Transactional
-    public ApiResponse<GroupResponse> editGroup(GroupRequest request) {
-        if(!groupRepository.existsById(request.getGroupId())) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        
-        Group group = groupRepository.findById(request.getGroupId()).get();
+    public Group editGroup(GroupRequest request) {
+        Group group = groupRepository.findById(request.getGroupId())
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
         group.setName(request.getName());
         group.setDescription(request.getDescription());
         group.setPrivacy(request.getPrivacy());
         group.setUpdatedAt(LocalDateTime.now());
-
-        groupRepository.save(group);
-
-        ApiResponse<GroupResponse> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Delete group successfully");
-        apiResponse.setResult(null);
-
-        return apiResponse;
+        return groupRepository.save(group);
     }
 
-    // Remove Group Admin
-    @Transactional
-    public ApiResponse<String> removeGroupAdmin(Long adminId, Long groupId) {
-        if(!groupRepository.existsById(groupId) || !userRepository.existsById(adminId)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        Group group = groupRepository.findById(groupId).get();
-
-        Set<User> admins = group.getAdmins();
-
-        if(admins.size() < 2) {
-            apiResponse.setCode(1000);
-            apiResponse.setMessage("Can NOT remove admin when there is 1 admin left!");
-
-            return apiResponse;
-        }
-
-        admins.remove(userService.findById(adminId).get());
-        group.setAdmins(admins);
-        groupRepository.save(group);
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Remove group Admin successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
+    // DELETE: Delete Group
+    public void deleteGroup(Long groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+        groupRepository.delete(group);
     }
 
-    // Remove Group member
+    // DELETE: Remove Admin from Group
     @Transactional
-    public ApiResponse<String> removeGroupMember(Long memberId, Long groupId) {
-        if(!groupRepository.existsById(groupId) || !userRepository.existsById(memberId)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+    public void removeGroupAdmin(Long adminId, Long groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+        if (group.getAdmins().size() <= 1) {
+            throw new AppException(ErrorCode.INVALID_ACTION);
         }
-        Group group = groupRepository.findById(groupId).get();
-
-        Set<User> members = group.getMembers();
-        members.remove(userService.findById(memberId).get());
-        group.setMembers(members);
+        group.getAdmins().remove(admin);
         groupRepository.save(group);
+    }
 
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Remove group member successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
+    // DELETE: Remove Member from Group
+    @Transactional
+    public void removeGroupMember(Long memberId, Long groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+        User member = userRepository.findById(memberId)
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+        group.getMembers().remove(member);
+        groupRepository.save(group);
     }
     
 }

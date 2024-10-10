@@ -8,7 +8,6 @@ import com.me_social.MeSocial.entity.modal.Post;
 import com.me_social.MeSocial.repository.CommentRepository;
 import com.me_social.MeSocial.repository.GroupRepository;
 import com.me_social.MeSocial.repository.LikeRepository;
-import com.me_social.MeSocial.repository.UserRepository;
 import com.me_social.MeSocial.service.UserService;
 
 import lombok.AccessLevel;
