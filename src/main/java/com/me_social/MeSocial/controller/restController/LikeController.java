@@ -23,26 +23,46 @@ public class LikeController {
 
     // Create Post Like
     @PostMapping("/post/add/{userId}/{postId}")
-    public ApiResponse<Like> createLPostLike(@PathVariable Long userId, @PathVariable Long postId) {
-        return likeService.createPostLike(userId, postId);
+    public ApiResponse<Like> createPostLike(@PathVariable Long userId, @PathVariable Long postId) {
+        Like like = likeService.createPostLike(userId, postId);
+        return ApiResponse.<Like>builder()
+            .code(1000)
+            .message("Create post like successfully")
+            .result(like)
+            .build();
     }
 
     // Create Comment Like
     @PostMapping("/comment/add/{userId}/{commentId}")
     public ApiResponse<Like> createCommentLike(@PathVariable Long userId, @PathVariable Long commentId) {
-        return likeService.createCommentLike(userId, commentId);
+        Like like = likeService.createCommentLike(userId, commentId);
+        return ApiResponse.<Like>builder()
+            .code(1000)
+            .message("Create comment like successfully")
+            .result(like)
+            .build();
     }
 
     // Delete Post Like
     @DeleteMapping("/post/remove/{userId}/{postId}")
     public ApiResponse<String> deletePostLike(@PathVariable Long userId, @PathVariable Long postId) {
-        return likeService.deletePostLike(userId, postId);
+        likeService.deletePostLike(userId, postId);
+        return ApiResponse.<String>builder()
+            .code(1000)
+            .message("Delete post like successfully")
+            .result("")
+            .build();
     }
 
     // Delete Comment Like
     @DeleteMapping("/comment/remove/{userId}/{commentId}")
     public ApiResponse<String> deleteCommentLike(@PathVariable Long userId, @PathVariable Long commentId) {
-        return likeService.deleteCommentLike(userId, commentId);
+        likeService.deleteCommentLike(userId, commentId);
+        return ApiResponse.<String>builder()
+            .code(1000)
+            .message("Delete comment like successfully")
+            .result("")
+            .build();
     }
 
 }

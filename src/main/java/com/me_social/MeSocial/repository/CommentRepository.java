@@ -1,5 +1,7 @@
 package com.me_social.MeSocial.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -13,7 +15,7 @@ public interface CommentRepository extends PagingAndSortingRepository<Comment, L
 
     void delete(Comment comment);
 
-    Comment findById(Long id);
+    Optional<Comment> findById(Long id);
 
     boolean existsById(Long id);
 

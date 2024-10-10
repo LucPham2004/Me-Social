@@ -32,11 +32,8 @@ public class CommentService {
 
     // Get by id
     public Comment getCommentById(Long id) {
-        if (!commentRepository.existsById(id)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-
-        return commentRepository.findById(id);
+        return commentRepository.findById(id)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
     }
 
     // Get comments by post
@@ -72,20 +69,15 @@ public class CommentService {
 
     // DELETE
     public void deleteComment(Long commentId) {
-        if (!commentRepository.existsById(commentId)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        commentRepository.delete(commentRepository.findById(commentId));
+        commentRepository.delete(commentRepository.findById(commentId)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED)));
     }
 
     // PUT
     @Transactional
     public Comment editcomment(CommentRequest request) {
-        if (!commentRepository.existsById(request.getId())) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-
-        Comment comment = commentRepository.findById(request.getId());
+        Comment comment = commentRepository.findById(request.getId())
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
         comment.setContent(request.getContent());
 
         return commentRepository.save(comment);

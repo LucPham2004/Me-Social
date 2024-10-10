@@ -113,7 +113,8 @@ public class PostService {
             post.setTags(tags);
         }
         
-        post.setUser(userService.findById(request.getUserId()).get());
+        post.setUser(userService.findById(request.getUserId())
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED)));
         post.setCreatedAt(LocalDateTime.now());
 
         return postRepository.save(post);
@@ -121,20 +122,16 @@ public class PostService {
 
     // Delete Post
     public void deletePost(Long postId) {
-        if(!postRepository.existsById(postId)) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        postRepository.delete(postRepository.findById(postId));
+        postRepository.delete(postRepository.findById(postId)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED)));
 
     }
 
     // Edit Post
     @Transactional
     public Post editPost(PostRequest request) {
-        if(!postRepository.existsById(request.getId())) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-        Post post = postRepository.findById(request.getId());
+        Post post = postRepository.findById(request.getId())
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
         post.setContent(request.getContent());
         post.setPrivacy(request.getPrivacy());
 
