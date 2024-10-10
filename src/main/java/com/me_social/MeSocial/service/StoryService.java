@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.modal.Story;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
@@ -31,67 +30,38 @@ public class StoryService {
     static int STORIES_PER_PAGE = 10;
 
     // Create story
-    public ApiResponse<Story> createStory(Long userId, MultipartFile file, String content) {
-        User user = userService.findById(userId).get();
+    public Story createStory(Long userId, MultipartFile file, String content) {
+        User user = userService.findById(userId)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
 
         Story story = new Story();
-        //  More handling
+        // More handling for the file can be done here
         story.setUser(user);
         story.setCreatedAt(Instant.now());
 
-        ApiResponse<Story> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Created story successfully");
-        apiResponse.setResult(storyRepository.save(story));
-
-        return apiResponse;
+        return storyRepository.save(story);
     }
 
     // Get by id
-    public ApiResponse<String> GetStoryById(String id) {
-        Story story = storyRepository.findById(id);
-        if (story == null) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get story successfully");
-        apiResponse.setResult(null);
-
-        return apiResponse;
+    public Story getStoryById(String id) {
+        return storyRepository.findById(id)
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
     }
 
-    //  Get all stories paginated
-    public ApiResponse<Page<Story>> GetStorysByUserId(Long userId, int pageNum) {
+    // Get all stories paginated
+    public Page<Story> getStoriesByUserId(Long userId, int pageNum) {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, STORIES_PER_PAGE);
-
-        ApiResponse<Page<Story>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get storys by user successfully");
-        apiResponse.setResult(storyRepository.findAllByUserId(userId, pageable));
-
-        return apiResponse;
+        return storyRepository.findAllByUserId(userId, pageable);
     }
 
-    public ApiResponse<String> deleteStory(String id) {
-        if (storyRepository.existsById(id)) {
+    // Delete story
+    public void deleteStory(String id) {
+        if (!storyRepository.existsById(id)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-
         storyRepository.deleteById(id);
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Delete story successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
     }
 }

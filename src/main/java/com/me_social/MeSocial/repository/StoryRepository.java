@@ -1,5 +1,7 @@
 package com.me_social.MeSocial.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -13,7 +15,7 @@ public interface StoryRepository extends PagingAndSortingRepository<Story, Strin
 
     boolean existsById(String id);
 
-    Story findById(String id);
+    Optional<Story> findById(String id);
 
     void deleteById(String id);
 
