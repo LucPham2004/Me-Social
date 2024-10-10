@@ -28,7 +28,9 @@ public enum ErrorCode {
 
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
 
-    INVALID_DOB(1008, "You must be at least 16 years old", HttpStatus.BAD_REQUEST)
+    INVALID_ACTION(1008, "Invalid action that cannot be done", HttpStatus.EXPECTATION_FAILED),
+
+    INVALID_DOB(1009, "You must be at least 16 years old", HttpStatus.BAD_REQUEST)
 
     ;
 

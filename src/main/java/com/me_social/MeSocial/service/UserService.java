@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
 import com.me_social.MeSocial.entity.dto.request.UserUpdateRequest;
-import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.dto.response.UserDTO;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
@@ -64,7 +63,7 @@ public class UserService {
     }
 
     // Get User friends
-    public Page<User> getUserFriends(Long userId, int pageNum) {
+    public Page<UserDTO> getUserFriends(Long userId, int pageNum) {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
@@ -72,11 +71,11 @@ public class UserService {
 
         Page<User> friends = userRepository.findFriends(userId, pageable);
 
-        return friends;
+        return getUsersWithMutualFriendsCount(userId, friends);
     }
 
     // Get mutual friends
-    public ApiResponse<Page<UserDTO>> getMutualFriends(Long meId, Long youId, int pageNum) {
+    public Page<UserDTO> getMutualFriends(Long meId, Long youId, int pageNum) {
         if (!userRepository.existsById(meId) || !userRepository.existsById(youId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
@@ -84,13 +83,7 @@ public class UserService {
 
         Page<User> mutualFriends = userRepository.findMutualFriends(meId, youId, pageable);
 
-        ApiResponse<Page<UserDTO>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get mutual friends successfully");
-        apiResponse.setResult(getUsersWithMutualFriendsCount(meId, mutualFriends));
-
-        return apiResponse;
+        return getUsersWithMutualFriendsCount(meId, mutualFriends);
     }
 
     // USER CRUD

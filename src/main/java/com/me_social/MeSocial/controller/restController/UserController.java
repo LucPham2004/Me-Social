@@ -125,7 +125,22 @@ public class UserController {
                 return ApiResponse.<Page<UserDTO>>builder()
                                 .code(1000)
                                 .message("Get friends of the user with ID " + userId + " successfully!")
-                                .result(friends.map(userMapper::toUserDTO))
+                                .result(friends)
+                                .build();
+        }
+
+        // Get mutual friends
+        @GetMapping("/get/mutualFriends")
+        public ApiResponse<Page<UserDTO>> getMutualFriends(
+                        @RequestParam Long meId,
+                        @RequestParam Long youId,
+                        @RequestParam(defaultValue = "0") int pageNum) {
+                var friends = this.userService.getMutualFriends(meId, youId, pageNum);
+                return ApiResponse.<Page<UserDTO>>builder()
+                                .code(1000)
+                                .message("Get mutual friends of user with ID " + meId + 
+                                        " and user with ID " + youId + " successfully!")
+                                .result(friends)
                                 .build();
         }
 
