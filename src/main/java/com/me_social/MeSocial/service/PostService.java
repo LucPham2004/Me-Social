@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.me_social.MeSocial.entity.dto.request.PostRequest;
-import com.me_social.MeSocial.entity.dto.response.ApiResponse;
-import com.me_social.MeSocial.entity.dto.response.PostResponse;
 import com.me_social.MeSocial.entity.modal.Post;
 import com.me_social.MeSocial.entity.modal.Tag;
 import com.me_social.MeSocial.exception.AppException;
@@ -44,97 +42,60 @@ public class PostService {
     // GET
 
     // Get Posts for NewsFeed
-    public ApiResponse<Page<PostResponse>> getPostsForNewsFeed(Long userId, int pageNum) {
+    public Page<Post> getPostsForNewsFeed(Long userId, int pageNum) {
         if(!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
 
-        Page<Post> postPage = postRepository.findNewsfeedPosts(userId, pageable);
-
-        ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get Posts for NewsFeed successfully");
-        apiResponse.setResult(postPage.map(postMapper::toPostResponse));
-
-        return apiResponse;
+        return postRepository.findNewsfeedPosts(userId, pageable);
     }
 
     // Get Posts for Group Activities 
-    public ApiResponse<Page<PostResponse>> getPostsForUserJoinedGroupNewsFeed(Long userId, int pageNum) {
+    public Page<Post> getPostsForUserJoinedGroupNewsFeed(Long userId, int pageNum) {
         if(!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
 
-        Page<Post> postPage = postRepository.findUnreadPublicGroupPosts(userId, pageable);
-
-        ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get Posts for Group Activities successfully");
-        apiResponse.setResult(postPage.map(postMapper::toPostResponse));
-
-        return apiResponse;
+        return postRepository.findUnreadPublicGroupPosts(userId, pageable);
     }
 
     // Get Posts By User
-    public ApiResponse<Page<PostResponse>> getPostsByUser(Long userId, int pageNum) {
+    public Page<Post> getPostsByUser(Long userId, int pageNum) {
         if(!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
-
-        Page<Post> postPage = postRepository.findByUserId(userId, pageable);
-
-        ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get Posts by User successfully");
-        apiResponse.setResult(postPage.map(postMapper::toPostResponse));
-
-        return apiResponse;
+        
+        return postRepository.findByUserId(userId, pageable);
     }
     
     // Get Posts By Group
-    public ApiResponse<Page<PostResponse>> getPostsByGroup(Long groupId, int pageNum) {
+    public Page<Post> getPostsByGroup(Long groupId, int pageNum) {
         if(!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
     
-        Page<Post> postPage = postRepository.findByGroupIdOrderByCreatedAtDesc(groupId, pageable);
-    
-        ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get Posts by Group successfully");
-        apiResponse.setResult(postPage.map(postMapper::toPostResponse));
-    
-        return apiResponse;
+        return postRepository.findByGroupIdOrderByCreatedAtDesc(groupId, pageable);
     }
     
 
     // Get Posts By Tag
-    public ApiResponse<Page<PostResponse>> getPostsByTag(Long tagId, int pageNum) {
+    public Page<Post> getPostsByTag(Long tagId, int pageNum) {
         if(!tagRepository.existsById(tagId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
-        
-        Page<Post> postPage = postRepository.findByTagsId(tagId, pageable);
 
-        ApiResponse<Page<PostResponse>> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Get Posts by Tag successfully");
-        apiResponse.setResult(postPage.map(postMapper::toPostResponse));
-
-        return apiResponse;
+        return postRepository.findByTagsId(tagId, pageable);
     }
 
     // POST
     // Create New Post
-    public ApiResponse<PostResponse> createPost(PostRequest request) {
+    public Post createPost(PostRequest request) {
         Post post = postMapper.toPost(request);
 
         if(request.getNameTag() != null) {
@@ -154,35 +115,22 @@ public class PostService {
         
         post.setUser(userService.findById(request.getUserId()).get());
         post.setCreatedAt(LocalDateTime.now());
-        postRepository.save(post);
 
-        ApiResponse<PostResponse> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Post created successfully");
-        apiResponse.setResult(postMapper.toPostResponse(post));
-
-        return apiResponse;
+        return postRepository.save(post);
     }
 
     // Delete Post
-    public ApiResponse<String> deletePost(Long postId) {
+    public void deletePost(Long postId) {
         if(!postRepository.existsById(postId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         postRepository.delete(postRepository.findById(postId));
 
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Post deleted successfully");
-        
-        return apiResponse;
     }
 
     // Edit Post
     @Transactional
-    public ApiResponse<PostResponse> editPost(PostRequest request) {
+    public Post editPost(PostRequest request) {
         if(!postRepository.existsById(request.getId())) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
@@ -208,14 +156,7 @@ public class PostService {
         }
         
         post.setUpdatedAt(LocalDateTime.now());
-        postRepository.save(post);
-
-        ApiResponse<PostResponse> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Post edited successfully");
-        apiResponse.setResult(postMapper.toPostResponse(post));
-
-        return apiResponse;
+        
+        return postRepository.save(post);
     }
 }

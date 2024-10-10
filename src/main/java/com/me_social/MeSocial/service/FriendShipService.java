@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.modal.Friendship;
 import com.me_social.MeSocial.enums.FriendshipStatus;
 import com.me_social.MeSocial.exception.AppException;
@@ -25,45 +24,42 @@ public class FriendShipService {
     UserService userService;
     UserRepository userRepository;
 
-    public ApiResponse<String> createFriendShip(Long requesterId, Long receiverId) {
+    public Friendship getFriendStatus(Long requesterId, Long receiverId) {
         if (!userRepository.existsById(requesterId) || !userRepository.existsById(receiverId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        Friendship friendship = new Friendship();
+        Friendship friendship = friendShipRepository.findBy2UserIds(requesterId, receiverId);
+
+        return friendship;
+    }
+
+    public Friendship sendFriendRequest(Long requesterId, Long receiverId) {
+        if (!userRepository.existsById(requesterId) || !userRepository.existsById(receiverId)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+        Friendship friendship = friendShipRepository.findBy2UserIds(requesterId, receiverId);
+        if(friendship != null) {
+            return friendship;
+        }
+        friendship = new Friendship();
         friendship.setRequester(userService.findById(requesterId).get());
         friendship.setRequestReceiver(userService.findById(receiverId).get());
         friendship.setStatus(FriendshipStatus.PENDING);
         friendship.setCreatedAt(LocalDateTime.now());
 
-        friendShipRepository.save(friendship);
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("Sent friendship request successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
+        return friendShipRepository.save(friendship);
     }
 
-    public ApiResponse<String> deleteFriendShip(Long id) {
+    public void deleteFriendShip(Long id) {
         if (!friendShipRepository.existsById(id)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
         friendShipRepository.delete(friendShipRepository.findById(id));
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("delete friendship successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
     }
 
     @Transactional
-    public ApiResponse<String> editFriendShipStatus(Long id, FriendshipStatus status) {
+    public Friendship editFriendShipStatus(Long id, FriendshipStatus status) {
         Friendship friendship = friendShipRepository.findById(id);
         if (friendship == null) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
@@ -71,14 +67,6 @@ public class FriendShipService {
 
         friendship.setStatus(status);
         friendship.setUpdatedAt(LocalDateTime.now());
-        friendShipRepository.save(friendship);
-
-        ApiResponse<String> apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(1000);
-        apiResponse.setMessage("edit friendship successfully");
-        apiResponse.setResult("");
-
-        return apiResponse;
+        return friendShipRepository.save(friendship);
     }
 }
