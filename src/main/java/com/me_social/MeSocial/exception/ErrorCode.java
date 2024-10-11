@@ -32,7 +32,9 @@ public enum ErrorCode {
 
     INVALID_DOB(1009, "You must be at least 16 years old", HttpStatus.BAD_REQUEST),
 
-    NO_REFRESH_TOKEN(1010, "You don't have refresh token in cookies", HttpStatus.BAD_REQUEST)
+    NO_REFRESH_TOKEN(1010, "You don't have refresh token in cookies", HttpStatus.BAD_REQUEST),
+
+    INVALID_ACCESS_TOKEN(1011, "Your access token is not valid", HttpStatus.BAD_REQUEST)
 
     ;
 

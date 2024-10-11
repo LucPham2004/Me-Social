@@ -1,12 +1,15 @@
 package com.me_social.MeSocial.controller.restController;
 
+import org.apache.catalina.security.SecurityUtil;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,11 +19,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.me_social.MeSocial.entity.dto.request.LoginRequest;
+import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.dto.response.LoginResponse;
+import com.me_social.MeSocial.entity.dto.response.UserDTO;
+import com.me_social.MeSocial.entity.dto.response.UserResponse;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
+import com.me_social.MeSocial.mapper.UserMapper;
 import com.me_social.MeSocial.service.UserService;
 import com.me_social.MeSocial.utils.SecurityUtils;
 
@@ -40,6 +47,8 @@ public class AuthController {
      AuthenticationManagerBuilder authenticationManagerBuilder;
      UserService userService;
      SecurityUtils securityUtils;
+     PasswordEncoder passwordEncoder;
+     UserMapper userMapper;
 
      // @Value("${me_social.jwt.refresh-token-validity-in-seconds}")
      // private Long refreshTokenExpiration;
@@ -141,7 +150,8 @@ public class AuthController {
           String emailUsernamePhone = decodedToken.getSubject();
 
           // check user by token + email
-          User currentUser = this.userService.getUserByRefreshTokenAndEmailOrUsernameOrPhone(refresh_token, emailUsernamePhone);
+          User currentUser = this.userService.getUserByRefreshTokenAndEmailOrUsernameOrPhone(refresh_token,
+                    emailUsernamePhone);
 
           // issue new token / set refresh token as cookies
           LoginResponse res = new LoginResponse();
@@ -183,5 +193,50 @@ public class AuthController {
           return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, resCookie.toString())
                     .body(apiResponse);
+     }
+
+     @PostMapping("/logout")
+     public ResponseEntity<ApiResponse<Void>> logout() {
+          String emailUsernamePhone = SecurityUtils.getCurrentUserLogin().isPresent()
+                    ? SecurityUtils.getCurrentUserLogin().get()
+                    : "";
+
+          if (emailUsernamePhone.equals("")) {
+               throw new AppException(ErrorCode.INVALID_ACCESS_TOKEN);
+          }
+
+          // update refresh token = null
+          this.userService.updateUserToken(null, emailUsernamePhone);
+
+          ApiResponse<Void> apiResponse = new ApiResponse<>();
+          apiResponse.setCode(1000);
+          apiResponse.setMessage("Log out successfully!");
+
+          // remove fresh token from cookie`
+          ResponseCookie deleteSpringCookie = ResponseCookie
+                    .from("refresh_token", null)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(0)
+                    .build();
+
+          return ResponseEntity
+                    .ok()
+                    .header(HttpHeaders.SET_COOKIE, deleteSpringCookie.toString())
+                    .body(apiResponse);
+
+     }
+
+     @PostMapping("/register")
+     public ApiResponse<UserResponse> register(@Valid @RequestBody UserCreationRequest reqUser) {
+
+          User resUser = this.userService.createUser(reqUser);
+
+          return ApiResponse.<UserResponse>builder()
+                    .code(1000)
+                    .message("register successfully!")
+                    .result(userMapper.toUserResponse(resUser))
+                    .build();
      }
 }
