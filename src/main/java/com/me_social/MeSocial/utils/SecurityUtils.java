@@ -28,50 +28,52 @@ import com.me_social.MeSocial.entity.dto.response.LoginResponse;
 import com.nimbusds.jose.util.Base64;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class SecurityUtils {
 
-     public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
-     private final JwtEncoder jwtEncoder;
+    public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
+    private final JwtEncoder jwtEncoder;
 
-     @Value("${me_social.jwt.base64-secret}")
-     private String jwtKey;
+    @Value("${me_social.jwt.base64-secret}")
+    private String jwtKey;
 
-     @Value("${me_social.jwt.access-token-validity-in-seconds}")
-     private Long accessTokenExpiration;
+    @Value("${me_social.jwt.access-token-validity-in-seconds}")
+    private Long accessTokenExpiration;
 
-     private SecretKey getSecretKey() {
-          byte[] keyBytes = Base64.from(jwtKey).decode();
-          return new SecretKeySpec(keyBytes, 0, keyBytes.length, JWT_ALGORITHM.getName());
-     }
+    private SecretKey getSecretKey() {
+        byte[] keyBytes = Base64.from(jwtKey).decode();
+        return new SecretKeySpec(keyBytes, 0, keyBytes.length, JWT_ALGORITHM.getName());
+    }
 
-     public Jwt checkValidRefreshToken(String token) {
-          NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(getSecretKey())
-                    .macAlgorithm(JWT_ALGORITHM).build();
-          try {
-               return jwtDecoder.decode(token);
-          } catch (JwtException e) {
-               System.out.println(">>> JWT error: " + e.getMessage());
-               throw e;
-          }
-     }
+    public Jwt checkValidRefreshToken(String token) {
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(getSecretKey())
+                .macAlgorithm(JWT_ALGORITHM).build();
+        try {
+            return jwtDecoder.decode(token);
+        } catch (JwtException e) {
+            System.out.println(">>> JWT error: " + e.getMessage());
+            throw e;
+        }
+    }
 
-     public String createAccessToken(String email, LoginResponse dto) {
-          LoginResponse.UserInsideToken userToken = new LoginResponse.UserInsideToken();
-          userToken.setId(dto.getUser().getId());
-          userToken.setEmail(dto.getUser().getEmail());
-          userToken.setName(dto.getUser().getName());
+    public String createAccessToken(String email, LoginResponse dto) {
+        LoginResponse.UserInsideToken userToken = new LoginResponse.UserInsideToken();
+        userToken.setId(dto.getUser().getId());
+        userToken.setEmail(dto.getUser().getEmail());
+        userToken.setName(dto.getUser().getUsername());
 
-          Instant now = Instant.now();
-          Instant validity = now.plus(accessTokenExpiration, ChronoUnit.SECONDS);
+        Instant now = Instant.now();
+        Instant validity = now.plus(accessTokenExpiration, ChronoUnit.SECONDS);
 
-          // hardcode permission for testing
-          List<String> listAuthority = new ArrayList<>();
+        // hardcode permission for testing
+        List<String> listAuthority = new ArrayList<>();
 
-          listAuthority.add("ROLE_USER_CREATE");
-          listAuthority.add("ROLE_USER_UPDATE");
+        listAuthority.add("ROLE_USER_CREATE");
+        listAuthority.add("ROLE_USER_UPDATE");
 
         // @formatter:off
           JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -92,6 +94,7 @@ public class SecurityUtils {
      */
     public static Optional<String> getCurrentUserLogin() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
+        log.info("authentication: {}" , securityContext.getAuthentication());
         return Optional.ofNullable(extractPrincipal(securityContext.getAuthentication()));
     }
 
