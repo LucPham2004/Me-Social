@@ -1,6 +1,5 @@
 package com.me_social.MeSocial.controller.restController;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -131,56 +130,58 @@ public class AuthController {
                     .build();
      }
 
-     // @GetMapping("/auth/refresh")
-     // public ApiResponse<LoginResponse> getRefreshToken(
-     // @CookieValue(name = "refresh_token", defaultValue = "abc") String
-     // refresh_token) {
-     // if (refresh_token.equals("abc")) {
-     // throw new AppException(ErrorCode.NO_REFRESH_TOKEN);
-     // }
-     // // check valid
-     // Jwt decodedToken = this.securityUtils.checkValidRefreshToken(refresh_token);
-     // String email = decodedToken.getSubject();
+     @GetMapping("/refresh")
+     public ResponseEntity<ApiResponse<LoginResponse>> getRefreshToken(
+               @CookieValue(name = "refresh_token", defaultValue = "blabla") String refresh_token) {
+          if (refresh_token.equals("blabla")) {
+               throw new AppException(ErrorCode.NO_REFRESH_TOKEN);
+          }
+          // check valid
+          Jwt decodedToken = this.securityUtils.checkValidRefreshToken(refresh_token);
+          String emailUsernamePhone = decodedToken.getSubject();
 
-     // // check user by token + email
-     // User currentUser =
-     // this.userService.getUserByRefreshTokenAndEmail(refresh_token, email);
-     // if (currentUser == null) {
-     // throw new IdInvalidException("Refresh Token is not valid");
-     // }
-     // // issue new token / set refresh token as cookies
-     // ResLoginDTO res = new ResLoginDTO();
+          // check user by token + email
+          User currentUser = this.userService.getUserByRefreshTokenAndEmailOrUsernameOrPhone(refresh_token, emailUsernamePhone);
 
-     // User currentUserDB = this.userService
-     // .handleGetUserByUsername(email);
-     // if (currentUserDB != null) {
-     // ResLoginDTO.UserLogin userLogin = new
-     // ResLoginDTO.UserLogin(currentUserDB.getId(),
-     // currentUserDB.getEmail(), currentUserDB.getName(), currentUserDB.getRole());
-     // res.setUser(userLogin);
-     // }
+          // issue new token / set refresh token as cookies
+          LoginResponse res = new LoginResponse();
 
-     // String access_token = this.securityUtil.createAccessToken(email, res);
+          LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
+                    currentUser.getId(),
+                    currentUser.getEmail(),
+                    currentUser.getUsername(),
+                    currentUser.getLocation(),
+                    currentUser.getBio(),
+                    currentUser.getAuthorities());
+          res.setUser(userLogin);
 
-     // res.setAccess_token(access_token);
+          String access_token = this.securityUtils.createAccessToken(emailUsernamePhone, res);
 
-     // // create refresh token
-     // String new_refresh_token = this.securityUtil.createRefreshToken(email, res);
+          res.setAccess_token(access_token);
 
-     // // update refreshToken for user
-     // this.userService.updateUserToken(new_refresh_token, email);
+          // create refresh token
+          String new_refresh_token = this.securityUtils.createRefreshToken(emailUsernamePhone, res);
 
-     // // set cookies
-     // ResponseCookie resCookie = ResponseCookie
-     // .from("refresh_token", new_refresh_token)
-     // .httpOnly(true)
-     // .secure(true)
-     // .path("/")
-     // .maxAge(refreshTokenExpiration)
-     // .build();
+          // update refreshToken for user
+          this.userService.updateUserToken(new_refresh_token, emailUsernamePhone);
 
-     // return ResponseEntity.ok()
-     // .header(HttpHeaders.SET_COOKIE, resCookie.toString())
-     // .body(res);
-     // }
+          // set cookies
+          ResponseCookie resCookie = ResponseCookie
+                    .from("refresh_token", new_refresh_token)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(securityUtils.refreshTokenExpiration)
+                    .build();
+
+          ApiResponse<LoginResponse> apiResponse = new ApiResponse<>();
+
+          apiResponse.setCode(1000);
+          apiResponse.setMessage("get refresh token successfully!");
+          apiResponse.setResult(res);
+
+          return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, resCookie.toString())
+                    .body(apiResponse);
+     }
 }

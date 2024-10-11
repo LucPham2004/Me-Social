@@ -204,4 +204,8 @@ public class UserService {
         }
     }
 
+    public User getUserByRefreshTokenAndEmailOrUsernameOrPhone(String token, String emailUsernamePhone) {
+        return this.userRepository.findByRefreshTokenAndEmailOrUsernameOrPhone(token, emailUsernamePhone)
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+    }
 }
