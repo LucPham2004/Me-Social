@@ -1,8 +1,6 @@
 package com.me_social.MeSocial.controller.restController;
 
-import org.apache.catalina.security.SecurityUtil;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +20,6 @@ import com.me_social.MeSocial.entity.dto.request.LoginRequest;
 import com.me_social.MeSocial.entity.dto.request.UserCreationRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.dto.response.LoginResponse;
-import com.me_social.MeSocial.entity.dto.response.UserDTO;
 import com.me_social.MeSocial.entity.dto.response.UserResponse;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
