@@ -39,6 +39,7 @@ public class LoginResponse {
      public static class UserInsideToken {
           private long id;
           private String email;
-          private String name;
+          private String username;
+          private String location;
      }
 }

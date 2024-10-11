@@ -44,6 +44,9 @@ public class SecurityUtils {
     @Value("${me_social.jwt.access-token-validity-in-seconds}")
     private Long accessTokenExpiration;
 
+    @Value("${me_social.jwt.refresh-token-validity-in-seconds}")
+    public Long refreshTokenExpiration;
+
     private SecretKey getSecretKey() {
         byte[] keyBytes = Base64.from(jwtKey).decode();
         return new SecretKeySpec(keyBytes, 0, keyBytes.length, JWT_ALGORITHM.getName());
@@ -60,11 +63,11 @@ public class SecurityUtils {
         }
     }
 
-    public String createAccessToken(String email, LoginResponse dto) {
+    public String createAccessToken(String emailUsernamePhone, LoginResponse dto) {
         LoginResponse.UserInsideToken userToken = new LoginResponse.UserInsideToken();
         userToken.setId(dto.getUser().getId());
         userToken.setEmail(dto.getUser().getEmail());
-        userToken.setName(dto.getUser().getUsername());
+        userToken.setUsername(dto.getUser().getUsername());
 
         Instant now = Instant.now();
         Instant validity = now.plus(accessTokenExpiration, ChronoUnit.SECONDS);
@@ -79,13 +82,34 @@ public class SecurityUtils {
           JwtClaimsSet claims = JwtClaimsSet.builder()
           .issuedAt(now)
           .expiresAt(validity)
-          .subject(email)
+          .subject(emailUsernamePhone)
           .claim("user", userToken)
           .claim("permission", listAuthority)
           .build();
           JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
           return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
      }
+
+     public String createRefreshToken(String emailUsernamPhone, LoginResponse dto) {
+        Instant now = Instant.now();
+        Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
+
+        LoginResponse.UserInsideToken userToken = new LoginResponse.UserInsideToken();
+        userToken.setId(dto.getUser().getId());
+        userToken.setEmail(dto.getUser().getEmail());
+        userToken.setUsername(dto.getUser().getUsername());
+        userToken.setLocation(dto.getUser().getLocatation());
+
+        // @formatter:off
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+        .issuedAt(now)
+        .expiresAt(validity)
+        .subject(emailUsernamPhone)
+        .claim("user", userToken)
+        .build();
+        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+   }
 
         /**
      * Get the login of the current user.
@@ -94,7 +118,6 @@ public class SecurityUtils {
      */
     public static Optional<String> getCurrentUserLogin() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
-        log.info("authentication: {}" , securityContext.getAuthentication());
         return Optional.ofNullable(extractPrincipal(securityContext.getAuthentication()));
     }
 

@@ -196,4 +196,12 @@ public class UserService {
         });
     }
 
+    public void updateUserToken(String token, String emailUsernamePhone) {
+        User currentUser = this.handleGetUserByUsernameOrEmailOrPhone(emailUsernamePhone);
+        if (currentUser != null) {
+            currentUser.setRefreshToken(token);
+            this.userRepository.save(currentUser);
+        }
+    }
+
 }
