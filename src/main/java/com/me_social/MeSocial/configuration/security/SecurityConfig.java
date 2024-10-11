@@ -6,6 +6,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -33,17 +34,27 @@ public class SecurityConfig {
     @Value("${me_social.jwt.base64-secret}")
     private String jwtKey;
 
+    String[] whiteList = {
+            "/",
+            "/api/auth/login", "/api/auth/refresh", "/api/auth/register"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> {
-                    auth.anyRequest().permitAll();
-                })
+                .cors(Customizer.withDefaults())
+                .authorizeHttpRequests(
+                        authz -> authz
+                                .requestMatchers(whiteList)
+                                .permitAll()
+                                .anyRequest().authenticated())
                 .formLogin(f -> f.disable())
-                .oauth2ResourceServer((oauth2) -> oauth2
-                        .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())))
+                .oauth2ResourceServer(
+                        (oauth2) -> oauth2
+                                .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                                        .jwtAuthenticationConverter(jwtAuthenticationConverter())))
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }

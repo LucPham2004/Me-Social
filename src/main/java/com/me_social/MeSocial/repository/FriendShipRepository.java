@@ -1,5 +1,5 @@
 package com.me_social.MeSocial.repository;
-
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -13,7 +13,7 @@ public interface FriendShipRepository extends PagingAndSortingRepository<Friends
 
     void delete(Friendship friendship);
 
-    Friendship findById(Long id);
+    Optional<Friendship> findById(Long id);
 
     boolean existsById(Long id);
 

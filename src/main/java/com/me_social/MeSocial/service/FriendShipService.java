@@ -1,7 +1,5 @@
 package com.me_social.MeSocial.service;
 
-import java.time.LocalDateTime;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +21,6 @@ public class FriendShipService {
     FriendShipRepository friendShipRepository;
     UserService userService;
     UserRepository userRepository;
-
     public Friendship getFriendStatus(Long requesterId, Long receiverId) {
         if (!userRepository.existsById(requesterId) || !userRepository.existsById(receiverId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
@@ -45,7 +42,6 @@ public class FriendShipService {
         friendship.setRequester(userService.findById(requesterId).get());
         friendship.setRequestReceiver(userService.findById(receiverId).get());
         friendship.setStatus(FriendshipStatus.PENDING);
-        friendship.setCreatedAt(LocalDateTime.now());
 
         return friendShipRepository.save(friendship);
     }
@@ -55,18 +51,14 @@ public class FriendShipService {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
-        friendShipRepository.delete(friendShipRepository.findById(id));
+        friendShipRepository.delete(friendShipRepository.findById(id).get());
     }
 
     @Transactional
     public Friendship editFriendShipStatus(Long id, FriendshipStatus status) {
-        Friendship friendship = friendShipRepository.findById(id);
-        if (friendship == null) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
+        Friendship friendship = friendShipRepository.findById(id).get();
 
         friendship.setStatus(status);
-        friendship.setUpdatedAt(LocalDateTime.now());
         return friendShipRepository.save(friendship);
     }
 }

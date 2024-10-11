@@ -72,6 +72,9 @@ public class User {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private String refreshToken;
+
     // Entity Relationships
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)

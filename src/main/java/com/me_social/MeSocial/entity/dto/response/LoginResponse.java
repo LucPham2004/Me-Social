@@ -6,9 +6,7 @@ import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Data
 public class LoginResponse {
@@ -16,32 +14,32 @@ public class LoginResponse {
      private String access_token;
      private UserLogin user;
 
-     @Getter
-     @Setter
+     @Data
      @AllArgsConstructor
      @NoArgsConstructor
      public static class UserLogin {
           private long id;
           private String email;
-          private String name;
+          private String username;
+          private String locatation;
+          private String bio;
           private Set<Role> authorities;
      }
 
-     @Getter
-     @Setter
+     @Data
      @AllArgsConstructor
      @NoArgsConstructor
      public static class UserGetAccount {
           private UserLogin user;
      }
 
-     @Getter
-     @Setter
+     @Data
      @AllArgsConstructor
      @NoArgsConstructor
      public static class UserInsideToken {
           private long id;
           private String email;
-          private String name;
+          private String username;
+          private String location;
      }
 }

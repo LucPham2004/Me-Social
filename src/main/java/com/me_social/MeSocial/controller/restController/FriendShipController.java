@@ -21,7 +21,7 @@ import lombok.experimental.FieldDefaults;
 @RestController
 @RequestMapping("/api/friendships")
 @RequiredArgsConstructor
-@FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FriendShipController {
     FriendShipService friendShipService;
     FriendshipMapper mapper;

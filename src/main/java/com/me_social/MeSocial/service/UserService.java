@@ -25,9 +25,11 @@ import com.me_social.MeSocial.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
     UserRepository userRepository;
@@ -94,7 +96,7 @@ public class UserService {
 
     public User getUser(Long id) {
         return userRepository.findById(id)
-            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
     }
 
     // Get all Users
@@ -107,6 +109,7 @@ public class UserService {
     // Get User by username/email/phone
     public User handleGetUserByUsernameOrEmailOrPhone(String loginInput) {
         Optional<User> optionalUser = this.userRepository.findByEmail(loginInput);
+        log.info("login input: {}", loginInput);
         if (optionalUser.isEmpty()) {
             optionalUser = userRepository.findByUsername(loginInput);
         }
@@ -138,45 +141,43 @@ public class UserService {
     // Edit user info
     @Transactional
     public User updateUser(UserUpdateRequest reqUser) {
-        User dbUser = this.findById(reqUser.getId()).orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+        User dbUser = this.findById(reqUser.getId()).get();
 
-        if (reqUser.getFirstName() != null && !reqUser.getFirstName().isEmpty() 
-            && !reqUser.getFirstName().equals(dbUser.getFirstName())) {
+        if (reqUser.getFirstName() != null && !reqUser.getFirstName().isEmpty()
+                && !reqUser.getFirstName().equals(dbUser.getFirstName())) {
             dbUser.setFirstName(reqUser.getFirstName());
         }
-        
-        if (reqUser.getLastName() != null && !reqUser.getLastName().isEmpty() 
-            && !reqUser.getLastName().equals(dbUser.getLastName())) {
+
+        if (reqUser.getLastName() != null && !reqUser.getLastName().isEmpty()
+                && !reqUser.getLastName().equals(dbUser.getLastName())) {
             dbUser.setLastName(reqUser.getLastName());
         }
-        
+
         if (reqUser.getGender() != null && !reqUser.getGender().equals(dbUser.getGender())) {
             dbUser.setGender(reqUser.getGender());
         }
-        
-        if (reqUser.getBio() != null && !reqUser.getBio().isEmpty() 
-            && !reqUser.getBio().equals(dbUser.getBio())) {
+
+        if (reqUser.getBio() != null && !reqUser.getBio().isEmpty()
+                && !reqUser.getBio().equals(dbUser.getBio())) {
             dbUser.setBio(reqUser.getBio());
         }
-        
+
         if (reqUser.getDob() != null && !reqUser.getDob().equals(dbUser.getDob())) {
             dbUser.setDob(reqUser.getDob());
         }
-        
-        if (reqUser.getLocation() != null && !reqUser.getLocation().isEmpty() 
-            && !reqUser.getLocation().equals(dbUser.getLocation())) {
+
+        if (reqUser.getLocation() != null && !reqUser.getLocation().isEmpty()
+                && !reqUser.getLocation().equals(dbUser.getLocation())) {
             dbUser.setLocation(reqUser.getLocation());
         }
 
         return this.userRepository.save(dbUser);
     }
 
-
-
     // DELETE
     public void deleteUserById(Long id) {
         User dbUser = this.findById(id)
-            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
 
         userRepository.delete(dbUser);
     }
@@ -195,4 +196,16 @@ public class UserService {
         });
     }
 
+    public void updateUserToken(String token, String emailUsernamePhone) {
+        User currentUser = this.handleGetUserByUsernameOrEmailOrPhone(emailUsernamePhone);
+        if (currentUser != null) {
+            currentUser.setRefreshToken(token);
+            this.userRepository.save(currentUser);
+        }
+    }
+
+    public User getUserByRefreshTokenAndEmailOrUsernameOrPhone(String token, String emailUsernamePhone) {
+        return this.userRepository.findByRefreshTokenAndEmailOrUsernameOrPhone(token, emailUsernamePhone)
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+    }
 }

@@ -15,8 +15,9 @@ import lombok.experimental.FieldDefaults;
 
 @Component
 @RequiredArgsConstructor
-@FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommentMapper {
+
     UserService userService;
     PostRepository postRepository;
     LikeRepository likeRepository;
@@ -31,7 +32,7 @@ public class CommentMapper {
         
         return comment;
     }
-    
+
     public CommentResponse toCommentResponse(Comment comment) {
         CommentResponse response = new CommentResponse();
 
@@ -40,7 +41,7 @@ public class CommentMapper {
         response.setId(comment.getId());
         response.setUpdatedAt(comment.getUpdatedAt());
         response.setLikeNum(likeRepository.countByCommentId(comment.getId()));
-        
+
         return response;
     }
 }

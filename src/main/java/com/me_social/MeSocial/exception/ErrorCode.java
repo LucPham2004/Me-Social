@@ -24,13 +24,17 @@ public enum ErrorCode {
 
     ENTITY_NOT_EXISTED(1005, "Entity not existed", HttpStatus.NOT_FOUND),
 
-    UNAUTHENTICATED(1006, "User not authenticated", HttpStatus.UNAUTHORIZED), 
+    UNAUTHENTICATED(1006, "User not authenticated", HttpStatus.UNAUTHORIZED),
 
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
 
     INVALID_ACTION(1008, "Invalid action that cannot be done", HttpStatus.EXPECTATION_FAILED),
 
-    INVALID_DOB(1009, "You must be at least 16 years old", HttpStatus.BAD_REQUEST)
+    INVALID_DOB(1009, "You must be at least 16 years old", HttpStatus.BAD_REQUEST),
+
+    NO_REFRESH_TOKEN(1010, "You don't have refresh token in cookies", HttpStatus.BAD_REQUEST),
+
+    INVALID_ACCESS_TOKEN(1011, "Your access token is not valid", HttpStatus.BAD_REQUEST)
 
     ;
 
