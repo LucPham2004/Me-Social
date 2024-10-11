@@ -3,6 +3,8 @@ package com.me_social.MeSocial.entity.modal;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -29,6 +31,7 @@ public class Role {
     private String authority;
 
     @ManyToMany(mappedBy = "authorities", fetch = FetchType.LAZY)
+    @JsonBackReference(value = "user_role")
     private Set<User> user;
     
     public Role(String authority) {

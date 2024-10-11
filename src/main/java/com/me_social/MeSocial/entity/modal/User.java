@@ -81,6 +81,7 @@ public class User {
 	@JoinTable( name = "user_role", 
                 joinColumns = @JoinColumn(name = "user_id"), 
                 inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JsonManagedReference(value = "user_role")
 	private Set<Role> authorities;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
