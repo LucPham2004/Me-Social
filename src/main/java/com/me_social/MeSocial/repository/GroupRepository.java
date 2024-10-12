@@ -24,29 +24,50 @@ public interface GroupRepository extends PagingAndSortingRepository<Group, Long>
     
     Page<Group> findByMembersIdOrAdminsId(Long adminId, Long memberId, Pageable pageable);
 
-    @Query("SELECT a FROM Group g " +
-        "JOIN g.admins a " +
-        "WHERE g.id = :id")
+    // Suggest groups sort by member count and posts count, mix in each page
+    @Query("""
+        SELECT g FROM Group g
+        LEFT JOIN g.members m
+        LEFT JOIN g.posts p
+        GROUP BY g.id
+        ORDER BY COUNT(m) DESC, COUNT(p) DESC, FUNCTION('RAND')
+        """)
+    Page<Group> findSuggestionGroups(Pageable pageable);
+
+    @Query("""
+            SELECT a FROM Group g 
+            JOIN g.admins a 
+            WHERE g.id = :id
+            """)
     Page<User> findAdminsById(@Param("id") Long id, Pageable pageable);
 
-    @Query("SELECT m FROM Group g " +
-        "JOIN g.members m " +
-        "WHERE g.id = :id")
+    @Query("""
+            SELECT m FROM Group g 
+            JOIN g.members m 
+            WHERE g.id = :id
+            """)
     Page<User> findMembersById(@Param("id") Long id, Pageable pageable);
 
-    @Query("SELECT COUNT(g) FROM Group g " +
-       "JOIN g.admins a " +
-       "JOIN g.members m " +
-       "WHERE a.id = :userId OR m.id = :userId")
+    @Query("""
+            SELECT COUNT(g) FROM Group g 
+            JOIN g.admins a 
+            JOIN g.members m 
+            WHERE a.id = :userId OR m.id = :userId
+            """)
     int countGroupsByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT COUNT(m) FROM Group g " +
-           "JOIN g.members m " +
-           "WHERE g.id = :id")
+    @Query("""
+            SELECT COUNT(m) FROM Group g 
+            JOIN g.members m 
+            WHERE g.id = :id
+            """)
     int countMembersById(@Param("id") Long id);
 
-    @Query("SELECT COUNT(a) FROM Group g " +
-           "JOIN g.admins a " +
-           "WHERE g.id = :id")
+    @Query("""
+            SELECT COUNT(a) FROM Group g 
+            JOIN g.admins a 
+            WHERE g.id = :id
+            """)
     int countAdminsById(@Param("id") Long id);
+
 }

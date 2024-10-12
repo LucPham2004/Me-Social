@@ -48,6 +48,12 @@ public class GroupService {
         return groupRepository.findByMembersIdOrAdminsId(userId, userId, pageable);
     }
 
+    // Get suggestion groups
+    public Page<Group> getSuggestionGroups(int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum, GROUPS_PER_PAGE);
+        return groupRepository.findSuggestionGroups(pageable);
+    }
+
     // POST
 
     // Create Group

@@ -57,6 +57,18 @@ public class GroupController {
             .build();
     }
 
+    // Get groups by user
+    @GetMapping("/user/{userId}")
+    public ApiResponse<Page<GroupResponse>> getSuggestionGroups(
+            @RequestParam(defaultValue = "0") int pageNum) {
+        Page<Group> groupPage = groupService.getSuggestionGroups(pageNum);
+        return ApiResponse.<Page<GroupResponse>>builder()
+            .code(1000)
+            .message("Get suggestion groups successfully")
+            .result(groupPage.map(groupMapper::toGroupResponse))
+            .build();
+    }
+
     // POST
 
     // Create Group
