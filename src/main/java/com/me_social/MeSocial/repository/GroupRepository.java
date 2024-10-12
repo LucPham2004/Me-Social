@@ -24,15 +24,25 @@ public interface GroupRepository extends PagingAndSortingRepository<Group, Long>
     
     Page<Group> findByMembersIdOrAdminsId(Long adminId, Long memberId, Pageable pageable);
 
-    // Suggest groups sort by member count and posts count, mix in each page
+    // Suggest groups sort by member count and post count, mix in each page
     @Query("""
         SELECT g FROM Group g
         LEFT JOIN g.members m
+        LEFT JOIN g.admins a
         LEFT JOIN g.posts p
+        WHERE g.id NOT IN (
+            SELECT g1.id FROM Group g1 
+            JOIN g1.members m1 
+            WHERE m1.id = :userId
+            UNION
+            SELECT g2.id FROM Group g2 
+            JOIN g2.admins a2 
+            WHERE a2.id = :userId
+        )
         GROUP BY g.id
         ORDER BY COUNT(m) DESC, COUNT(p) DESC, FUNCTION('RAND')
         """)
-    Page<Group> findSuggestionGroups(Pageable pageable);
+    Page<Group> findSuggestedGroups(@Param("userId") Long userId, Pageable pageable);
 
     @Query("""
             SELECT a FROM Group g 

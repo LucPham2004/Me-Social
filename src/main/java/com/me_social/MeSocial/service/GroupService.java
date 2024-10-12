@@ -49,9 +49,12 @@ public class GroupService {
     }
 
     // Get suggestion groups
-    public Page<Group> getSuggestionGroups(int pageNum) {
+    public Page<Group> getSuggestionGroups(Long userId, int pageNum) {
+        if (!userRepository.existsById(userId)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
         Pageable pageable = PageRequest.of(pageNum, GROUPS_PER_PAGE);
-        return groupRepository.findSuggestionGroups(pageable);
+        return groupRepository.findSuggestedGroups(userId, pageable);
     }
 
     // POST

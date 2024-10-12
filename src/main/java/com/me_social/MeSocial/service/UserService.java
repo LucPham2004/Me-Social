@@ -73,6 +73,18 @@ public class UserService {
         return getUsersWithMutualFriendsCount(userId, friends);
     }
 
+    // Get User friends
+    public Page<UserDTO> getSuggestedFriends(Long userId, int pageNum) {
+        if (!userRepository.existsById(userId)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+        Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
+
+        Page<User> friends = userRepository.findSuggestedFriends(userId, pageable);
+
+        return getUsersWithMutualFriendsCount(userId, friends);
+    }
+
     // Get mutual friends
     public Page<UserDTO> getMutualFriends(Long meId, Long youId, int pageNum) {
         if (!userRepository.existsById(meId) || !userRepository.existsById(youId)) {

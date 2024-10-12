@@ -35,7 +35,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
      void deleteById(Long id);
 
-     // User's friends
+     // Find User's friends
      @Query("""
                SELECT u FROM User u
                JOIN Friendship f
@@ -55,6 +55,35 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
                AND u.id != :userId
                """)
      int countFriends(@Param("userId") Long userId);
+
+	// Friend suggestion by finding other users having most mutual friends
+     @Query("""
+		SELECT u FROM User u
+		WHERE u.id <> :userId
+		AND u.id NOT IN (
+			SELECT f.requestReceiver.id FROM Friendship f WHERE f.requester.id = :userId
+			UNION
+			SELECT f2.requester.id FROM Friendship f2 WHERE f2.requestReceiver.id = :userId
+		)
+		AND u.id IN (
+			SELECT f3.requestReceiver.id FROM Friendship f3 
+			WHERE f3.requester.id IN (
+				SELECT f4.requestReceiver.id FROM Friendship f4 WHERE f4.requester.id = :userId
+				UNION
+				SELECT f5.requester.id FROM Friendship f5 WHERE f5.requestReceiver.id = :userId
+			)
+			UNION
+			SELECT f6.requester.id FROM Friendship f6 
+			WHERE f6.requestReceiver.id IN (
+				SELECT f7.requestReceiver.id FROM Friendship f7 WHERE f7.requester.id = :userId
+				UNION
+				SELECT f8.requester.id FROM Friendship f8 WHERE f8.requestReceiver.id = :userId
+			)
+		)
+		GROUP BY u.id
+		ORDER BY COUNT(u) DESC, FUNCTION('RAND')
+		""")
+     Page<User> findSuggestedFriends(@Param("userAId") Long userId, Pageable pageable);
 
      // 2 User's mutual friends
      @Query("""

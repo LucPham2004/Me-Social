@@ -54,7 +54,7 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
         AND p.isRead = false
         AND p.group.id IN (SELECT g.id FROM Group g WHERE :userId IN (SELECT u.id FROM g.admins u)
                             OR :userId IN (SELECT u.id FROM g.members u))
-        ORDER BY p.createdAt DESC
+        ORDER BY p.createdAt DESC, FUNCTION('RAND')
         """)
     Page<Post> findUnreadPublicGroupPosts(@Param("userId") Long userId, Pageable pageable);
 
