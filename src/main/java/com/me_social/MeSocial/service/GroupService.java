@@ -49,7 +49,7 @@ public class GroupService {
     }
 
     // Get suggestion groups
-    public Page<Group> getSuggestionGroups(Long userId, int pageNum) {
+    public Page<Group> getSuggestedGroups(Long userId, int pageNum) {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
@@ -96,12 +96,24 @@ public class GroupService {
     public Group editGroup(GroupRequest request) {
         Group group = groupRepository.findById(request.getGroupId())
                 .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
-        group.setName(request.getName());
-        group.setDescription(request.getDescription());
-        group.setPrivacy(request.getPrivacy());
+
+        if (request.getName() != null && !request.getName().isEmpty() && !request.getName().equals(group.getName())) {
+            group.setName(request.getName());
+        }
+
+        if (request.getDescription() != null && !request.getDescription().isEmpty() 
+                && !request.getDescription().equals(group.getDescription())) {
+            group.setDescription(request.getDescription());
+        }
+
+        if (request.getPrivacy() != null && !request.getPrivacy().equals(group.getPrivacy())) {
+            group.setPrivacy(request.getPrivacy());
+        }
+
         group.setUpdatedAt(LocalDateTime.now());
         return groupRepository.save(group);
     }
+
 
     // DELETE: Delete Group
     public void deleteGroup(Long groupId) {

@@ -59,10 +59,10 @@ public class GroupController {
 
     // Get groups by user
     @GetMapping("/suggested")
-    public ApiResponse<Page<GroupResponse>> getSuggestionGroups(
+    public ApiResponse<Page<GroupResponse>> getSuggestedGroups(
             @RequestParam Long userId,
             @RequestParam(defaultValue = "0") int pageNum) {
-        Page<Group> groupPage = groupService.getSuggestionGroups(userId, pageNum);
+        Page<Group> groupPage = groupService.getSuggestedGroups(userId, pageNum);
         return ApiResponse.<Page<GroupResponse>>builder()
             .code(1000)
             .message("Get suggestion groups successfully")

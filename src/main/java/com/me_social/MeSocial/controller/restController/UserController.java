@@ -144,4 +144,17 @@ public class UserController {
                                 .build();
         }
 
+        // Get User's friends
+        @GetMapping("/get/friends/suggested")
+        public ApiResponse<Page<UserDTO>> getSuggestedFriends(
+                        @RequestParam Long userId,
+                        @RequestParam(defaultValue = "0") int pageNum) {
+                var friends = this.userService.getSuggestedFriends(userId, pageNum);
+                return ApiResponse.<Page<UserDTO>>builder()
+                                .code(1000)
+                                .message("Get suggested friends of the user with ID " + userId + " successfully!")
+                                .result(friends)
+                                .build();
+        }
+
 }
