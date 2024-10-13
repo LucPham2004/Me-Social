@@ -58,7 +58,7 @@ public class GroupController {
     }
 
     // Get groups by user
-    @GetMapping("/user/{userId}")
+    @GetMapping("/suggested")
     public ApiResponse<Page<GroupResponse>> getSuggestionGroups(
             @RequestParam Long userId,
             @RequestParam(defaultValue = "0") int pageNum) {

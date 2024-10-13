@@ -83,7 +83,7 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 		GROUP BY u.id
 		ORDER BY COUNT(u) DESC, FUNCTION('RAND')
 		""")
-     Page<User> findSuggestedFriends(@Param("userAId") Long userId, Pageable pageable);
+     Page<User> findSuggestedFriends(@Param("userId") Long userId, Pageable pageable);
 
      // 2 User's mutual friends
      @Query("""
