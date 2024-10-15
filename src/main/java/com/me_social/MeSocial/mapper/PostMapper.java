@@ -50,8 +50,11 @@ public class PostMapper {
 
         response.setId(post.getId());
         response.setUserId(post.getUser().getId());
-        if(post.getGroup() != null)
+        response.setUserFullName(post.getUser().getFirstName() + " " + post.getUser().getLastName());
+        if(post.getGroup() != null) {
             response.setGroupId(post.getGroup().getId());
+            response.setGroupName(post.getGroup().getName());
+        }
         response.setContent(post.getContent());
         response.setPrivacy(post.getPrivacy());
         response.setCreatedAt(post.getCreatedAt());

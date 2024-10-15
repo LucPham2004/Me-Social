@@ -1,12 +1,13 @@
 package com.me_social.MeSocial.controller;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
-import com.me_social.MeSocial.entity.dto.request.ChatRequest;
-import com.me_social.MeSocial.entity.modal.DirectMessage;
+import com.me_social.MeSocial.entity.modal.ChatMessage;
 import com.me_social.MeSocial.mapper.ChatMapper;
 import com.me_social.MeSocial.service.DirectMessageService;
 
@@ -23,14 +24,22 @@ public class ChatController {
     DirectMessageService chatService;
     SimpMessagingTemplate messagingTemplate;
 
-    @MessageMapping("/send-message")
-    @SendTo("/topic/messages")
-    public DirectMessage sendMessage(ChatRequest request) {
-        DirectMessage message = chatMapper.toDirectMessage(request);
+    @MessageMapping("/sendMessage")
+    @SendTo("/topic/public")
+    public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
         
-        messagingTemplate.convertAndSend("/topic/messages/" + request.getReceiverId(), message);
+        return chatMessage;
+        
+    }
 
-        return chatService.saveDirectMessage(message);
+    @MessageMapping("/addUser")
+    @SendTo("/topic/public")
+    public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+        
+        // Add username in web socket session
+        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+        return chatMessage;
+        
     }
 }
 
