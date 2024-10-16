@@ -27,6 +27,16 @@ public class LikeService {
     PostRepository postRepository;
     CommentRepository commentRepository;
 
+    // Get post like count
+    public int getPostLikeCount(Long postId) {
+        return likeRepository.countByPostId(postId);
+    }
+
+    // Get comment like count
+    public int getCommentLikeCount(Long commentId) {
+        return likeRepository.countByCommentId(commentId);
+    }
+
     // Create Post Like
     public Like createPostLike(Long userId, Long postId) {
         if (!userRepository.existsById(userId) || !postRepository.existsById(postId)) {

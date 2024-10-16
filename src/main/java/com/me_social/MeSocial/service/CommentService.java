@@ -56,6 +56,11 @@ public class CommentService {
         return commentRepository.findByUserId(userId, pageable);
     }
 
+    // Get post comment count
+    public int getPostCommentCount(Long postId) {
+        return commentRepository.countByPostId(postId);
+    }
+
     // POST
     // Not in real-time update yet
     public Comment createcomment(CommentRequest request) {

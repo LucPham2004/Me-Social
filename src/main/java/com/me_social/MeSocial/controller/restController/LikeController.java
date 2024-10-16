@@ -1,6 +1,7 @@
 package com.me_social.MeSocial.controller.restController;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,28 @@ import lombok.experimental.FieldDefaults;
 public class LikeController {
     LikeService likeService;
 
+    // Create Post Like
+    @GetMapping("/post/count/{postId}")
+    public ApiResponse<Integer> getPostLikeCount(@PathVariable Long postId) {
+        int likeCount = likeService.getPostLikeCount(postId);
+        return ApiResponse.<Integer>builder()
+            .code(1000)
+            .message("Create post like successfully")
+            .result(likeCount)
+            .build();
+    }
+
+    // Create Post Like
+    @GetMapping("/comment/count/{commentId}")
+    public ApiResponse<Integer> getCommentLikeCount(@PathVariable Long commentId) {
+        int likeCount = likeService.getCommentLikeCount(commentId);
+        return ApiResponse.<Integer>builder()
+            .code(1000)
+            .message("Create post like successfully")
+            .result(likeCount)
+            .build();
+    }
+    
     // Create Post Like
     @PostMapping("/post/add/{userId}/{postId}")
     public ApiResponse<Like> createPostLike(@PathVariable Long userId, @PathVariable Long postId) {

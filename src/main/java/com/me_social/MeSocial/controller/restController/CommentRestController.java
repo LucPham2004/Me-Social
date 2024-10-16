@@ -67,6 +67,17 @@ public class CommentRestController {
                 .build();
     }
 
+    // Get by id
+    @GetMapping("/post/count/{postId}")
+    public ApiResponse<Integer> getPostCommentCount(@PathVariable Long postId) {
+        var comment = commentService.getPostCommentCount(postId);
+        return ApiResponse.<Integer>builder()
+                .code(1000)
+                .message("Get comment count for post with ID " + postId + " successfully!")
+                .result(comment)
+                .build();
+    }
+
     // POST
     // Not in real-time update yet
     @PostMapping("/new")
