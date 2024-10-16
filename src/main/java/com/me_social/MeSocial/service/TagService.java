@@ -1,5 +1,8 @@
 package com.me_social.MeSocial.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.me_social.MeSocial.entity.modal.Tag;
@@ -16,6 +19,18 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
 public class TagService {
     TagRepository tagRepository;
+
+    static int TAGS_PER_PAGE = 20;
+
+    public Page<Tag> getAllTags(int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum, TAGS_PER_PAGE);
+        return tagRepository.findAll(pageable);
+    }
+
+    public Page<Tag> getAllTagsSortedByPostCount(int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum, TAGS_PER_PAGE);
+        return tagRepository.findAllOrderByPostDesc(pageable);
+    }
     
     public Tag createTag(String nameTag) {
         Tag tag = new Tag();

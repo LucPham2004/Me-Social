@@ -47,7 +47,7 @@ public class GroupController {
     // Get groups by user
     @GetMapping("/user/{userId}")
     public ApiResponse<Page<GroupResponse>> getGroupsByUserId(
-            @PathVariable Long userId,
+            @RequestParam Long userId,
             @RequestParam(defaultValue = "0") int pageNum) {
         Page<Group> groupPage = groupService.getGroupsByUserId(userId, pageNum);
         return ApiResponse.<Page<GroupResponse>>builder()
@@ -85,23 +85,21 @@ public class GroupController {
 
     // Add Admin to Group
     @PostMapping("/admin/{groupId}/{adminId}")
-    public ApiResponse<String> addAdminToGroup(@PathVariable Long adminId, @PathVariable Long groupId) {
+    public ApiResponse<Void> addAdminToGroup(@PathVariable Long adminId, @PathVariable Long groupId) {
         groupService.addAdminToGroup(adminId, groupId);
-        return ApiResponse.<String>builder()
+        return ApiResponse.<Void>builder()
             .code(1000)
             .message("Add admin to group successfully")
-            .result("")
             .build();
     }
 
     // Add member to Group
     @PostMapping("/member/{groupId}/{memberId}")
-    public ApiResponse<String> addMemberToGroup(@PathVariable Long groupId, @PathVariable Long memberId) {
+    public ApiResponse<Void> addMemberToGroup(@PathVariable Long groupId, @PathVariable Long memberId) {
         groupService.addMemberToGroup(memberId, groupId);
-        return ApiResponse.<String>builder()
+        return ApiResponse.<Void>builder()
             .code(1000)
             .message("Add member to group successfully")
-            .result("")
             .build();
     }
 
@@ -118,34 +116,31 @@ public class GroupController {
 
     // DELETE: Delete Group
     @DeleteMapping("/{groupId}")
-    public ApiResponse<String> deleteGroup(@PathVariable Long groupId) {
+    public ApiResponse<Void> deleteGroup(@PathVariable Long groupId) {
         groupService.deleteGroup(groupId);
-        return ApiResponse.<String>builder()
+        return ApiResponse.<Void>builder()
                 .code(1000)
                 .message("Delete group successfully")
-                .result("")
                 .build();
     }
 
     // DELETE: Remove Admin from Group
     @DeleteMapping("/admin/remove/{groupId}/{adminId}")
-    public ApiResponse<String> removeAdminFromGroup(@PathVariable Long adminId, @PathVariable Long groupId) {
+    public ApiResponse<Void> removeAdminFromGroup(@PathVariable Long adminId, @PathVariable Long groupId) {
         groupService.removeGroupAdmin(adminId, groupId);
-        return ApiResponse.<String>builder()
+        return ApiResponse.<Void>builder()
                 .code(1000)
                 .message("Remove admin from group successfully")
-                .result("")
                 .build();
     }
 
     // DELETE: Remove Member from Group
     @DeleteMapping("/member/remove/{groupId}/{memberId}")
-    public ApiResponse<String> removeMemberFromGroup(@PathVariable Long groupId, @PathVariable Long memberId) {
+    public ApiResponse<Void> removeMemberFromGroup(@PathVariable Long groupId, @PathVariable Long memberId) {
         groupService.removeGroupMember(memberId, groupId);
-        return ApiResponse.<String>builder()
+        return ApiResponse.<Void>builder()
                 .code(1000)
                 .message("Remove member from group successfully")
-                .result("")
                 .build();
     }
 
