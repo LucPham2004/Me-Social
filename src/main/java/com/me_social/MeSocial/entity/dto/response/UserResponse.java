@@ -24,6 +24,7 @@ public class UserResponse {
      String firstName;
      String lastName;
      String phone;
+     String avatarUrl;
 
      Instant dob;
      Instant createdAt;

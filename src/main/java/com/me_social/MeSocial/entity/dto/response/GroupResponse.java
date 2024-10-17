@@ -20,6 +20,7 @@ public class GroupResponse {
     Long id;
     String name;
     String description;
+    String imageUrl;
     GroupPrivacy privacy;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

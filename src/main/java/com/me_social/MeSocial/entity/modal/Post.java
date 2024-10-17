@@ -43,6 +43,8 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private PostPrivacy privacy;
 
+    private Set<String> urls;
+
     @Column(name = "is_read", columnDefinition = "BIT")
     private Boolean isRead = false;
 

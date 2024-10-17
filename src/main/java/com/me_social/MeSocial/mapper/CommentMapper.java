@@ -39,6 +39,8 @@ public class CommentMapper {
         response.setContent(comment.getContent());
         response.setCreatedAt(comment.getCreatedAt());
         response.setId(comment.getId());
+        response.setUserId(comment.getUser().getId());
+        response.setPostId(comment.getPost().getId());
         response.setUpdatedAt(comment.getUpdatedAt());
         response.setLikeNum(likeRepository.countByCommentId(comment.getId()));
 

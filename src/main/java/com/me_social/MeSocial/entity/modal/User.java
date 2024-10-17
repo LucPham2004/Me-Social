@@ -62,6 +62,9 @@ public class User {
 
     private String location;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
     private String createdBy;
 
     private String updatedBy;

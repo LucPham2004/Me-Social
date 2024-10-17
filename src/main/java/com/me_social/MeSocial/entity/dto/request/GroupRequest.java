@@ -26,6 +26,7 @@ public class GroupRequest {
     String name;
 
     String description;
+    String imageUrl;
 
     @NotNull
     GroupPrivacy privacy;

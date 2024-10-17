@@ -18,11 +18,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
 public class UserMapper {
 
-    // public UserMapper(UserRepository userRepository, GroupRepository groupRepository) {
-    //     this.userRepository = userRepository;
-    //     this.groupRepository = groupRepository;
-    // }
-
     UserRepository userRepository;
     GroupRepository groupRepository;
 
@@ -47,6 +42,7 @@ public class UserMapper {
         userResponse.setFirstName(user.getFirstName());
         userResponse.setLastName(user.getLastName());
         userResponse.setPhone(user.getPhone());
+        userResponse.setAvatarUrl(user.getAvatarUrl());
         userResponse.setDob(user.getDob());
         userResponse.setCreatedAt(user.getCreatedAt());
         userResponse.setUpdatedAt(user.getUpdatedAt());
@@ -63,6 +59,7 @@ public class UserMapper {
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
         userDTO.setLocation(user.getLocation());
+        userDTO.setAvatarUrl(user.getAvatarUrl());
         userDTO.setFriendNum(userRepository.countFriends(user.getId()));
 
         return userDTO;

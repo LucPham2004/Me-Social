@@ -1,5 +1,7 @@
 package com.me_social.MeSocial.entity.dto.request;
 
+import java.util.Set;
+
 import com.me_social.MeSocial.enums.PostPrivacy;
 
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +24,7 @@ public class PostRequest {
     Long userId;
     Long groupId;
     String content;
+    Set<String> urls;
     
     @NotNull
     PostPrivacy privacy;

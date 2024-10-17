@@ -21,4 +21,6 @@ public class UserUpdateRequest {
     private String bio;
 
     private String location;
+    
+    private String avatarUrl;
 }

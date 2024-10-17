@@ -23,10 +23,7 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
 public class GroupMapper {
-    // public GroupMapper(UserRepository userRepository, GroupRepository groupRepository) {
-    //     this.userRepository = userRepository;
-    //     this.groupRepository = groupRepository;
-    // }
+    
     UserRepository userRepository;
     UserService userService;
     GroupRepository groupRepository;
@@ -51,6 +48,7 @@ public class GroupMapper {
         group.setName(request.getName());
         group.setDescription(request.getDescription());
         group.setPrivacy(request.getPrivacy());
+        group.setImageUrl(request.getImageUrl());
         
         return group;
     }}
@@ -62,6 +60,7 @@ public class GroupMapper {
         groupResponse.setName(group.getName());
         groupResponse.setDescription(group.getDescription());
         groupResponse.setPrivacy(group.getPrivacy());
+        groupResponse.setImageUrl(group.getImageUrl());
         groupResponse.setCreatedAt(group.getCreatedAt());
         groupResponse.setUpdatedAt(group.getUpdatedAt());
         groupResponse.setMemberNum(groupRepository.countMembersById(group.getId()));

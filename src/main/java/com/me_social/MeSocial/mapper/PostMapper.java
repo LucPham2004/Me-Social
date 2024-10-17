@@ -19,14 +19,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
 public class PostMapper {
 
-    // public PostMapper(UserRepository userRepository, GroupRepository groupRepository, LikeRepository likeRepository,
-    //         CommentRepository commentRepository) {
-    //     this.userRepository = userRepository;
-    //     this.groupRepository = groupRepository;
-    //     this.likeRepository = likeRepository;
-    //     this.commentRepository = commentRepository;
-    // }
-
     UserService userService;
     GroupRepository groupRepository;
     LikeRepository likeRepository;
@@ -36,6 +28,7 @@ public class PostMapper {
         Post post = new Post();
         post.setContent(request.getContent());
         post.setPrivacy(request.getPrivacy());
+        post.setUrls(request.getUrls());
 
         post.setUser(userService.findById(request.getUserId()).get());
         
@@ -56,6 +49,7 @@ public class PostMapper {
             response.setGroupName(post.getGroup().getName());
         }
         response.setContent(post.getContent());
+        response.setUrls(post.getUrls());
         response.setPrivacy(post.getPrivacy());
         response.setCreatedAt(post.getCreatedAt());
         response.setUpdatedAt(post.getUpdatedAt());

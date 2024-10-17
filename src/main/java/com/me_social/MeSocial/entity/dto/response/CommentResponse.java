@@ -16,6 +16,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level=AccessLevel.PRIVATE)
 public class CommentResponse {
     Long id;
+    Long userId;
+    Long postId;
     String content;
     Instant createdAt;
     Instant updatedAt;
