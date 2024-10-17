@@ -33,6 +33,8 @@ public class Story {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    private String url;
+
     @Column(name = "created_at", nullable = true, updatable = true)
     private Instant createdAt;
 

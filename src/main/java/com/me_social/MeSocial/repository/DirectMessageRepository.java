@@ -2,6 +2,7 @@ package com.me_social.MeSocial.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -21,4 +22,8 @@ public interface DirectMessageRepository extends PagingAndSortingRepository<Dire
 
     int countBySenderIdAndReceiverId(Long senderId, Long receiverId);
 
+    @Query("""
+            SELECT COUNT(m) FROM DirectMessage m
+            """)
+    int countAll();
 }

@@ -25,6 +25,11 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
      boolean existsByEmail(String email);
 
+     @Query("""
+               SELECT COUNT(u) FROM User u
+               """)
+     int countAll();
+
      Optional<User> findById(long id);
 
      Optional<User> findByUsername(String username);

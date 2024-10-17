@@ -19,7 +19,8 @@ public class ChatResponse {
     Long senderId;
     Long receiverId;
     String content;
+    String url;
     Boolean isRead;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }

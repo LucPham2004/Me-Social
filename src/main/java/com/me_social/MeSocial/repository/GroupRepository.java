@@ -23,6 +23,11 @@ public interface GroupRepository extends PagingAndSortingRepository<Group, Long>
     boolean existsById(Long id);
     
     Page<Group> findByMembersIdOrAdminsId(Long adminId, Long memberId, Pageable pageable);
+    
+    @Query("""
+            SELECT COUNT(g) FROM Group g
+            """)
+    int countAll();
 
     // Suggest groups sort by member count and post count, mix in each page
     @Query("""

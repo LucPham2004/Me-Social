@@ -21,6 +21,7 @@ public class ChatMapper {
     public DirectMessage toDirectMessage(ChatRequest request) {
         DirectMessage message = new DirectMessage();
         message.setContent(request.getContent());
+        message.setUrl(request.getUrl());
         message.setReceiver(userRepository.findById(request.getReceiverId()).get());
         message.setSender(userRepository.findById(request.getSenderId()).get());
         message.setRead(false);
@@ -31,6 +32,7 @@ public class ChatMapper {
     public ChatResponse toResponse(DirectMessage message) {
         ChatResponse response = new ChatResponse();
         response.setContent(message.getContent());
+        response.setUrl(message.getUrl());
         response.setReceiverId(message.getReceiver().getId());
         response.setSenderId(message.getSender().getId());
         response.setIsRead(false);

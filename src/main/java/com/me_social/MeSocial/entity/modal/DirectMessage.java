@@ -32,6 +32,8 @@ public class DirectMessage {
     private Long id;
 
     private String content;
+    
+    private String url;
 
     @Column(name = "is_read")
     private boolean isRead;

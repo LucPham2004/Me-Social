@@ -1,5 +1,7 @@
 package com.me_social.MeSocial.entity.dto.request;
 
+import java.util.Set;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,4 +19,5 @@ public class CommentRequest {
     Long userId;
     Long postId;
     String content;
+    Set<String> urls;
 }

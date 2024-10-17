@@ -21,4 +21,9 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
             ORDER BY COUNT(t.posts) DESC
             """)
     Page<Tag> findAllOrderByPostDesc(Pageable pageable);
+    
+    @Query("""
+        SELECT COUNT(t) FROM Tag t
+        """)
+    int countAll();
 }

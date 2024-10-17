@@ -24,4 +24,8 @@ public interface FriendShipRepository extends PagingAndSortingRepository<Friends
            """)
     Friendship findBy2UserIds(Long requesterId, Long receiverId);
 
+    @Query("""
+            SELECT COUNT(f) FROM Friendship f
+            """)
+    int countAll();
 }

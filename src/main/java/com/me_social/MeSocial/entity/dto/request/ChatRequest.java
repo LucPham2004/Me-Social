@@ -17,4 +17,5 @@ public class ChatRequest {
     Long senderId;
     Long receiverId;
     String content;
+    String url;
 }

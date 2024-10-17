@@ -36,6 +36,8 @@ public class Comment {
     private Long id;
 
     private String content;
+    
+    private Set<String> urls;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;

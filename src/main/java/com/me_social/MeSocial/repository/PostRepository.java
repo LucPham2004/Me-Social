@@ -34,6 +34,11 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
     int countByUserIdAndGroupId(Long userId, Long groupId);
 
     int countByTagsId(Long id);
+    
+    @Query("""
+        SELECT COUNT(p) FROM Post p
+        """)
+    int countAll();
 
     // Friend's Posts
     @Query("""

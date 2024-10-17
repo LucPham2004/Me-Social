@@ -36,6 +36,8 @@ public class Reel {
     private String id;
 
     private String content;
+    
+    private String url;
 
     @Column(name = "created_at", nullable = true, updatable = true)
     private Instant createdAt;

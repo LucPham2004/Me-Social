@@ -26,6 +26,7 @@ public class CommentMapper {
         Comment comment = new Comment();
 
         comment.setContent(request.getContent());
+        comment.setUrls(request.getUrls());
         comment.setId(request.getId());
         comment.setUser(userService.findById(request.getUserId()).get());
         comment.setPost(postRepository.findById(request.getPostId()).get());
@@ -37,6 +38,7 @@ public class CommentMapper {
         CommentResponse response = new CommentResponse();
 
         response.setContent(comment.getContent());
+        response.setUrls(comment.getUrls());
         response.setCreatedAt(comment.getCreatedAt());
         response.setId(comment.getId());
         response.setUserId(comment.getUser().getId());

@@ -2,6 +2,7 @@ package com.me_social.MeSocial.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +21,9 @@ public interface NotificationRepository extends PagingAndSortingRepository<Notif
     boolean existsById(Long id);
 
     Page<Notification> findByUserId(Long userId, Pageable pageable);
+    
+    @Query("""
+            SELECT COUNT(n) FROM Notification n
+            """)
+    int countAll();
 }

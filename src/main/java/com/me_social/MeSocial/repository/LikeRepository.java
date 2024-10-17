@@ -1,6 +1,7 @@
 package com.me_social.MeSocial.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.me_social.MeSocial.entity.modal.Like;
@@ -14,4 +15,9 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     int countByPostId(Long postId);
 
     int countByCommentId(Long id);
+    
+    @Query("""
+            SELECT COUNT(l) FROM Like l
+            """)
+    int countAll();
 }

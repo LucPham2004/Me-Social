@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.me_social.MeSocial.entity.modal.Story;
@@ -20,4 +21,9 @@ public interface StoryRepository extends PagingAndSortingRepository<Story, Strin
     void deleteById(String id);
 
     Page<Story> findAllByUserId(Long id, Pageable pageable);
+    
+    @Query("""
+            SELECT COUNT(s) FROM Story s
+            """)
+    int countAll();
 }
