@@ -45,10 +45,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
-                        authz -> authz
-                                .requestMatchers(whiteList)
-                                .permitAll()
-                                .anyRequest().authenticated())
+                        authz -> {  authz.requestMatchers(whiteList)
+                                        .permitAll()
+                                        .anyRequest().authenticated();
+                                    // authz.requestMatchers("/api/admin")
+                                    //     .hasRole("ADMIN")
+                                    //     .anyRequest().authenticated();
+                                    })
                 .formLogin(f -> f.disable())
                 .oauth2ResourceServer(
                         (oauth2) -> oauth2

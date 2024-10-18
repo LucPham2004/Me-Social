@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.modal.Story;
@@ -26,12 +25,11 @@ public class StoryController {
     StoryService storyService;
 
     // Create story
-    @PostMapping("/upload-video")
-    public ApiResponse<Story> createStory(
-            @RequestParam("file") MultipartFile file,
+    @PostMapping
+    public ApiResponse<Story> createStory(String url, 
             @RequestParam Long userId,
             @RequestParam String content) {
-        Story story = storyService.createStory(userId, file, content);
+        Story story = storyService.createStory(userId, content, url);
         return ApiResponse.<Story>builder()
             .code(1000)
             .message("Created story successfully")
