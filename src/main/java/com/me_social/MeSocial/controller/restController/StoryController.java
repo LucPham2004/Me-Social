@@ -5,10 +5,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.me_social.MeSocial.entity.dto.request.StoryRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 import com.me_social.MeSocial.entity.modal.Story;
 import com.me_social.MeSocial.service.StoryService;
@@ -26,10 +28,8 @@ public class StoryController {
 
     // Create story
     @PostMapping
-    public ApiResponse<Story> createStory(String url, 
-            @RequestParam Long userId,
-            @RequestParam String content) {
-        Story story = storyService.createStory(userId, content, url);
+    public ApiResponse<Story> createStory(@RequestBody StoryRequest request) {
+        Story story = storyService.createStory(request);
         return ApiResponse.<Story>builder()
             .code(1000)
             .message("Created story successfully")

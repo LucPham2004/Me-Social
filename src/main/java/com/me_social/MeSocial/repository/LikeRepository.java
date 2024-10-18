@@ -15,6 +15,10 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     int countByPostId(Long postId);
 
     int countByCommentId(Long id);
+
+    int countByReelId(String id);
+
+    int countByStoryId(String id);
     
     @Query("""
             SELECT COUNT(l) FROM Like l

@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.me_social.MeSocial.entity.dto.request.StoryRequest;
 import com.me_social.MeSocial.entity.modal.Story;
 import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
@@ -29,14 +30,14 @@ public class StoryService {
     static int STORIES_PER_PAGE = 10;
 
     // Create story
-    public Story createStory(Long userId, String content, String url) {
-        User user = userService.findById(userId)
+    public Story createStory(StoryRequest request) {
+        User user = userService.findById(request.getUserId())
             .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
 
         Story story = new Story();
         story.setUser(user);
         story.setCreatedAt(Instant.now());
-        story.setUrl(url);
+        story.setUrl(request.getUrl());
 
         return storyRepository.save(story);
     }

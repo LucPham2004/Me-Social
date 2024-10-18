@@ -28,6 +28,8 @@ public interface CommentRepository extends PagingAndSortingRepository<Comment, L
 
     int countByUserId(Long id);
     
+    int countByReelId(String id);
+    
     @Query("""
             SELECT COUNT(c) FROM Comment c
             """)

@@ -1,5 +1,7 @@
 package com.me_social.MeSocial.entity.dto.response;
 
+import java.time.Instant;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,10 +15,12 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level=AccessLevel.PRIVATE)
 public class ReelResponse {
-    Long id;
+    String id;
     Long userId;
     String url;
     String content;
+    Instant createdAt;
+    Instant updatedAt;
 
     int LikeNum;
     int commentNum;
