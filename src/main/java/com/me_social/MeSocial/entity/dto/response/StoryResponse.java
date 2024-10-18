@@ -1,5 +1,7 @@
 package com.me_social.MeSocial.entity.dto.response;
 
+import java.time.Instant;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +18,8 @@ public class StoryResponse {
     String id;
     Long userId;
     String url;
+    Instant createdAt;
+    Instant updatedAt;
 
     int LikeNum;
     int commentNum;

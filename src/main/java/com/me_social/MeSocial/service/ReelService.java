@@ -1,17 +1,14 @@
 package com.me_social.MeSocial.service;
 
-import java.time.Instant;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
+import com.me_social.MeSocial.entity.dto.request.ReelRequest;
 import com.me_social.MeSocial.entity.modal.Reel;
-import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
+import com.me_social.MeSocial.mapper.ReelMapper;
 import com.me_social.MeSocial.repository.ReelRepository;
 import com.me_social.MeSocial.repository.UserRepository;
 
@@ -25,19 +22,17 @@ import lombok.experimental.FieldDefaults;
 public class ReelService {
     ReelRepository reelRepository;
     UserRepository userRepository;
+    ReelMapper mapper;
     
     static int REELS_PER_PAGE = 5;
 
     // Create Reel
-    public Reel createReel(Long userId, MultipartFile file, String content) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+    public Reel createReel(ReelRequest request) {
+        if (!userRepository.existsById(request.getUserId())) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
 
-        Reel reel = new Reel();
-        // More handling for the file can be done here
-        reel.setContent(content);
-        reel.setUser(user);
-        reel.setCreatedAt(Instant.now());
+        Reel reel = mapper.toReel(request);
 
         return reelRepository.save(reel);
     }

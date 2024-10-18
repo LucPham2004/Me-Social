@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.me_social.MeSocial.entity.dto.request.StoryRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
+import com.me_social.MeSocial.entity.dto.response.StoryResponse;
 import com.me_social.MeSocial.entity.modal.Story;
+import com.me_social.MeSocial.mapper.StoryMapper;
 import com.me_social.MeSocial.service.StoryService;
 
 import lombok.AccessLevel;
@@ -25,50 +27,50 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
 public class StoryController {
     StoryService storyService;
+    StoryMapper storyMapper;
 
     // Create story
     @PostMapping
-    public ApiResponse<Story> createStory(@RequestBody StoryRequest request) {
+    public ApiResponse<StoryResponse> createStory(@RequestBody StoryRequest request) {
         Story story = storyService.createStory(request);
-        return ApiResponse.<Story>builder()
+        return ApiResponse.<StoryResponse>builder()
             .code(1000)
             .message("Created story successfully")
-            .result(story)
+            .result(storyMapper.toResponse(story))
             .build();
     }
 
     // Get story by id
     @GetMapping("/{id}")
-    public ApiResponse<Story> getStoryById(@PathVariable String id) {
+    public ApiResponse<StoryResponse> getStoryById(@PathVariable String id) {
         Story story = storyService.getStoryById(id);
-        return ApiResponse.<Story>builder()
+        return ApiResponse.<StoryResponse>builder()
             .code(1000)
             .message("Get story successfully")
-            .result(story)
+            .result(storyMapper.toResponse(story))
             .build();
     }
 
     // Get all stories by user
     @GetMapping("/user")
-    public ApiResponse<Page<Story>> getStoriesByUserId(
+    public ApiResponse<Page<StoryResponse>> getStoriesByUserId(
             @RequestParam Long userId,
             @RequestParam(defaultValue = "0") int pageNum) {
         Page<Story> stories = storyService.getStoriesByUserId(userId, pageNum);
-        return ApiResponse.<Page<Story>>builder()
+        return ApiResponse.<Page<StoryResponse>>builder()
             .code(1000)
             .message("Get stories by user successfully")
-            .result(stories)
+            .result(stories.map(storyMapper::toResponse))
             .build();
     }
 
     // Delete story
     @DeleteMapping("/delete/{id}")
-    public ApiResponse<String> deleteStory(@PathVariable String id) {
+    public ApiResponse<Void> deleteStory(@PathVariable String id) {
         storyService.deleteStory(id);
-        return ApiResponse.<String>builder()
+        return ApiResponse.<Void>builder()
             .code(1000)
             .message("Delete story successfully")
-            .result("")
             .build();
     }
 }
