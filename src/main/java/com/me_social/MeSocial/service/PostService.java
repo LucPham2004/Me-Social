@@ -1,7 +1,9 @@
 package com.me_social.MeSocial.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -120,11 +122,17 @@ public class PostService {
             
             Set<Media> medias = new HashSet<>();
 
-            for(int i = 0; i < request.getPublicIds().size(); i++) {
+            List<String> publicIdsList = new ArrayList<>(request.getPublicIds());
+            List<String> urlsList = new ArrayList<>(request.getUrls());
+
+            if (publicIdsList.size() != urlsList.size()) {
+                throw new IllegalArgumentException("The size of publicIds and urls must be the same.");
+            }
+
+            for (int i = 0; i < publicIdsList.size(); i++) {
                 Media media = new Media();
-                media.setPublicId(request.getPublicIds().iterator().next());
-                media.setUrl(request.getUrls().iterator().next());
-                media.setPost(post);
+                media.setPublicId(publicIdsList.get(i));
+                media.setUrl(urlsList.get(i));
 
                 medias.add(mediaRepository.save(media));
             }
