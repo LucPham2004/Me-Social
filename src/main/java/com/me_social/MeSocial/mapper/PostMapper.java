@@ -1,9 +1,12 @@
 package com.me_social.MeSocial.mapper;
 
+import java.util.Set;
+
 import org.springframework.stereotype.Component;
 
 import com.me_social.MeSocial.entity.dto.request.PostRequest;
 import com.me_social.MeSocial.entity.dto.response.PostResponse;
+import com.me_social.MeSocial.entity.modal.Media;
 import com.me_social.MeSocial.entity.modal.Post;
 import com.me_social.MeSocial.repository.CommentRepository;
 import com.me_social.MeSocial.repository.GroupRepository;
@@ -53,6 +56,20 @@ public class PostMapper {
         response.setUpdatedAt(post.getUpdatedAt());
         response.setLikeNum(likeRepository.countByPostId(post.getId()));
         response.setCommentNum(commentRepository.countByPostId(post.getId()));
+
+        Set<Media> medias = post.getMedias();
+        if (medias != null && !medias.isEmpty()) {
+            String[] publicIds = medias.stream()
+                .map(Media::getPublicId)
+                .toArray(String[]::new);
+
+            String[] urls = medias.stream()
+                .map(Media::getUrl)
+                .toArray(String[]::new);
+
+            response.setPublicIds(publicIds);
+            response.setUrls(urls);
+        }
         
         return response;
     }

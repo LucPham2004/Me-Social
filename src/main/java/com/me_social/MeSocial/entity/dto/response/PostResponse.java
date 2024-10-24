@@ -1,7 +1,6 @@
 package com.me_social.MeSocial.entity.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import com.me_social.MeSocial.enums.PostPrivacy;
 
@@ -24,8 +23,8 @@ public class PostResponse {
     Long groupId;
     String groupName;
     String content;
-    Set<String> urls;
-    Set<String> publicIds;
+    String[] urls;
+    String[] publicIds;
     PostPrivacy privacy;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

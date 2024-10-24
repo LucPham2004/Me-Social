@@ -1,9 +1,7 @@
 package com.me_social.MeSocial.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -118,33 +116,31 @@ public class PostService {
             post.setTags(tags);
         }
 
-        if(request.getPublicIds() != null && request.getUrls() != null) {
-            
-            Set<Media> medias = new HashSet<>();
+        post.setUser(userService.findById(request.getUserId())
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED)));
+        postRepository.save(post);
 
-            List<String> publicIdsList = new ArrayList<>(request.getPublicIds());
-            List<String> urlsList = new ArrayList<>(request.getUrls());
+        if (request.getPublicIds() != null && request.getUrls() != null) {
 
-            if (publicIdsList.size() != urlsList.size()) {
+            if (request.getPublicIds().length != request.getUrls().length) {
                 throw new IllegalArgumentException("The size of publicIds and urls must be the same.");
             }
-
-            for (int i = 0; i < publicIdsList.size(); i++) {
+        
+            Set<Media> medias = new HashSet<>();
+        
+            for (int i = 0; i < request.getPublicIds().length; i++) {
                 Media media = new Media();
-                media.setPublicId(publicIdsList.get(i));
-                media.setUrl(urlsList.get(i));
-
+                media.setPublicId(request.getPublicIds()[i]);
+                media.setUrl(request.getUrls()[i]);
+                media.setPost(post);
+        
                 medias.add(mediaRepository.save(media));
             }
-    
+        
             post.setMedias(medias);
         }
         
-        post.setUser(userService.findById(request.getUserId())
-            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED)));
-        post.setCreatedAt(LocalDateTime.now());
-
-        return postRepository.save(post);
+        return post;
     }
 
     // Delete Post
