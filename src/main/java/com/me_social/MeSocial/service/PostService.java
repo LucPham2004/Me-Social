@@ -11,12 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.me_social.MeSocial.entity.dto.request.PostRequest;
+import com.me_social.MeSocial.entity.modal.Media;
 import com.me_social.MeSocial.entity.modal.Post;
 import com.me_social.MeSocial.entity.modal.Tag;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
 import com.me_social.MeSocial.mapper.PostMapper;
 import com.me_social.MeSocial.repository.GroupRepository;
+import com.me_social.MeSocial.repository.MediaRepository;
 import com.me_social.MeSocial.repository.PostRepository;
 import com.me_social.MeSocial.repository.TagRepository;
 import com.me_social.MeSocial.repository.UserRepository;
@@ -35,6 +37,7 @@ public class PostService {
     GroupRepository groupRepository;
     TagRepository tagRepository;
     PostMapper postMapper;
+    MediaRepository mediaRepository;
     TagService tagService;
 
     static int POSTS_PER_PAGE = 10;
@@ -111,6 +114,22 @@ public class PostService {
             }
     
             post.setTags(tags);
+        }
+
+        if(request.getPublicIds() != null && request.getUrls() != null) {
+            
+            Set<Media> medias = new HashSet<>();
+
+            for(int i = 0; i < request.getPublicIds().size(); i++) {
+                Media media = new Media();
+                media.setPublicId(request.getPublicIds().iterator().next());
+                media.setUrl(request.getUrls().iterator().next());
+                media.setPost(post);
+
+                medias.add(mediaRepository.save(media));
+            }
+    
+            post.setMedias(medias);
         }
         
         post.setUser(userService.findById(request.getUserId())

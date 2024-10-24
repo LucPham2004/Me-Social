@@ -25,6 +25,7 @@ public class PostResponse {
     String groupName;
     String content;
     Set<String> urls;
+    Set<String> publicIds;
     PostPrivacy privacy;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

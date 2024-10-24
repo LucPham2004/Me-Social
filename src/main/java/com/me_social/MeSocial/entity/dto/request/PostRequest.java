@@ -25,6 +25,7 @@ public class PostRequest {
     Long groupId;
     String content;
     Set<String> urls;
+    Set<String> publicIds;
     
     @NotNull
     PostPrivacy privacy;

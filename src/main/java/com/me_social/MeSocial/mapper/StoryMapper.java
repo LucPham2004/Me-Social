@@ -21,6 +21,7 @@ public class StoryMapper {
 
     public Story toStory(StoryRequest request) {
         Story story = new Story();
+        story.setId(request.getPublicId());
         story.setUser(userRepository.findById(request.getUserId()).get());
         story.setUrl(request.getUrl());
 

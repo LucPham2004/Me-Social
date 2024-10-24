@@ -43,8 +43,6 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private PostPrivacy privacy;
 
-    private Set<String> urls;
-
     @Column(name = "is_read", columnDefinition = "BIT")
     private Boolean isRead = false;
 
@@ -63,6 +61,10 @@ public class Post {
     @JoinColumn(name = "group_id")
     @JsonBackReference(value = "group_posts")
     private Group group;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "post_medias")
+    private Set<Media> medias;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "post_likes")

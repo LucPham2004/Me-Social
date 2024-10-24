@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level=AccessLevel.PRIVATE)
 public class StoryRequest {
+    String publicId;
     Long userId;
     String url;
 }

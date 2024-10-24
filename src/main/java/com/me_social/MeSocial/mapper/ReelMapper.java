@@ -23,6 +23,7 @@ public class ReelMapper {
 
     public Reel toReel(ReelRequest request) {
         Reel reel = new Reel();
+        reel.setId(request.getPublicId());
         reel.setUser(userRepository.findById(request.getUserId()).get());
         reel.setUrl(request.getUrl());
         reel.setContent(request.getContent());

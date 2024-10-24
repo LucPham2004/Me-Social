@@ -5,10 +5,13 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.me_social.MeSocial.enums.PostPrivacy;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,6 +39,11 @@ public class Story {
     private String id;
 
     private String url;
+
+    private String content;
+    
+    @Enumerated(EnumType.STRING)
+    private PostPrivacy privacy;
 
     @Column(name = "created_at", nullable = true, updatable = true)
     private Instant createdAt;
