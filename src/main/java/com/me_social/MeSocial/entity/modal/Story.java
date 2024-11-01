@@ -57,6 +57,10 @@ public class Story {
     private User user;
 
     @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference(value = "story_medias")
+    private Set<Media> medias;
+
+    @OneToMany(mappedBy = "story", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "story_likes")
     private Set<Like> likes;
     

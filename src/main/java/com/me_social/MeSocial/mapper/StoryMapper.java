@@ -1,9 +1,12 @@
 package com.me_social.MeSocial.mapper;
 
+import java.util.Set;
+
 import org.springframework.stereotype.Component;
 
 import com.me_social.MeSocial.entity.dto.request.StoryRequest;
 import com.me_social.MeSocial.entity.dto.response.StoryResponse;
+import com.me_social.MeSocial.entity.modal.Media;
 import com.me_social.MeSocial.entity.modal.Story;
 import com.me_social.MeSocial.repository.LikeRepository;
 import com.me_social.MeSocial.repository.UserRepository;
@@ -32,11 +35,24 @@ public class StoryMapper {
         StoryResponse response = new StoryResponse();
 
         response.setId(story.getId());
-        response.setUrl(story.getUrl());
         response.setUserId(story.getUser().getId());
         response.setCreatedAt(story.getCreatedAt());
         response.setUpdatedAt(story.getUpdatedAt());
         response.setLikeNum(likeRepository.countByStoryId(story.getId()));
+
+        Set<Media> medias = story.getMedias();
+        if (medias != null && !medias.isEmpty()) {
+            String[] publicIds = medias.stream()
+                .map(Media::getPublicId)
+                .toArray(String[]::new);
+
+            String[] urls = medias.stream()
+                .map(Media::getUrl)
+                .toArray(String[]::new);
+
+            response.setPublicIds(publicIds);
+            response.setUrls(urls);
+        }
 
         return response;
     }

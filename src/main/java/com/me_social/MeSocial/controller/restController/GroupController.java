@@ -45,7 +45,7 @@ public class GroupController {
     }
 
     // Get groups by user
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user")
     public ApiResponse<Page<GroupResponse>> getGroupsByUserId(
             @RequestParam Long userId,
             @RequestParam(defaultValue = "0") int pageNum) {

@@ -1,7 +1,8 @@
 package com.me_social.MeSocial.entity.modal;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,6 +40,11 @@ public class Media {
     @JoinColumn(name = "post_id")
     @JsonBackReference(value = "post_medias")
     private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "story_id")
+    @JsonBackReference(value = "story_medias")
+    private Story story;
     
     @PrePersist
     public void handleBeforeCreate() {

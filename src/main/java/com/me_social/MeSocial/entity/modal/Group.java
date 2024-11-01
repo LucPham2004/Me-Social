@@ -42,6 +42,8 @@ public class Group {
 
     private String description;
 
+    private String location;
+
     @Column(name = "image_url")
     private String imageUrl;
 

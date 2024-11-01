@@ -7,7 +7,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,11 +43,7 @@ public class AuthController {
      AuthenticationManagerBuilder authenticationManagerBuilder;
      UserService userService;
      SecurityUtils securityUtils;
-     PasswordEncoder passwordEncoder;
      UserMapper userMapper;
-
-     // @Value("${me_social.jwt.refresh-token-validity-in-seconds}")
-     // private Long refreshTokenExpiration;
 
      @PostMapping("/login")
      public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
