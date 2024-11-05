@@ -17,13 +17,14 @@ import lombok.experimental.FieldDefaults;
 public class StoryResponse {
     String id;
     Long userId;
+    String content;
 
+    String thumbnail;
     String[] urls;
     String[] publicIds;
+
     Instant createdAt;
-    
     Instant updatedAt;
 
     int LikeNum;
-    int commentNum;
 }

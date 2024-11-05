@@ -41,6 +41,8 @@ public class Story {
     private String url;
 
     private String content;
+
+    private String thumbnail;
     
     @Enumerated(EnumType.STRING)
     private PostPrivacy privacy;

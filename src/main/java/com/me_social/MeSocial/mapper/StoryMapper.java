@@ -1,5 +1,6 @@
 package com.me_social.MeSocial.mapper;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
@@ -24,9 +25,23 @@ public class StoryMapper {
 
     public Story toStory(StoryRequest request) {
         Story story = new Story();
-        story.setId(request.getPublicId());
         story.setUser(userRepository.findById(request.getUserId()).get());
-        story.setUrl(request.getUrl());
+        story.setContent(request.getContent());
+        story.setThumbnail(request.getThumbnail());
+
+        Set<Media> medias = new HashSet<>();
+        String[] publicIds = request.getPublicIds();
+        String[] urls = request.getUrls();
+        if (publicIds.length < 1 && urls.length < 1 ) {
+            for (int i = 0; i < request.getPublicIds().length; i++) {
+                Media media = new Media();
+                media.setPublicId(publicIds[i]);
+                media.setUrl(urls[i]);
+
+                medias.add(media);
+            }
+            story.setMedias(medias);
+        }
 
         return story;
     }
@@ -36,6 +51,8 @@ public class StoryMapper {
 
         response.setId(story.getId());
         response.setUserId(story.getUser().getId());
+        response.setContent(story.getContent());
+        response.setThumbnail(story.getThumbnail());
         response.setCreatedAt(story.getCreatedAt());
         response.setUpdatedAt(story.getUpdatedAt());
         response.setLikeNum(likeRepository.countByStoryId(story.getId()));
