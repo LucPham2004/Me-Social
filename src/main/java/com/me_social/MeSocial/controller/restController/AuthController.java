@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.me_social.MeSocial.entity.dto.request.LoginRequest;
@@ -27,13 +28,15 @@ import com.me_social.MeSocial.mapper.UserMapper;
 import com.me_social.MeSocial.repository.LikeRepository;
 import com.me_social.MeSocial.repository.PostRepository;
 import com.me_social.MeSocial.service.UserService;
+import com.me_social.MeSocial.utils.EmailUtil;
+import com.me_social.MeSocial.utils.OtpUtil;
 import com.me_social.MeSocial.utils.SecurityUtils;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.var;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -49,6 +52,7 @@ public class AuthController {
      UserService userService;
      SecurityUtils securityUtils;
      UserMapper userMapper;
+     EmailUtil emailUtil;
 
      @PostMapping("/login")
      public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
@@ -237,6 +241,13 @@ public class AuthController {
 
      @PostMapping("/register")
      public ApiResponse<UserResponse> register(@Valid @RequestBody UserCreationRequest reqUser) {
+          String otp = OtpUtil.generateOtp(6);
+
+          try {
+               emailUtil.sendOtpEmail(reqUser.getEmail(), otp);
+          } catch (MessagingException e) {
+               throw new AppException(ErrorCode.ERROR_EMAIL);
+          }
 
           User resUser = this.userService.createUser(reqUser);
 
@@ -246,4 +257,56 @@ public class AuthController {
                     .result(userMapper.toUserResponse(resUser))
                     .build();
      }
+
+     @PostMapping("/verify-otp")
+     public ApiResponse<Void> verifyOtp(@RequestParam String email, @RequestParam String otp) {
+          User user = userService.getUserByEmail(email);
+          if (user == null) {
+               return ApiResponse.<Void>builder()
+                    .code(1001)
+                    .message("User not found.")
+                    .build();
+          }
+
+          boolean isVerified = userService.verifyOtp(user, otp);
+          if (isVerified) {
+               user.setActive(true);
+               return ApiResponse.<Void>builder()
+                    .code(1000)
+                    .message("Account verified successfully!")
+                    .build();
+          } else {
+               return ApiResponse.<Void>builder()
+                    .code(1001)
+                    .message("Invalid or expired OTP.")
+                    .build();
+          }
+     }
+
+     @PostMapping("/regenerate-otp")
+     public ApiResponse<String> regenerateOtp(@RequestParam String email) {
+          User user = userService.getUserByEmail(email);
+          if (user == null) {
+               return ApiResponse.<String>builder()
+                    .code(1001)
+                    .message("User not found.")
+                    .result("Regeneration failed")
+                    .build();
+          }
+          
+          String otp = OtpUtil.generateOtp(6);
+          try {
+               emailUtil.sendOtpEmail(email, otp);
+          } catch (MessagingException e) {
+               throw new RuntimeException("Unable to send OTP, please try again.");
+          }
+
+          user.setOtp(otp);
+          return ApiResponse.<String>builder()
+               .code(1000)
+               .message("New OTP sent to email.")
+               .result("OTP regenerated")
+               .build();
+     }
+
 }

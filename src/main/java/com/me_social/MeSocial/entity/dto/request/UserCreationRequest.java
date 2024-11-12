@@ -35,4 +35,6 @@ public class UserCreationRequest {
 
     Gender gender;
 
+    String otp;
+
 }

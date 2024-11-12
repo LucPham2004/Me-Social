@@ -1,6 +1,7 @@
 package com.me_social.MeSocial.entity.modal;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -81,11 +82,9 @@ public class User {
     // Entity Relationships
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-	@JoinTable( name = "user_role", 
-                joinColumns = @JoinColumn(name = "user_id"), 
-                inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     @JsonManagedReference(value = "user_role")
-	private Set<Role> authorities;
+    private Set<Role> authorities;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "user_posts")
@@ -131,6 +130,10 @@ public class User {
 
     @OneToMany(mappedBy = "requestReceiver", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Friendship> friendRequestReceived;
+
+    private String otp;
+    private Instant otpGeneratedTime;
+    private boolean isActive;
 
     @PrePersist
     public void handleBeforeCreate() {

@@ -1,5 +1,8 @@
 package com.me_social.MeSocial.service;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -219,5 +222,23 @@ public class UserService {
     public User getUserByRefreshTokenAndEmailOrUsernameOrPhone(String token, String emailUsernamePhone) {
         return this.userRepository.findByRefreshTokenAndEmailOrUsernameOrPhone(token, emailUsernamePhone)
                 .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+    }
+
+    public User getUserByEmail(String email) {
+        Optional<User> optionalUser = this.userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            return null;
+        }
+        return optionalUser.get();
+    }
+
+      public boolean verifyOtp(User user, String otp) {
+        if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(), Instant.now()).getSeconds() < 60) {
+            user.setOtp(null); // Clear OTP after successful verification
+            userRepository.save(user);
+            return true;
+        } else {
+            throw new AppException(ErrorCode.INVALID_OTP);
+        }
     }
 }

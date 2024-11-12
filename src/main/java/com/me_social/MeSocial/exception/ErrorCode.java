@@ -34,7 +34,9 @@ public enum ErrorCode {
 
     NO_REFRESH_TOKEN(1010, "You don't have refresh token in cookies", HttpStatus.BAD_REQUEST),
 
-    INVALID_ACCESS_TOKEN(1011, "Your access token is not valid", HttpStatus.BAD_REQUEST)
+    INVALID_ACCESS_TOKEN(1011, "Your access token is not valid", HttpStatus.BAD_REQUEST), 
+    ERROR_EMAIL(1012, "Some error occur when sending email", HttpStatus.INTERNAL_SERVER_ERROR), 
+    INVALID_OTP(1013, "Invalid OTP", HttpStatus.BAD_REQUEST)
 
     ;
 
