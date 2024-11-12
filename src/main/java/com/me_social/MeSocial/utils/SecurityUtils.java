@@ -98,7 +98,7 @@ public class SecurityUtils {
         userToken.setId(dto.getUser().getId());
         userToken.setEmail(dto.getUser().getEmail());
         userToken.setUsername(dto.getUser().getUsername());
-        userToken.setLocation(dto.getUser().getLocatation());
+        userToken.setLocation(dto.getUser().getLocation());
 
         // @formatter:off
         JwtClaimsSet claims = JwtClaimsSet.builder()

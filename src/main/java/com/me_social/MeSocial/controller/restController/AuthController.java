@@ -24,6 +24,8 @@ import com.me_social.MeSocial.entity.modal.User;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
 import com.me_social.MeSocial.mapper.UserMapper;
+import com.me_social.MeSocial.repository.LikeRepository;
+import com.me_social.MeSocial.repository.PostRepository;
 import com.me_social.MeSocial.service.UserService;
 import com.me_social.MeSocial.utils.SecurityUtils;
 
@@ -31,6 +33,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.var;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -41,6 +44,8 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController {
 
      AuthenticationManagerBuilder authenticationManagerBuilder;
+     PostRepository postRepository;
+     LikeRepository likeRepository;
      UserService userService;
      SecurityUtils securityUtils;
      UserMapper userMapper;
@@ -63,6 +68,9 @@ public class AuthController {
           LoginResponse loginResponse = new LoginResponse();
           User currentUserDB = userService.handleGetUserByUsernameOrEmailOrPhone(loginRequest.getUsername());
 
+          int postNum = this.postRepository.countByUserId(currentUserDB.getId());
+          int likeNum = this.likeRepository.countByUserId(currentUserDB.getId());
+
           if (currentUserDB != null) {
                LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
                          currentUserDB.getId(),
@@ -70,6 +78,8 @@ public class AuthController {
                          currentUserDB.getUsername(),
                          currentUserDB.getLocation(),
                          currentUserDB.getBio(),
+                         postNum,
+                         likeNum,
                          currentUserDB.getAuthorities());
                loginResponse.setUser(userLogin);
           }
@@ -117,7 +127,7 @@ public class AuthController {
                userLogin.setId(currentUserDB.getId());
                userLogin.setEmail(currentUserDB.getEmail());
                userLogin.setUsername(currentUserDB.getUsername());
-               userLogin.setLocatation(currentUserDB.getLocation());
+               userLogin.setLocation(currentUserDB.getLocation());
                userLogin.setBio(currentUserDB.getBio());
                userLogin.setAuthorities(currentUserDB.getAuthorities());
 
@@ -148,12 +158,17 @@ public class AuthController {
           // issue new token / set refresh token as cookies
           LoginResponse res = new LoginResponse();
 
+          int postNum = this.postRepository.countByUserId(currentUser.getId());
+          int likeNum = this.likeRepository.countByUserId(currentUser.getId());
+
           LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(
                     currentUser.getId(),
                     currentUser.getEmail(),
                     currentUser.getUsername(),
                     currentUser.getLocation(),
                     currentUser.getBio(),
+                    postNum,
+                    likeNum,
                     currentUser.getAuthorities());
           res.setUser(userLogin);
 

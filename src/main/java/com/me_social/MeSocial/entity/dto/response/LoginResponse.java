@@ -18,12 +18,27 @@ public class LoginResponse {
      @AllArgsConstructor
      @NoArgsConstructor
      public static class UserLogin {
+
           private long id;
           private String email;
           private String username;
-          private String locatation;
+          private String location;
           private String bio;
+          private int postNum;
+          private int likeNum;
           private Set<Role> authorities;
+
+          public UserLogin(Long id, String email, String username, String location, String bio, int postNum2,
+                    int likeNum2, Set<Role> authorities) {
+               this.id = id;
+               this.email = email;
+               this.username = username;
+               this.location = location;
+               this.bio = bio;
+               this.postNum = postNum2;
+               this.likeNum = likeNum2;
+               this.authorities = authorities;
+          }
      }
 
      @Data
