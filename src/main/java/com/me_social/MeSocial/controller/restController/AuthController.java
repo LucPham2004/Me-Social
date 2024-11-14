@@ -1,5 +1,7 @@
 package com.me_social.MeSocial.controller.restController;
 
+import java.time.Instant;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,7 @@ import com.me_social.MeSocial.exception.ErrorCode;
 import com.me_social.MeSocial.mapper.UserMapper;
 import com.me_social.MeSocial.repository.LikeRepository;
 import com.me_social.MeSocial.repository.PostRepository;
+import com.me_social.MeSocial.repository.UserRepository;
 import com.me_social.MeSocial.service.UserService;
 import com.me_social.MeSocial.utils.EmailUtil;
 import com.me_social.MeSocial.utils.OtpUtil;
@@ -53,6 +56,7 @@ public class AuthController {
      SecurityUtils securityUtils;
      UserMapper userMapper;
      EmailUtil emailUtil;
+     UserRepository userRepository;
 
      @PostMapping("/login")
      public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
@@ -245,11 +249,16 @@ public class AuthController {
 
           try {
                emailUtil.sendOtpEmail(reqUser.getEmail(), otp);
+               
           } catch (MessagingException e) {
                throw new AppException(ErrorCode.ERROR_EMAIL);
           }
 
           User resUser = this.userService.createUser(reqUser);
+          resUser.setOtp(otp);
+          resUser.setOtpGeneratedTime(Instant.now());
+          this.userRepository.save(resUser);
+
 
           return ApiResponse.<UserResponse>builder()
                     .code(1000)
@@ -261,16 +270,11 @@ public class AuthController {
      @PostMapping("/verify-otp")
      public ApiResponse<Void> verifyOtp(@RequestParam String email, @RequestParam String otp) {
           User user = userService.getUserByEmail(email);
-          if (user == null) {
-               return ApiResponse.<Void>builder()
-                    .code(1001)
-                    .message("User not found.")
-                    .build();
-          }
 
           boolean isVerified = userService.verifyOtp(user, otp);
           if (isVerified) {
                user.setActive(true);
+
                return ApiResponse.<Void>builder()
                     .code(1000)
                     .message("Account verified successfully!")
@@ -286,19 +290,12 @@ public class AuthController {
      @PostMapping("/regenerate-otp")
      public ApiResponse<String> regenerateOtp(@RequestParam String email) {
           User user = userService.getUserByEmail(email);
-          if (user == null) {
-               return ApiResponse.<String>builder()
-                    .code(1001)
-                    .message("User not found.")
-                    .result("Regeneration failed")
-                    .build();
-          }
           
           String otp = OtpUtil.generateOtp(6);
           try {
                emailUtil.sendOtpEmail(email, otp);
           } catch (MessagingException e) {
-               throw new RuntimeException("Unable to send OTP, please try again.");
+               throw new AppException(ErrorCode.ERROR_EMAIL);
           }
 
           user.setOtp(otp);
