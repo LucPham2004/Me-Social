@@ -245,7 +245,11 @@ public class AuthController {
 
      @PostMapping("/register")
      public ApiResponse<UserResponse> register(@Valid @RequestBody UserCreationRequest reqUser) {
+          User resUser = this.userService.createUser(reqUser);
+
           String otp = OtpUtil.generateOtp(6);
+          resUser.setOtp(otp);
+          resUser.setOtpGeneratedTime(Instant.now());
 
           try {
                emailUtil.sendOtpEmail(reqUser.getEmail(), otp);
@@ -254,9 +258,6 @@ public class AuthController {
                throw new AppException(ErrorCode.ERROR_EMAIL);
           }
 
-          User resUser = this.userService.createUser(reqUser);
-          resUser.setOtp(otp);
-          resUser.setOtpGeneratedTime(Instant.now());
           this.userRepository.save(resUser);
 
 

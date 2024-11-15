@@ -141,9 +141,11 @@ public class UserService {
     // POST
     // Create user
     public User createUser(UserCreationRequest request) {
+        
         if (userRepository.existsByUsername(request.getUsername())
                 || userRepository.existsByEmail(request.getEmail())
                 || userRepository.existsByPhone(request.getPhone())) {
+                    log.info("something wrong");
             throw new AppException(ErrorCode.ENTITY_EXISTED);
         }
         User user = userMapper.toUser(request);

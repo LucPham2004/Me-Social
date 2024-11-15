@@ -1,6 +1,7 @@
 package com.me_social.MeSocial.controller.restController;
 
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,7 +87,6 @@ public class UserController {
                                 .build();
         }
 
-
         // Get Group members
         @GetMapping("/get/group/members")
         public ApiResponse<Page<UserDTO>> getGroupMembers(
@@ -138,8 +138,8 @@ public class UserController {
                 var friends = this.userService.getMutualFriends(meId, youId, pageNum);
                 return ApiResponse.<Page<UserDTO>>builder()
                                 .code(1000)
-                                .message("Get mutual friends of user with ID " + meId + 
-                                        " and user with ID " + youId + " successfully!")
+                                .message("Get mutual friends of user with ID " + meId +
+                                                " and user with ID " + youId + " successfully!")
                                 .result(friends)
                                 .build();
         }
@@ -156,5 +156,4 @@ public class UserController {
                                 .result(friends)
                                 .build();
         }
-
 }
