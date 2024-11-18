@@ -22,6 +22,7 @@ public class PostRequest {
     Long userId;
     Long groupId;
     String content;
+    
     String[] urls;
     String[] publicIds;
     
