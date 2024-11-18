@@ -30,7 +30,6 @@ public class UserMapper {
         user.setPhone(request.getPhone());
         user.setDob(request.getDob());
         user.setGender(request.getGender());
-        user.setOtp(request.getOtp());
 
         return user;
     };

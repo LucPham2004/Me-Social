@@ -140,9 +140,11 @@ public class UserService {
     // POST
     // Create user
     public User createUser(UserCreationRequest request) {
+        
         if (userRepository.existsByUsername(request.getUsername())
                 || userRepository.existsByEmail(request.getEmail())
                 || userRepository.existsByPhone(request.getPhone())) {
+                    log.info("something wrong");
             throw new AppException(ErrorCode.ENTITY_EXISTED);
         }
         User user = userMapper.toUser(request);
@@ -233,7 +235,7 @@ public class UserService {
 
       public boolean verifyOtp(User user, String otp) {
         if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(), Instant.now()).getSeconds() < 60) {
-            user.setOtp(null); // Clear OTP after successful verification
+            user.setOtp(otp); // Clear OTP after successful verification
             userRepository.save(user);
             return true;
         } else {

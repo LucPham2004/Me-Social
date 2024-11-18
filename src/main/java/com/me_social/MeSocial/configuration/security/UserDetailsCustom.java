@@ -10,6 +10,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.me_social.MeSocial.entity.modal.User;
+import com.me_social.MeSocial.exception.AppException;
+import com.me_social.MeSocial.exception.ErrorCode;
 import com.me_social.MeSocial.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -42,7 +44,7 @@ public class UserDetailsCustom implements UserDetailsService {
           if (userOptional.isEmpty()) {
                // Nếu không tìm thấy user ở tất cả các trường hợp, ném ngoại lệ tại đây
                log.info("phone empty");
-               throw new UsernameNotFoundException("User not found with login: " + login);
+               throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
           }
 
           // Lấy user từ Optional nếu có

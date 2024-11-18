@@ -10,15 +10,15 @@ import com.me_social.MeSocial.entity.dto.response.ApiResponse;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     
-    @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ApiResponse<String>> handlingRuntimeException(RuntimeException exception) {
-        ApiResponse<String> apiResponse = new ApiResponse<>();
+    // @ExceptionHandler(value = Exception.class)
+    // public ResponseEntity<ApiResponse<String>> handlingRuntimeException(RuntimeException exception) {
+    //     ApiResponse<String> apiResponse = new ApiResponse<>();
 
-        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
-        apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
+    //     apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
+    //     apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
         
-        return ResponseEntity.badRequest().body(apiResponse);
-    }
+    //     return ResponseEntity.badRequest().body(apiResponse);
+    // }
 
     @ExceptionHandler(value = AppException.class)
     public ResponseEntity<ApiResponse<String>> handlingAppException(AppException exception) {
