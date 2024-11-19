@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.me_social.MeSocial.entity.dto.request.ChatRequest;
 import com.me_social.MeSocial.entity.dto.response.ChatResponse;
+import com.me_social.MeSocial.entity.modal.ChatMessage;
 import com.me_social.MeSocial.entity.modal.DirectMessage;
 import com.me_social.MeSocial.repository.UserRepository;
 
@@ -19,6 +20,17 @@ public class ChatMapper {
     UserRepository userRepository;
     
     public DirectMessage toDirectMessage(ChatRequest request) {
+        DirectMessage message = new DirectMessage();
+        message.setContent(request.getContent());
+        message.setUrl(request.getUrl());
+        message.setReceiver(userRepository.findById(request.getReceiverId()).get());
+        message.setSender(userRepository.findById(request.getSenderId()).get());
+        message.setRead(false);
+
+        return message;
+    }
+
+    public DirectMessage toDirectMessage(ChatMessage request) {
         DirectMessage message = new DirectMessage();
         message.setContent(request.getContent());
         message.setUrl(request.getUrl());

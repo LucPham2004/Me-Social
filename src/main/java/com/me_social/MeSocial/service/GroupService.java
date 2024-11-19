@@ -126,6 +126,10 @@ public class GroupService {
             group.setPrivacy(request.getPrivacy());
         }
 
+        if (request.getImageUrl() != null && !request.getImageUrl().equals(group.getImageUrl())) {
+            group.setImageUrl(request.getImageUrl());
+        }
+
         group.setUpdatedAt(LocalDateTime.now());
         return groupRepository.save(group);
     }

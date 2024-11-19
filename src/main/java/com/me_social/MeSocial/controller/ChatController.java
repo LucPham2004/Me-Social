@@ -3,7 +3,6 @@ package com.me_social.MeSocial.controller;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -27,19 +26,18 @@ public class ChatController {
     @MessageMapping("/sendMessage")
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
-        
+        chatService.saveDirectMessage(chatMapper.toDirectMessage(chatMessage));
+
         return chatMessage;
         
     }
 
-    @MessageMapping("/addUser")
-    @SendTo("/topic/public")
-    public ChatMessage addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+    @MessageMapping("/private-message")
+    public void sendPrivateMessage(@Payload ChatMessage chatMessage) {
+        chatService.saveDirectMessage(chatMapper.toDirectMessage(chatMessage));
         
-        // Add username in web socket session
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-        return chatMessage;
-        
+        String receiverId = chatMessage.getReceiverId().toString();
+        messagingTemplate.convertAndSendToUser(receiverId, "/queue/messages", chatMessage);
     }
 }
 

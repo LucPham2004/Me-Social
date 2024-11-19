@@ -2,13 +2,8 @@ package com.me_social.MeSocial.utils;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
-import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-
-import com.me_social.MeSocial.entity.modal.ChatMessage;
-import com.me_social.MeSocial.enums.MessageType;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,20 +20,21 @@ public class WebSocketEventListener {
         log.info("Received a new web socket connection");
     }
     
-    @EventListener
-    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String username = (String) headerAccessor.getSessionAttributes().get("username");
+    // @EventListener
+    // public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
+    //     StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+    //     long senderId = (long) headerAccessor.getSessionAttributes().get("senderId");
+    //     long receiverId = (long) headerAccessor.getSessionAttributes().get("receiverId");
         
-        if (username != null) {
-            log.info("user disconnected: {}", username);
+    //         log.info("user disconnected: {}", senderId);
             
-            var chatMessage = ChatMessage.builder()
-                    .type(MessageType.LEAVE)
-                    .sender(username)
-                    .build();
+    //         var chatMessage = ChatMessage.builder()
+    //                 .type(MessageType.LEAVE)
+    //                 .senderId(senderId)
+    //                 .receiverId(receiverId)
+    //                 .build();
             
-            messagingTemplate.convertAndSend("/topic/public", chatMessage);
-        }
-    }
+    //         messagingTemplate.convertAndSend("/topic/public", chatMessage);
+    //     }
+    
 }
