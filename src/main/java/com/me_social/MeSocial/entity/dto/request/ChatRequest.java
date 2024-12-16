@@ -1,5 +1,7 @@
 package com.me_social.MeSocial.entity.dto.request;
 
+import com.me_social.MeSocial.enums.MessageType;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,4 +20,5 @@ public class ChatRequest {
     Long receiverId;
     String content;
     String url;
+    MessageType type; 
 }

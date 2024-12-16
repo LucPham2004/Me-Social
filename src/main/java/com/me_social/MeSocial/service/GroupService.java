@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.me_social.MeSocial.entity.dto.request.GroupRequest;
+import com.me_social.MeSocial.entity.dto.request.PostRequest;
 import com.me_social.MeSocial.entity.modal.Group;
 import com.me_social.MeSocial.entity.modal.User;
+import com.me_social.MeSocial.enums.PostPrivacy;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
 import com.me_social.MeSocial.mapper.GroupMapper;
@@ -28,6 +30,7 @@ public class GroupService {
     GroupRepository groupRepository;
     UserRepository userRepository;
     GroupMapper groupMapper;
+    PostService postService;
 
     static int GROUPS_PER_PAGE = 20;
 
@@ -61,12 +64,25 @@ public class GroupService {
 
     // Create Group
     public Group createGroup(GroupRequest request) {
-        if (!userRepository.existsById(request.getAdminId())) {
-            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
-        }
+        User admin = userRepository.findById(request.getAdminId())
+            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+        
         Group group = groupMapper.toGroup(request);
         group.setCreatedAt(LocalDateTime.now());
-        return groupRepository.save(group);
+        // group.setImageUrl("https://www.facebook.com/images/groups/groups-default-cover-photo-2x.png");
+
+        groupRepository.save(group);
+        
+        // Create a post for creating group
+        PostRequest postRequest = new PostRequest();
+        postRequest.setUserId(request.getAdminId());
+        postRequest.setGroupId(group.getId());
+        postRequest.setContent(admin.getFirstName() + " " + (admin.getLastName() != null ? admin.getLastName() : " ") + " đã tạo nhóm " + group.getName());
+        postRequest.setPrivacy(PostPrivacy.PUBLIC);
+
+        postService.createPost(postRequest);
+
+        return group;
     }
 
     // POST: Add Admin to Group
@@ -108,6 +124,10 @@ public class GroupService {
 
         if (request.getPrivacy() != null && !request.getPrivacy().equals(group.getPrivacy())) {
             group.setPrivacy(request.getPrivacy());
+        }
+
+        if (request.getImageUrl() != null && !request.getImageUrl().equals(group.getImageUrl())) {
+            group.setImageUrl(request.getImageUrl());
         }
 
         group.setUpdatedAt(LocalDateTime.now());

@@ -48,7 +48,9 @@ public class GroupMapper {
         group.setName(request.getName());
         group.setDescription(request.getDescription());
         group.setPrivacy(request.getPrivacy());
-        group.setImageUrl(request.getImageUrl());
+        group.setImageUrl(request.getImageUrl() != null 
+            ? request.getImageUrl() 
+            : "https://www.facebook.com/images/groups/groups-default-cover-photo-2x.png");
         
         return group;
     }}

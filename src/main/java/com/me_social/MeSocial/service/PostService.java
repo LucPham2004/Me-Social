@@ -61,7 +61,7 @@ public class PostService {
         }
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
 
-        return postRepository.findUnreadPublicGroupPosts(userId, pageable);
+        return postRepository.findJoinedGroupPosts(userId, pageable);
     }
 
     // Get Posts By User
