@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,7 +37,7 @@ public class SecurityConfig {
 
     String[] whiteList = {
             "/",
-            "/api/auth/login", "/api/auth/refresh", "/api/auth/register"
+            "/api/auth/login", "/api/auth/refresh", "/api/auth/register", "/api/auth/verify-otp"
     };
 
     @Bean
@@ -52,12 +53,11 @@ public class SecurityConfig {
                                     //     .hasRole("ADMIN")
                                     //     .anyRequest().authenticated();
                                     })
-                .formLogin(f -> f.disable())
+                .formLogin(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(
                         (oauth2) -> oauth2
                                 .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
                                         .jwtAuthenticationConverter(jwtAuthenticationConverter())))
-
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }

@@ -36,7 +36,8 @@ public enum ErrorCode {
 
     INVALID_ACCESS_TOKEN(1011, "Your access token is not valid", HttpStatus.BAD_REQUEST), 
     ERROR_EMAIL(1012, "Some error occur when sending email", HttpStatus.INTERNAL_SERVER_ERROR), 
-    INVALID_OTP(1013, "Invalid OTP", HttpStatus.BAD_REQUEST)
+    INVALID_OTP(1013, "Invalid OTP", HttpStatus.BAD_REQUEST), 
+    EXPIRED_OTP(1014, "OTP is expired", HttpStatus.BAD_REQUEST)
 
     ;
 

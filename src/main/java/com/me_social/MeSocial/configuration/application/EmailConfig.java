@@ -1,4 +1,4 @@
-package com.me_social.MeSocial.configuration;
+package com.me_social.MeSocial.configuration.application;
 
 import java.util.Properties;
 import org.springframework.beans.factory.annotation.Value;

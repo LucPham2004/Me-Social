@@ -239,8 +239,10 @@ public class UserService {
             user.setOtp(otp); // Clear OTP after successful verification
             userRepository.save(user);
             return true;
-        } else {
+        } else if (!user.getOtp().equals(otp)) {
             throw new AppException(ErrorCode.INVALID_OTP);
+        } else {
+            throw new AppException(ErrorCode.EXPIRED_OTP);
         }
     }
 }

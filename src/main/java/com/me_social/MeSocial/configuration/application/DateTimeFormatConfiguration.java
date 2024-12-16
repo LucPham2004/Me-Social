@@ -1,4 +1,4 @@
-package com.me_social.MeSocial.configuration;
+package com.me_social.MeSocial.configuration.application;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
