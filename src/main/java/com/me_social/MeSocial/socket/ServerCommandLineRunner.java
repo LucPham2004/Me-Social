@@ -1,20 +1,20 @@
-package com.me_social.MeSocial.socket;
-
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-
-import com.corundumstudio.socketio.SocketIOServer;
-
-import lombok.RequiredArgsConstructor;
-
-@Component
-@RequiredArgsConstructor
-public class ServerCommandLineRunner implements CommandLineRunner {
-
-    private final SocketIOServer server;
-
-    @Override
-    public void run(String... args) throws Exception {
-        server.start();
-    }
-}
+//package com.me_social.MeSocial.socket;
+//
+//import org.springframework.boot.CommandLineRunner;
+//import org.springframework.stereotype.Component;
+//
+//import com.corundumstudio.socketio.SocketIOServer;
+//
+//import lombok.RequiredArgsConstructor;
+//
+//@Component
+//@RequiredArgsConstructor
+//public class ServerCommandLineRunner implements CommandLineRunner {
+//
+//    private final SocketIOServer server;
+//
+//    @Override
+//    public void run(String... args) throws Exception {
+//        server.start();
+//    }
+//}

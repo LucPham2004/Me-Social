@@ -44,6 +44,7 @@ public class UserMapper {
         userResponse.setPhone(user.getPhone());
         userResponse.setAvatarUrl(user.getAvatarUrl());
         userResponse.setDob(user.getDob());
+        userResponse.setBio(user.getBio());
         userResponse.setCreatedAt(user.getCreatedAt());
         userResponse.setUpdatedAt(user.getUpdatedAt());
         userResponse.setGender(user.getGender());

@@ -64,8 +64,11 @@ public class AuthController {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(), loginRequest.getPassword());
 
+        log.info("authenticationToken: {}", authenticationToken);
+
         // Authenticate the user
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        log.info("auth success");
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         log.info("authentication principal: {}", authentication.getPrincipal());
@@ -86,7 +89,10 @@ public class AuthController {
                 postNum,
                 likeNum,
                 currentUserDB.isActive(),
-                currentUserDB.getAuthorities());
+                currentUserDB.getAuthorities(),
+                currentUserDB.getFirstName(),
+                currentUserDB.getLastName(),
+                currentUserDB.getAvatarUrl());
         loginResponse.setUser(userLogin);
 
         // Generate tokens
@@ -175,7 +181,10 @@ public class AuthController {
                 postNum,
                 likeNum,
                 currentUser.isActive(),
-                currentUser.getAuthorities());
+                currentUser.getAuthorities(),
+                currentUser.getFirstName(),
+                currentUser.getLastName(),
+                currentUser.getAvatarUrl());
         res.setUser(userLogin);
 
         String access_token = this.securityUtils.createAccessToken(emailUsernamePhone, res);

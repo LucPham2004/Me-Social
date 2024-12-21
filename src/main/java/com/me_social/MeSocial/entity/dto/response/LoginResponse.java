@@ -28,9 +28,12 @@ public class LoginResponse {
           private int likeNum;
           private boolean isActive;
           private Set<Role> authorities;
+          private String firstName;
+          private String lastName;
+          private String avatarUrl;
 
           public UserLogin(Long id, String email, String username, String location, String bio, int postNum2,
-                    int likeNum2, boolean isActive, Set<Role> authorities) {
+                    int likeNum2, boolean isActive, Set<Role> authorities, String firstName, String lastName, String avatarUrl) {
                this.id = id;
                this.email = email;
                this.username = username;
@@ -40,6 +43,9 @@ public class LoginResponse {
                this.likeNum = likeNum2;
                this.isActive = isActive;
                this.authorities = authorities;
+               this.firstName = firstName;
+               this.lastName = lastName;
+               this.avatarUrl = avatarUrl;
           }
      }
 

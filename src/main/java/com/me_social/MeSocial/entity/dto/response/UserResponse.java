@@ -31,6 +31,7 @@ public class UserResponse {
      Instant updatedAt;
      
      Gender gender;
+     String bio;
 
      int groupNum;
      int friendNum;
