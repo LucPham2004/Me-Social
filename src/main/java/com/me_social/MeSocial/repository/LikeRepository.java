@@ -26,4 +26,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
             SELECT COUNT(l) FROM Like l
             """)
     int countAll();
+
+    boolean existsByPostIdAndUserId(Long postId, Long userId);
 }

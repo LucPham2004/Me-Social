@@ -30,4 +30,5 @@ public class PostResponse {
     LocalDateTime updatedAt;
     int likeNum;
     int commentNum;
+    boolean isLiked;
 }

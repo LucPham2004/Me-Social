@@ -2,6 +2,7 @@ package com.me_social.MeSocial.repository;
 
 import java.util.Optional;
 
+import com.me_social.MeSocial.entity.dto.response.PostResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

@@ -22,7 +22,7 @@ import lombok.experimental.FieldDefaults;
 public class LikeController {
     LikeService likeService;
 
-    // Create Post Like
+    // get post like count
     @GetMapping("/post/count/{postId}")
     public ApiResponse<Integer> getPostLikeCount(@PathVariable Long postId) {
         int likeCount = likeService.getPostLikeCount(postId);
@@ -33,7 +33,7 @@ public class LikeController {
             .build();
     }
 
-    // Create Post Like
+    // get comment like count
     @GetMapping("/comment/count/{commentId}")
     public ApiResponse<Integer> getCommentLikeCount(@PathVariable Long commentId) {
         int likeCount = likeService.getCommentLikeCount(commentId);

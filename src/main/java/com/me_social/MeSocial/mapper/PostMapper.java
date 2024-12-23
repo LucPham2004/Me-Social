@@ -42,10 +42,12 @@ public class PostMapper {
 
     public PostResponse toPostResponse(Post post) {
         PostResponse response = new PostResponse();
+        boolean isLiked = likeRepository.existsByPostIdAndUserId(post.getId(), post.getUser().getId());
+        response.setLiked(isLiked);
 
         response.setId(post.getId());
         response.setUserId(post.getUser().getId());
-        response.setUserFullName(post.getUser().getLastName() + " " + post.getUser().getFirstName());
+        response.setUserFullName(post.getUser().getUsername());
         if(post.getGroup() != null) {
             response.setGroupId(post.getGroup().getId());
             response.setGroupName(post.getGroup().getName());
