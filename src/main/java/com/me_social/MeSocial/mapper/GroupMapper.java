@@ -3,6 +3,7 @@ package com.me_social.MeSocial.mapper;
 import java.util.HashSet;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import com.me_social.MeSocial.entity.dto.request.GroupRequest;
@@ -22,6 +23,7 @@ import lombok.experimental.FieldDefaults;
 @Component
 @RequiredArgsConstructor
 @FieldDefaults(level=AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class GroupMapper {
     
     UserRepository userRepository;
@@ -45,6 +47,7 @@ public class GroupMapper {
             group.setAdmins(admin);
         }
 
+        group.setLocation(request.getLocation());
         group.setName(request.getName());
         group.setDescription(request.getDescription());
         group.setPrivacy(request.getPrivacy());
@@ -55,8 +58,18 @@ public class GroupMapper {
         return group;
     }}
 
-    public GroupResponse toGroupResponse(Group group) {{
+    public GroupResponse toGroupResponse(Group group, Long userId) {
         GroupResponse groupResponse = new GroupResponse();
+
+        if (groupRepository.existsByUserIdInGroup(userId, group.getId()) > 0) {
+            int response = groupRepository.existsByUserIdInGroup(userId, group.getId());
+            log.info("response : {}", response);
+            groupResponse.setJoined(true);
+        } else {
+            groupResponse.setJoined(false);
+        }
+
+
 
         groupResponse.setId(group.getId());
         groupResponse.setName(group.getName());
@@ -65,9 +78,10 @@ public class GroupMapper {
         groupResponse.setImageUrl(group.getImageUrl());
         groupResponse.setCreatedAt(group.getCreatedAt());
         groupResponse.setUpdatedAt(group.getUpdatedAt());
+        groupResponse.setLocation(group.getLocation());
         groupResponse.setMemberNum(groupRepository.countMembersById(group.getId()));
         groupResponse.setAdminNum(groupRepository.countAdminsById(group.getId()));
         
         return groupResponse;
-    }}
+    }
 }

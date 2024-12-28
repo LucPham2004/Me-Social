@@ -1,4 +1,4 @@
-package com.me_social.MeSocial.controller.restController;
+    package com.me_social.MeSocial.controller.restController;
 
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -81,7 +81,7 @@ public class CommentRestController {
     // POST
     // Not in real-time update yet
     @PostMapping("/new")
-    public ApiResponse<CommentResponse> createcomment(@RequestBody CommentRequest request) {
+    public ApiResponse<CommentResponse> createComment(@RequestBody CommentRequest request) {
         var comment = commentService.createcomment(request);
         return ApiResponse.<CommentResponse>builder()
                 .code(1000)

@@ -169,7 +169,7 @@ public class AuthController {
         // issue new token / set refresh token as cookies
         LoginResponse res = new LoginResponse();
 
-        int postNum = this.postRepository.countByUserId(currentUser.getId());
+        int postNum = this.postRepository.countPublicPostsInProfile(currentUser.getId());
         int likeNum = this.likeRepository.countByUserId(currentUser.getId());
 
         LoginResponse.UserLogin userLogin = new LoginResponse.UserLogin(

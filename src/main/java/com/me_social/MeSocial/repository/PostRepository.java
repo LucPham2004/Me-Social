@@ -32,6 +32,15 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
 
     int countByUserId(Long userId);
 
+    @Query("""
+                SELECT COUNT(p) FROM Post p
+                WHERE p.user.id = :userId         
+                AND p.group.id IS NULL
+                AND p.privacy = 'PUBLIC'
+            """)
+    int countPublicPostsInProfile(@Param("userId") Long userId);
+
+
     int countByUserIdAndGroupId(Long userId, Long groupId);
 
     int countByTagsId(Long id);
@@ -75,5 +84,51 @@ public interface PostRepository extends PagingAndSortingRepository<Post, Long> {
             ORDER BY p.createdAt DESC
             """)
     Page<Post> findNewsfeedPosts(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("""
+                SELECT p FROM Post p
+                WHERE p.user.id = :userId 
+                AND p.group.id IS NULL
+                ORDER BY p.createdAt DESC
+            """)
+    Page<Post> findPostsByUserExceptGroup(@Param("userId") Long userId, Pageable pageable);
+
+
+//    @Query(value = """
+//            SELECT p.*
+//            FROM posts p
+//            WHERE
+//                p.privacy = 'PUBLIC'
+//                OR
+//                p.user_id = :userId
+//                OR
+//                (p.privacy = 'FRIENDS' AND p.user_id IN (
+//                    SELECT f.request_receiver_id
+//                    FROM friendships f
+//                    WHERE f.requester_id = :userId AND f.status = 'ACCEPTED'
+//                    UNION
+//                    SELECT f.requester_id
+//                    FROM friendships f
+//                    WHERE f.request_receiver_id = :userId AND f.status = 'ACCEPTED'
+//                ))
+//                OR
+//                p.group_id IN (
+//                    SELECT g.id
+//                    FROM groups g
+//                    WHERE :userId IN (
+//                        SELECT gu.user_id
+//                        FROM group_admins gu
+//                        WHERE gu.group_id = g.id
+//                    )
+//                    OR :userId IN (
+//                        SELECT gm.user_id
+//                        FROM group_members gm
+//                        WHERE gm.group_id = g.id
+//                    )
+//                )
+//            ORDER BY p.created_at DESC
+//            """, nativeQuery = true)
+//    Page<Post> findNewsfeedPosts(@Param("userId") Long userId, Pageable pageable);
+
 
 }

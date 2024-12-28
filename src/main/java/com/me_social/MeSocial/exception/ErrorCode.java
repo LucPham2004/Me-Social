@@ -40,8 +40,9 @@ public enum ErrorCode {
 
     INVALID_OTP(1013, "Invalid OTP", HttpStatus.BAD_REQUEST),
 
-    EXPIRED_OTP(1014, "OTP is expired", HttpStatus.BAD_REQUEST)
-    ;
+    EXPIRED_OTP(1014, "OTP is expired", HttpStatus.BAD_REQUEST),
+
+    MEMBER_ALREADY_EXISTS(1015, "Member is already existed", HttpStatus.BAD_REQUEST);
 
     private int code;
     private String message;

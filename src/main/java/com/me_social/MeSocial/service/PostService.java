@@ -71,7 +71,7 @@ public class PostService {
         }
         Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
         
-        return postRepository.findByUserId(userId, pageable);
+        return postRepository.findPostsByUserExceptGroup(userId, pageable);
     }
     
     // Get Posts By Group

@@ -1,6 +1,7 @@
 package com.me_social.MeSocial.entity.modal;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -61,14 +62,14 @@ public class Group {
                 joinColumns = @JoinColumn(name = "group_id"), 
                 inverseJoinColumns = @JoinColumn(name = "user_id"))
     @JsonManagedReference(value = "groups_admins")
-    private Set<User> admins;
+    private Set<User> admins = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
 	@JoinTable( name = "groups_members", 
                 joinColumns = @JoinColumn(name = "group_id"), 
                 inverseJoinColumns = @JoinColumn(name = "user_id"))
     @JsonManagedReference(value = "groups_members")
-	private Set<User> members;
+	private Set<User> members = new HashSet<>();
     
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "group_posts")

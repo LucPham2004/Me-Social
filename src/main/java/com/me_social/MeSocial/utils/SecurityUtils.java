@@ -83,7 +83,7 @@ public class SecurityUtils {
           .issuedAt(now)
           .expiresAt(validity)
           .subject(emailUsernamePhone)
-          .claim("user", userToken)
+          .claim("user", userToken).claim("user_id", dto.getUser().getId())
           .claim("permission", listAuthority)
           .build();
           JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();

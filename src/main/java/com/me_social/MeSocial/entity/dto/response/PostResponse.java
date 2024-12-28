@@ -20,8 +20,11 @@ public class PostResponse {
     Long id;
     Long userId;
     String userFullName;
+    String avatarUrl;
     Long groupId;
     String groupName;
+    String groupAvatar;
+    LocalDateTime groupCreatedAt;
     String content;
     String[] urls;
     String[] publicIds;

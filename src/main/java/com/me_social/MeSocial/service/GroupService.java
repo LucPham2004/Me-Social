@@ -1,7 +1,17 @@
 package com.me_social.MeSocial.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import com.me_social.MeSocial.entity.modal.Media;
+import com.me_social.MeSocial.entity.modal.Post;
+import com.me_social.MeSocial.repository.MediaRepository;
+import com.me_social.MeSocial.repository.PostRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,12 +35,15 @@ import lombok.experimental.FieldDefaults;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level=AccessLevel.PRIVATE, makeFinal=true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class GroupService {
+    private final PostRepository postRepository;
     GroupRepository groupRepository;
     UserRepository userRepository;
     GroupMapper groupMapper;
     PostService postService;
+    MediaRepository mediaRepository;
 
     static int GROUPS_PER_PAGE = 20;
 
@@ -39,7 +52,7 @@ public class GroupService {
     // Get group by id
     public Group getGroupById(Long id) {
         return groupRepository.findById(id)
-            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
     }
 
     // Get groups by user
@@ -65,14 +78,13 @@ public class GroupService {
     // Create Group
     public Group createGroup(GroupRequest request) {
         User admin = userRepository.findById(request.getAdminId())
-            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
-        
+                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+
         Group group = groupMapper.toGroup(request);
         group.setCreatedAt(LocalDateTime.now());
-        // group.setImageUrl("https://www.facebook.com/images/groups/groups-default-cover-photo-2x.png");
 
-        groupRepository.save(group);
-        
+        group = groupRepository.save(group);
+
         // Create a post for creating group
         PostRequest postRequest = new PostRequest();
         postRequest.setUserId(request.getAdminId());
@@ -80,10 +92,26 @@ public class GroupService {
         postRequest.setContent(admin.getFirstName() + " " + (admin.getLastName() != null ? admin.getLastName() : " ") + " đã tạo nhóm " + group.getName());
         postRequest.setPrivacy(PostPrivacy.PUBLIC);
 
-        postService.createPost(postRequest);
+        Post post = postService.createPost(postRequest);
+        String defaultMediaUrl = "https://www.facebook.com/images/groups/groups-default-cover-photo-2x.png";
+        Media media = new Media();
+        media.setUrl(defaultMediaUrl);
+        media.setPost(post);
+        media.setPublicId(defaultMediaUrl);
+
+        Media savedMedia = mediaRepository.save(media);
+
+        Set<Media> medias = new HashSet<>();
+        medias.add(savedMedia);
+
+        post.setMedias(medias);
+
+        // Save the post with media
+        postRepository.save(post);
 
         return group;
     }
+
 
     // POST: Add Admin to Group
     @Transactional
@@ -106,7 +134,7 @@ public class GroupService {
         group.getMembers().add(member);
         groupRepository.save(group);
     }
-    
+
     // PUT: Edit Group
     @Transactional
     public Group editGroup(GroupRequest request) {
@@ -117,7 +145,7 @@ public class GroupService {
             group.setName(request.getName());
         }
 
-        if (request.getDescription() != null && !request.getDescription().isEmpty() 
+        if (request.getDescription() != null && !request.getDescription().isEmpty()
                 && !request.getDescription().equals(group.getDescription())) {
             group.setDescription(request.getDescription());
         }
@@ -166,5 +194,5 @@ public class GroupService {
         group.getMembers().remove(member);
         groupRepository.save(group);
     }
-    
+
 }

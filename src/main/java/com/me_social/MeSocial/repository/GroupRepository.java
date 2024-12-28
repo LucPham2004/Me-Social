@@ -85,4 +85,8 @@ public interface GroupRepository extends PagingAndSortingRepository<Group, Long>
             """)
     int countAdminsById(@Param("id") Long id);
 
+    @Query(value = "SELECT EXISTS (SELECT 1 FROM groups_members WHERE group_id = :groupId AND user_id = :userId)",
+            nativeQuery = true)
+    int existsByUserIdInGroup(@Param("userId") Long userId, @Param("groupId") Long groupId);
+
 }

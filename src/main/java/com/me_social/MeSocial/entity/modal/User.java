@@ -23,6 +23,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -59,6 +60,7 @@ public class User {
     private Instant dob; // date of birth
 
     @Enumerated(EnumType.STRING)
+    @NotNull
     private Gender gender;
 
     private String bio;

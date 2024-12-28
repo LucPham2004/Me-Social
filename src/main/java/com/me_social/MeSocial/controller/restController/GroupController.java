@@ -1,6 +1,8 @@
 package com.me_social.MeSocial.controller.restController;
 
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,12 +37,13 @@ public class GroupController {
 
     // Get group by id
     @GetMapping("/{id}")
-    public ApiResponse<GroupResponse> getGroupById(@PathVariable Long id) {
+    public ApiResponse<GroupResponse> getGroupById(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwt.getClaim("user_id");
         Group group = groupService.getGroupById(id);
         return ApiResponse.<GroupResponse>builder()
             .code(1000)
             .message("Get group by id successfully")
-            .result(groupMapper.toGroupResponse(group))
+            .result(groupMapper.toGroupResponse(group, userId))
             .build();
     }
 
@@ -51,13 +54,13 @@ public class GroupController {
             @RequestParam(defaultValue = "0") int pageNum) {
         Page<Group> groupPage = groupService.getGroupsByUserId(userId, pageNum);
         return ApiResponse.<Page<GroupResponse>>builder()
-            .code(1000)
-            .message("Get user's groups successfully")
-            .result(groupPage.map(groupMapper::toGroupResponse))
-            .build();
+                .code(1000)
+                .message("Get user's groups successfully")
+                .result(groupPage.map(group -> groupMapper.toGroupResponse(group, userId)))
+                .build();
     }
 
-    // Get groups by user
+    // Get suggested groups by user
     @GetMapping("/suggested")
     public ApiResponse<Page<GroupResponse>> getSuggestedGroups(
             @RequestParam Long userId,
@@ -66,20 +69,21 @@ public class GroupController {
         return ApiResponse.<Page<GroupResponse>>builder()
             .code(1000)
             .message("Get suggestion groups successfully")
-            .result(groupPage.map(groupMapper::toGroupResponse))
-            .build();
+                .result(groupPage.map(group -> groupMapper.toGroupResponse(group, userId)))
+                .build();
     }
 
     // POST
 
     // Create Group
     @PostMapping
-    public ApiResponse<GroupResponse> createGroup(@Valid @RequestBody GroupRequest request) {
+    public ApiResponse<GroupResponse> createGroup(@Valid @RequestBody GroupRequest request, @AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwt.getClaim("user_id");
         Group group = groupService.createGroup(request);
         return ApiResponse.<GroupResponse>builder()
             .code(1000)
             .message("Group created successfully")
-            .result(groupMapper.toGroupResponse(group))
+            .result(groupMapper.toGroupResponse(group, userId))
             .build();
     }
 
@@ -105,12 +109,13 @@ public class GroupController {
 
     // PUT: Edit Group
     @PutMapping
-    public ApiResponse<GroupResponse> editGroup(@Valid @RequestBody GroupRequest request) {
+    public ApiResponse<GroupResponse> editGroup(@Valid @RequestBody GroupRequest request, @AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwt.getClaim("user_id");
         Group group = groupService.editGroup(request);
         return ApiResponse.<GroupResponse>builder()
                 .code(1000)
                 .message("Edit group successfully")
-                .result(groupMapper.toGroupResponse(group))
+                .result(groupMapper.toGroupResponse(group, userId))
                 .build();
     }
 

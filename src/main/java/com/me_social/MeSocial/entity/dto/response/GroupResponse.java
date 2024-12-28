@@ -24,6 +24,8 @@ public class GroupResponse {
     GroupPrivacy privacy;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+    String location;
     int memberNum;
     int adminNum;
+    boolean isJoined;
 }
