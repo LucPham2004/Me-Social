@@ -1,5 +1,8 @@
 package com.me_social.MeSocial.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,7 @@ public class FriendShipService {
     FriendShipRepository friendShipRepository;
     UserService userService;
     UserRepository userRepository;
+
     public Friendship getFriendStatus(Long requesterId, Long receiverId) {
         if (!userRepository.existsById(requesterId) || !userRepository.existsById(receiverId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
@@ -44,6 +48,17 @@ public class FriendShipService {
         friendship.setStatus(FriendshipStatus.PENDING);
 
         return friendShipRepository.save(friendship);
+    }
+
+    public Page<Friendship> getFriendRequestByUser (Long userId, int pageNum) {
+
+        if (this.userService.findById(userId).isEmpty()) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+
+        Pageable pageable = PageRequest.of(pageNum, 20);
+
+        return this.friendShipRepository.findFriendRequestByUser(userId, pageable);
     }
 
     public void deleteFriendShip(Long id) {

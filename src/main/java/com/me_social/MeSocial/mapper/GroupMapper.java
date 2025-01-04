@@ -33,6 +33,8 @@ public class GroupMapper {
     public Group toGroup(GroupRequest request) {{
         Group group = new Group();
 
+        User user = userService.findById(request.getAdminId()).get();
+
         if(request.getGroupId() != null) {
             group.setId(request.getGroupId());
         }
@@ -40,10 +42,17 @@ public class GroupMapper {
         if(!userRepository.existsById(request.getAdminId())) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         } else {
+//            Set<User> members = new HashSet<>();
+//            if (group.getMembers() != null) {
+//                members = group.getMembers();
+//            }
+//            members.add(user);
+//            group.setMembers(members);
+
             Set<User> admin = new HashSet<>();
             if(group.getAdmins() != null) 
                 admin = group.getAdmins();
-            admin.add(userService.findById(request.getAdminId()).get());
+            admin.add(user);
             group.setAdmins(admin);
         }
 
@@ -68,8 +77,6 @@ public class GroupMapper {
         } else {
             groupResponse.setJoined(false);
         }
-
-
 
         groupResponse.setId(group.getId());
         groupResponse.setName(group.getName());

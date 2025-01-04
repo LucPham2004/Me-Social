@@ -134,7 +134,7 @@ public class UserController {
                         @RequestParam Long meId,
                         @RequestParam Long youId,
                         @RequestParam(defaultValue = "0") int pageNum) {
-                var friends = this.userService.getMutualFriends(meId, youId, pageNum);
+                var friends= this.userService.getMutualFriends(meId, youId, pageNum);
                 return ApiResponse.<Page<UserDTO>>builder()
                                 .code(1000)
                                 .message("Get mutual friends of user with ID " + meId +

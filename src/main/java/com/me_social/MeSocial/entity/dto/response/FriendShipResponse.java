@@ -17,7 +17,10 @@ import lombok.experimental.FieldDefaults;
 public class FriendShipResponse {
     Long friendshipId;
     Long requesterId;
+    String requesterName;
+    Long mutualFriend;
     Long receiverId;
+    String requesterAvatar;
 
     FriendshipStatus status;
 }
