@@ -19,12 +19,14 @@ public class FriendshipMapper {
     
     public FriendShipResponse toFriendShipResponse(Friendship friendship) {
         FriendShipResponse response = new FriendShipResponse();
-        response.setRequesterAvatar(friendship.getRequester().getAvatarUrl());
-        response.setMutualFriend(userRepository.countMutualFriends(friendship.getRequester().getId(), friendship.getRequestReceiver().getId()));
-        response.setRequesterName(friendship.getRequester().getUsername());
         response.setFriendshipId(friendship.getId());
+        response.setRequesterAvatar(friendship.getRequester().getAvatarUrl());
+        response.setReceiverAvatar(friendship.getRequestReceiver().getAvatarUrl());
+        response.setReceiverName(friendship.getRequestReceiver().getUsername());
+        response.setRequesterName(friendship.getRequester().getUsername());
         response.setReceiverId(friendship.getRequestReceiver().getId());
         response.setRequesterId(friendship.getRequester().getId());
+        response.setMutualFriend(userRepository.countMutualFriends(friendship.getRequester().getId(), friendship.getRequestReceiver().getId()));
         response.setStatus(friendship.getStatus());
 
         return response;

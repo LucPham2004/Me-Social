@@ -79,4 +79,33 @@ public class FriendShipController {
                 .build();
     }
 
+    @GetMapping("/friends/{userId}/{pageNum}")
+    public ApiResponse<Page<FriendShipResponse>> getUserFriends(@PathVariable Long userId, @PathVariable Integer pageNum) {
+        var response = this.friendShipService.getUserFriends(userId, pageNum);
+        return ApiResponse.<Page<FriendShipResponse>>builder()
+                .code(1000)
+                .message("Get friends for user " + userId + " successfully!")
+                .result(response)
+                .build();
+    }
+
+    @GetMapping("/friendsTest/{userId}/{pageNum}")
+    public ApiResponse<Page<FriendShipResponse>> getUserFriendsTest(
+            @PathVariable Long userId,
+            @PathVariable(required = false) Integer pageNum) {
+
+        // Provide default value if pageNum is null
+        if (pageNum == null) {
+            pageNum = 0; // Default to the first page
+        }
+
+        var response = this.friendShipService.getUserFriendsTest(userId, pageNum);
+
+        return ApiResponse.<Page<FriendShipResponse>>builder()
+                .code(1000)
+                .message("get user friends test")
+                .result(response)
+                .build();
+    }
+
 }

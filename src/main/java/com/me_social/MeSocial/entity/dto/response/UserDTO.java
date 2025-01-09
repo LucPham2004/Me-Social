@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level=AccessLevel.PRIVATE)
 public class UserDTO {
+    String username;
     Long id;
     String firstName;
     String lastName;

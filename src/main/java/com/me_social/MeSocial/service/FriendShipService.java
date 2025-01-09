@@ -1,5 +1,8 @@
 package com.me_social.MeSocial.service;
 
+import com.me_social.MeSocial.entity.dto.response.FriendShipResponse;
+import com.me_social.MeSocial.mapper.FriendshipMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,13 +20,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.util.*;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class FriendShipService {
     FriendShipRepository friendShipRepository;
     UserService userService;
     UserRepository userRepository;
+    FriendshipMapper friendshipMapper;
 
     public Friendship getFriendStatus(Long requesterId, Long receiverId) {
         if (!userRepository.existsById(requesterId) || !userRepository.existsById(receiverId)) {
@@ -39,7 +46,7 @@ public class FriendShipService {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
         Friendship friendship = friendShipRepository.findBy2UserIds(requesterId, receiverId);
-        if(friendship != null) {
+        if (friendship != null) {
             return friendship;
         }
         friendship = new Friendship();
@@ -50,7 +57,47 @@ public class FriendShipService {
         return friendShipRepository.save(friendship);
     }
 
-    public Page<Friendship> getFriendRequestByUser (Long userId, int pageNum) {
+    public Page<FriendShipResponse> getUserFriends(Long userId, Integer pageNum) {
+        Pageable pageable = PageRequest.of(pageNum != null ? pageNum : 0, 20);
+        var friendships = friendShipRepository.findUserFriends(userId, pageable);
+
+        return getFriendshipsWithMutualFriendsCount(userId, friendships);
+    }
+
+
+
+    private Page<FriendShipResponse> getFriendshipsWithMutualFriendsCount(Long userId, Page<Friendship> friendships) {
+        List<Long> userIds = new ArrayList<>();
+        for (Friendship friendship : friendships.getContent()) {
+            if (Objects.equals(friendship.getRequester().getId(), userId)) {
+                userIds.add(friendship.getRequestReceiver().getId());
+            } else {
+                userIds.add(friendship.getRequester().getId());
+            }
+        }
+
+        Map<Long, Long> mutualFriendsCount = new HashMap<>();
+        if (!userIds.isEmpty()) {
+            List<Object[]> result = userRepository.countMutualFriendsForUsers2(userId, userIds);
+            for (Object[] row : result) {
+                Long otherUserId = (Long) row[0];
+                Long count = (Long) row[1];
+                mutualFriendsCount.put(otherUserId, count);
+            }
+        }
+
+        return friendships.map(friendship -> {
+            FriendShipResponse response = friendshipMapper.toFriendShipResponse(friendship);
+            Long otherUserId = Objects.equals(friendship.getRequester().getId(), userId)
+                    ? friendship.getRequestReceiver().getId()
+                    : friendship.getRequester().getId();
+            response.setMutualFriend(mutualFriendsCount.getOrDefault(otherUserId, 0L));
+            return response;
+        });
+    }
+
+
+    public Page<Friendship> getFriendRequestByUser(Long userId, int pageNum) {
 
         if (this.userService.findById(userId).isEmpty()) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
@@ -75,5 +122,12 @@ public class FriendShipService {
 
         friendship.setStatus(status);
         return friendShipRepository.save(friendship);
+    }
+
+    public Page<FriendShipResponse> getUserFriendsTest(Long userId, Integer pageNum) {
+        Pageable pageable = PageRequest.of(pageNum, 20);
+        log.info("pageNum: {}", pageNum);
+
+        return friendShipRepository.findUserFriends(userId, pageable).map(friendshipMapper::toFriendShipResponse);
     }
 }

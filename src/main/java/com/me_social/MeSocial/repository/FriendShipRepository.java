@@ -37,4 +37,11 @@ public interface FriendShipRepository extends PagingAndSortingRepository<Friends
                WHERE f.requestReceiver.id = :userId AND f.status = 'PENDING'        
             """)
     Page<Friendship> findFriendRequestByUser(Long userId, Pageable pageable);
+
+    @Query("""
+                   SELECT f from Friendship f
+                   WHERE (f.requester.id = :userId OR f.requestReceiver.id = :userId)
+                   AND f.status = 'ACCEPTED' 
+            """)
+    Page<Friendship> findUserFriends(Long userId, Pageable pageable);
 }
