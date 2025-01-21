@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.me_social.MeSocial.entity.modal.Favorite;
+import com.me_social.MeSocial.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,11 +19,6 @@ import com.me_social.MeSocial.entity.modal.Tag;
 import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
 import com.me_social.MeSocial.mapper.PostMapper;
-import com.me_social.MeSocial.repository.GroupRepository;
-import com.me_social.MeSocial.repository.MediaRepository;
-import com.me_social.MeSocial.repository.PostRepository;
-import com.me_social.MeSocial.repository.TagRepository;
-import com.me_social.MeSocial.repository.UserRepository;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -39,17 +36,17 @@ public class PostService {
     PostMapper postMapper;
     MediaRepository mediaRepository;
     TagService tagService;
+    FavoriteRepository favoriteRepository;
 
     static int POSTS_PER_PAGE = 10;
 
     // GET
 
     // Get Posts for NewsFeed
-    public Page<Post> getPostsForNewsFeed(Long userId, int pageNum) {
+    public Page<Post> getPostsForNewsFeed(Long userId, Pageable pageable) {
         if(!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        Pageable pageable = PageRequest.of(pageNum, POSTS_PER_PAGE);
 
         return postRepository.findNewsfeedPosts(userId, pageable);
     }
@@ -178,5 +175,15 @@ public class PostService {
         post.setUpdatedAt(LocalDateTime.now());
         
         return postRepository.save(post);
+    }
+
+    public Page<Post> getFavoritePostByUser(Long userId, Pageable pageable) {
+        if (!userRepository.existsById(userId)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+
+        var favorites = favoriteRepository.findByUserId(userId, pageable);
+
+        return favorites.map(Favorite::getPost);
     }
 }

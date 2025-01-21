@@ -2,6 +2,7 @@ package com.me_social.MeSocial.mapper;
 
 import java.util.Set;
 
+import com.me_social.MeSocial.repository.FavoriteRepository;
 import org.springframework.stereotype.Component;
 
 import com.me_social.MeSocial.entity.dto.request.PostRequest;
@@ -26,6 +27,7 @@ public class PostMapper {
     GroupRepository groupRepository;
     LikeRepository likeRepository;
     CommentRepository commentRepository;
+    FavoriteRepository favoriteRepository;
     
     public Post toPost(PostRequest request) {{
         Post post = new Post();
@@ -40,10 +42,12 @@ public class PostMapper {
         return post;
     }}
 
-    public PostResponse toPostResponse(Post post) {
+    public PostResponse toPostResponse(Post post, Long userId) {
         PostResponse response = new PostResponse();
-        boolean isLiked = likeRepository.existsByPostIdAndUserId(post.getId(), post.getUser().getId());
+        boolean isLiked = likeRepository.existsByPostIdAndUserId(post.getId(), userId);
+        boolean isFavorite = favoriteRepository.existsByUserIdAndPostId(userId, post.getId());
         response.setLiked(isLiked);
+        response.setFavorite(isFavorite);
 
         response.setAvatarUrl(post.getUser().getAvatarUrl());
 

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,31 +45,28 @@ public class UserService {
     // GET
 
     // Get Group members
-    public Page<User> getGroupMembers(Long groupId, int pageNum) {
+    public Page<User> getGroupMembers(Long groupId, Pageable pageable) {
         if (!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
         return groupRepository.findMembersById(groupId, pageable);
     }
 
     // Get Group admins
-    public Page<User> getGroupAdmins(Long groupId, int pageNum) {
+    public Page<User> getGroupAdmins(Long groupId, Pageable pageable) {
         if (!groupRepository.existsById(groupId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
         return groupRepository.findAdminsById(groupId, pageable);
     }
 
     // Get User friends
-    public Page<UserDTO> getUserFriends(Long userId, int pageNum) {
+    public Page<UserDTO> getUserFriends(Long userId, Pageable pageable) {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
         Page<User> friends = userRepository.findFriends(userId, pageable);
 
@@ -76,11 +74,10 @@ public class UserService {
     }
 
     // Get User friends
-    public Page<UserDTO> getSuggestedFriends(Long userId, int pageNum) {
+    public Page<UserDTO> getSuggestedFriends(Long userId, Pageable pageable) {
         if (!userRepository.existsById(userId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
         Page<User> friends = userRepository.findSuggestedFriends(userId, pageable);
 
@@ -88,11 +85,10 @@ public class UserService {
     }
 
     // Get mutual friends
-    public Page<UserDTO> getMutualFriends(Long meId, Long youId, int pageNum) {
+    public Page<UserDTO> getMutualFriends(Long meId, Long youId, Pageable pageable) {
         if (!userRepository.existsById(meId) || !userRepository.existsById(youId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        Pageable pageable = PageRequest.of(pageNum, USERS_PER_PAGE);
 
         Page<User> mutualFriends = userRepository.findMutualFriends(meId, youId, pageable);
 
@@ -114,10 +110,10 @@ public class UserService {
     }
 
     // Get all Users
-    public Page<User> getAllUsers(int pageNum, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNum, pageSize);
+    public Page<User> getAllUsers(Specification<User> specification, Pageable pageable) {
+//        Pageable pageable = PageRequest.of(pageNum, pageSize);
 
-        return userRepository.findAll(pageable);
+        return userRepository.findAll(specification, pageable);
     }
 
     // Get User by username/email/phone

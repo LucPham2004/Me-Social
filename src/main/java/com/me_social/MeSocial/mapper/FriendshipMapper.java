@@ -28,6 +28,7 @@ public class FriendshipMapper {
         response.setRequesterId(friendship.getRequester().getId());
         response.setMutualFriend(userRepository.countMutualFriends(friendship.getRequester().getId(), friendship.getRequestReceiver().getId()));
         response.setStatus(friendship.getStatus());
+        response.setAcceptedAt(friendship.getAcceptedAt());
 
         return response;
     }

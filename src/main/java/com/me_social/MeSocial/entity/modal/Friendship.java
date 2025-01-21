@@ -42,6 +42,8 @@ public class Friendship {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
+    private Instant acceptedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id")
     private User requester;

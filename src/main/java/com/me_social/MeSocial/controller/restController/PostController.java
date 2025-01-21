@@ -1,6 +1,7 @@
 package com.me_social.MeSocial.controller.restController;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,13 +36,13 @@ public class PostController {
     // Get Posts for NewsFeed
     @GetMapping("/newsfeed")
     public ApiResponse<Page<PostResponse>> getPostsForNewsFeed(
-            @RequestParam Long userId, 
-            @RequestParam(defaultValue = "0") int pageNum) {
-        var posts = this.postService.getPostsForNewsFeed(userId, pageNum);
+            @RequestParam Long userId,
+            Pageable pageable) {
+        var posts = this.postService.getPostsForNewsFeed(userId, pageable);
         return ApiResponse.<Page<PostResponse>>builder()
                             .code(1000)
                             .message("Get Posts for Newsfeed for User with ID = " + userId + " successfully!")
-                            .result(posts.map(postMapper::toPostResponse))
+                            .result(posts.map(post -> postMapper.toPostResponse(post, userId)))
                             .build();
     }
 
@@ -54,7 +55,7 @@ public class PostController {
         return ApiResponse.<Page<PostResponse>>builder()
                             .code(1000)
                             .message("Get Posts for Group Activities for User with ID = " + userId + " successfully!")
-                            .result(posts.map(postMapper::toPostResponse))
+                            .result(posts.map(post -> postMapper.toPostResponse(post, userId)))
                             .build();
     }
 
@@ -67,33 +68,35 @@ public class PostController {
         return ApiResponse.<Page<PostResponse>>builder()
                             .code(1000)
                             .message("Get Posts by User with ID = " + userId + " successfully!")
-                            .result(posts.map(postMapper::toPostResponse))
+                            .result(posts.map(post -> postMapper.toPostResponse(post, userId)))
                             .build();
     }
     
     // Get Posts By Group
     @GetMapping("/group")
     public ApiResponse<Page<PostResponse>> getPostsByGroup(
+            @RequestParam Long userId,
             @RequestParam Long groupId, 
             @RequestParam(defaultValue = "0") int pageNum) {
         var posts = this.postService.getPostsByGroup(groupId, pageNum);
         return ApiResponse.<Page<PostResponse>>builder()
                             .code(1000)
                             .message("Get Posts by Group with ID = " + groupId + " successfully!")
-                            .result(posts.map(postMapper::toPostResponse))
+                            .result(posts.map(post -> postMapper.toPostResponse(post, userId)))
                             .build();
     }
 
     // Get Posts By Tag
     @GetMapping("/tag")
     public ApiResponse<Page<PostResponse>> getPostsByTag(
+            @RequestParam Long userId,
             @RequestParam Long tagId, 
             @RequestParam(defaultValue = "0") int pageNum) {
         var posts = this.postService.getPostsByTag(tagId, pageNum);
         return ApiResponse.<Page<PostResponse>>builder()
                             .code(1000)
                             .message("Get Posts by Tag with ID = " + tagId + " successfully!")
-                            .result(posts.map(postMapper::toPostResponse))
+                            .result(posts.map(post -> postMapper.toPostResponse(post, userId)))
                             .build();
     }
 
@@ -105,7 +108,7 @@ public class PostController {
         return ApiResponse.<PostResponse>builder()
                             .code(1000)
                             .message("Create Post successfully!")
-                            .result(postMapper.toPostResponse(post))
+                            .result(postMapper.toPostResponse(post, request.getUserId()))
                             .build();
     }
 
@@ -126,7 +129,18 @@ public class PostController {
         return ApiResponse.<PostResponse>builder()
                             .code(1000)
                             .message("Edit Post with ID = " + request.getId() + " successfully!")
-                            .result(postMapper.toPostResponse(post))
+                            .result(postMapper.toPostResponse(post, request.getUserId()))
                             .build();
+    }
+
+    @GetMapping("favorite")
+    public ApiResponse<Page<PostResponse>> getFavoritePostByUser(@RequestParam Long userId, Pageable pageable) {
+        var posts = this.postService.getFavoritePostByUser(userId, pageable);
+
+        return ApiResponse.<Page<PostResponse>>builder()
+                .code(1000)
+                .message("Get all favorite post for user with id " + userId + " successfully!")
+                .result(posts.map(post -> postMapper.toPostResponse(post, userId)))
+                .build();
     }
 }

@@ -18,10 +18,16 @@ import lombok.experimental.FieldDefaults;
 public class CommentResponse {
     Long id;
     Long userId;
+    String username;
+    String avatarUrl;
     Long postId;
     String content;
     Set<String> urls;
     Instant createdAt;
     Instant updatedAt;
     int likeNum;
+    boolean isLiked;
+    Long parentCommentId;
+    String respondedToUser;
+    Long responseNum;
 }

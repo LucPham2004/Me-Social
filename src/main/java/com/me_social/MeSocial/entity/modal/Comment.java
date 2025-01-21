@@ -1,6 +1,7 @@
 package com.me_social.MeSocial.entity.modal;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -36,14 +37,21 @@ public class Comment {
     private Long id;
 
     private String content;
-    
-    private Set<String> urls;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
     @Column(name = "updated_at")
     private Instant updatedAt;
+
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference(value = "child_comments")
+    private Set<Comment> childComments = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_comment_id")
+    @JsonBackReference(value = "parent_comment")
+    private Comment parentComment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

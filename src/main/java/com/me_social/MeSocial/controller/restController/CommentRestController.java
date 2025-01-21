@@ -1,6 +1,7 @@
     package com.me_social.MeSocial.controller.restController;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,28 +32,29 @@ public class CommentRestController {
     CommentMapper mapper;
 
     // Get by id
-    @GetMapping("/{id}")
-    public ApiResponse<CommentResponse> getCommentById(@PathVariable Long id) {
+    @GetMapping("/{userId}/{id}")
+    public ApiResponse<CommentResponse> getCommentById(@PathVariable Long userId, @PathVariable Long id) {
         var comment = commentService.getCommentById(id);
         return ApiResponse.<CommentResponse>builder()
                 .code(1000)
                 .message("Get comment with ID " + id + " successfully!")
-                .result(mapper.toCommentResponse(comment))
+                .result(mapper.toCommentResponse(userId, comment))
                 .build();
     }
 
     // Get comments by post
-    @GetMapping("/post")
-    public ApiResponse<Page<CommentResponse>> getCommentsByPost(
-            @RequestParam Long postId,
-            @RequestParam(defaultValue = "0") int pageNum) {
-        var comments = commentService.getCommentsByPost(postId, pageNum);
+    // only get top comment (parentCommentId == null)
+    @GetMapping("/post/top-comment")
+    public ApiResponse<Page<CommentResponse>> getTopCommentsByPost(@RequestParam Long userId, @RequestParam Long postId, Pageable pageable) {
+        var comments = commentService.getTopLevelCommentsByPost(postId, pageable);
         return ApiResponse.<Page<CommentResponse>>builder()
                 .code(1000)
                 .message("Get comments of the post with ID " + postId + " successfully!")
-                .result(comments.map(mapper::toCommentResponse))
+                .result(comments.map(comment -> mapper.toCommentResponse(userId, comment)))
                 .build();
     }
+
+
 
     // Get comments by user
     @GetMapping("/user")
@@ -63,7 +65,18 @@ public class CommentRestController {
         return ApiResponse.<Page<CommentResponse>>builder()
                 .code(1000)
                 .message("Get comments of the user with ID " + userId + " successfully!")
-                .result(comments.map(mapper::toCommentResponse))
+                .result(comments.map(comment -> mapper.toCommentResponse(userId, comment)))
+                .build();
+    }
+
+    @GetMapping("/child-comments")
+    public ApiResponse<Page<CommentResponse>> getAllChildComments(@RequestParam Long userId, @RequestParam Long parentCommentId, Pageable pageable) {
+        var comments = commentService.getChildCommentByTopLevelComment(parentCommentId, pageable);
+
+        return ApiResponse.<Page<CommentResponse>>builder()
+                .code(1000)
+                .message("Get all children comments for parent comment with ID " + parentCommentId)
+                .result(comments.map(comment -> mapper.toCommentResponse(userId, comment)))
                 .build();
     }
 
@@ -86,7 +99,7 @@ public class CommentRestController {
         return ApiResponse.<CommentResponse>builder()
                 .code(1000)
                 .message("Create a new comment successfully!")
-                .result(mapper.toCommentResponse(comment))
+                .result(mapper.toCommentResponse(request.getUserId(), comment))
                 .build();
     }
 
@@ -102,12 +115,12 @@ public class CommentRestController {
 
     // PUT
     @PutMapping("/edit")
-    public ApiResponse<CommentResponse> editcomment(@RequestBody CommentRequest request) {
+    public ApiResponse<CommentResponse> editComment(@RequestBody CommentRequest request) {
         var comment = commentService.editcomment(request);
         return ApiResponse.<CommentResponse>builder()
                 .code(1000)
                 .message("Update comment with ID" + request.getId() + " successfully!")
-                .result(mapper.toCommentResponse(comment))
+                .result(mapper.toCommentResponse(request.getUserId(), comment))
                 .build();
     }
 }

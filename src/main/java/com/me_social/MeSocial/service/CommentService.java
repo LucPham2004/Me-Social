@@ -36,14 +36,20 @@ public class CommentService {
             .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
     }
 
-    // Get comments by post
-    public Page<Comment> getCommentsByPost(Long postId, int pageNum) {
+    public Page<Comment> getTopLevelCommentsByPost(Long postId, Pageable pageable) {
         if (!postRepository.existsById(postId)) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-        Pageable pageable = PageRequest.of(pageNum, COMMENTS_PER_PAGE);
 
-        return commentRepository.findByPostId(postId, pageable);
+        return commentRepository.findTopLevelCommentsByPostId(postId, pageable);
+    }
+
+    public Page<Comment> getChildCommentByTopLevelComment(Long parentCommentId, Pageable pageable) {
+        if (!commentRepository.existsById(parentCommentId)) {
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+
+        return commentRepository.findAllChildComments(parentCommentId, pageable);
     }
 
     // Get comments by user
@@ -69,6 +75,13 @@ public class CommentService {
         }
         Comment comment = mapper.toComment(request);
 
+        if (request.getParentCommentId() != null) {
+            Comment parentComment = commentRepository.findById(request.getParentCommentId())
+                    .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+
+            comment.setParentComment(parentComment);
+        }
+
         return commentRepository.save(comment);
     }
 
@@ -86,5 +99,16 @@ public class CommentService {
         comment.setContent(request.getContent());
 
         return commentRepository.save(comment);
+    }
+
+    public static Long countAllResponses(Comment comment) {
+        if (comment.getChildComments() == null || comment.getChildComments().isEmpty()) {
+            return 0L;
+        }
+        Long count = (long) comment.getChildComments().size();
+        for (Comment child : comment.getChildComments()) {
+            count += countAllResponses(child);
+        }
+        return count;
     }
 }

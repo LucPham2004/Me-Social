@@ -34,4 +34,5 @@ public class PostResponse {
     int likeNum;
     int commentNum;
     boolean isLiked;
+    boolean isFavorite;
 }

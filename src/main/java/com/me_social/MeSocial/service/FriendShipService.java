@@ -20,7 +20,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,8 +59,8 @@ public class FriendShipService {
         return friendShipRepository.save(friendship);
     }
 
-    public Page<FriendShipResponse> getUserFriends(Long userId, Integer pageNum) {
-        Pageable pageable = PageRequest.of(pageNum != null ? pageNum : 0, 20);
+    public Page<FriendShipResponse> getUserFriends(Long userId, Pageable pageable) {
+
         var friendships = friendShipRepository.findUserFriends(userId, pageable);
 
         return getFriendshipsWithMutualFriendsCount(userId, friendships);
@@ -97,13 +99,11 @@ public class FriendShipService {
     }
 
 
-    public Page<Friendship> getFriendRequestByUser(Long userId, int pageNum) {
+    public Page<Friendship> getFriendRequestByUser(Long userId, Pageable pageable) {
 
         if (this.userService.findById(userId).isEmpty()) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
-
-        Pageable pageable = PageRequest.of(pageNum, 20);
 
         return this.friendShipRepository.findFriendRequestByUser(userId, pageable);
     }
@@ -120,6 +120,10 @@ public class FriendShipService {
     public Friendship editFriendShipStatus(Long id, FriendshipStatus status) {
         Friendship friendship = friendShipRepository.findById(id).get();
 
+        if (status == FriendshipStatus.ACCEPTED) {
+            friendship.setAcceptedAt(Instant.now());
+        }
+
         friendship.setStatus(status);
         return friendShipRepository.save(friendship);
     }
@@ -130,4 +134,15 @@ public class FriendShipService {
 
         return friendShipRepository.findUserFriends(userId, pageable).map(friendshipMapper::toFriendShipResponse);
     }
+
+    public List<FriendShipResponse> getRecentAcceptedFriendships(Long userId) {
+        Instant oneHourAgo = Instant.now().minusSeconds(3600);
+        List<Friendship> recentFriendships = friendShipRepository.findRecentCreatedFriendshipsByUserId(userId, oneHourAgo);
+
+        // Map to response DTO
+        return recentFriendships.stream()
+                .map(friendshipMapper::toFriendShipResponse)
+                .collect(Collectors.toList());
+    }
+
 }

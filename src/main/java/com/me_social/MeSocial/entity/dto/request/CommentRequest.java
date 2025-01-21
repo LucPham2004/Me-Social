@@ -18,6 +18,6 @@ public class CommentRequest {
     Long id;
     Long userId;
     Long postId;
+    Long parentCommentId;
     String content;
-    Set<String> urls;
 }

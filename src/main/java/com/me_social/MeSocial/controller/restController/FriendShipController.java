@@ -1,6 +1,7 @@
 package com.me_social.MeSocial.controller.restController;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
@@ -12,6 +13,8 @@ import com.me_social.MeSocial.service.FriendShipService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/friendships")
@@ -38,9 +41,9 @@ public class FriendShipController {
                 .build();
     }
 
-    @GetMapping("/friendRequest/{userId}/{pageNum}")
-    public ApiResponse<Page<FriendShipResponse>> getFriendRequestByUser(@PathVariable Long userId, @PathVariable int pageNum) {
-        var response = this.friendShipService.getFriendRequestByUser(userId, pageNum);
+    @GetMapping("/friendRequest")
+    public ApiResponse<Page<FriendShipResponse>> getFriendRequestByUser(@RequestParam Long userId, Pageable pageable) {
+        var response = this.friendShipService.getFriendRequestByUser(userId, pageable);
 
         return ApiResponse.<Page<FriendShipResponse>>builder()
                 .code(1000)
@@ -79,9 +82,9 @@ public class FriendShipController {
                 .build();
     }
 
-    @GetMapping("/friends/{userId}/{pageNum}")
-    public ApiResponse<Page<FriendShipResponse>> getUserFriends(@PathVariable Long userId, @PathVariable Integer pageNum) {
-        var response = this.friendShipService.getUserFriends(userId, pageNum);
+    @GetMapping("/friends")
+    public ApiResponse<Page<FriendShipResponse>> getUserFriends(@RequestParam Long userId, Pageable pageable) {
+        var response = this.friendShipService.getUserFriends(userId, pageable);
         return ApiResponse.<Page<FriendShipResponse>>builder()
                 .code(1000)
                 .message("Get friends for user " + userId + " successfully!")
@@ -104,6 +107,17 @@ public class FriendShipController {
         return ApiResponse.<Page<FriendShipResponse>>builder()
                 .code(1000)
                 .message("get user friends test")
+                .result(response)
+                .build();
+    }
+
+    @GetMapping("/currentAccepted/{userId}")
+    public ApiResponse<List<FriendShipResponse>> getCurrentAcceptedFriendship(@PathVariable Long userId) {
+        var response = friendShipService.getRecentAcceptedFriendships(userId);
+
+        return ApiResponse.<List<FriendShipResponse>>builder()
+                .code(1000)
+                .message("Get current accept friendship for user with id = " + userId + " successfully!")
                 .result(response)
                 .build();
     }

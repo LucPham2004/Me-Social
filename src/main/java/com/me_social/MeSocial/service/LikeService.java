@@ -48,7 +48,7 @@ public class LikeService {
             like = new Like();
             like.setUser(userService.findById(userId).get());
             like.setPost(postRepository.findById(postId).get());
-            like.setCreatedAt(LocalDateTime.now());
+
             return likeRepository.save(like);
         } else {
             throw new AppException(ErrorCode.ENTITY_EXISTED);

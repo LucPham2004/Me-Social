@@ -28,4 +28,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     int countAll();
 
     boolean existsByPostIdAndUserId(Long postId, Long userId);
+
+    boolean existsByCommentIdAndUserId(Long commentId, Long userId);
 }

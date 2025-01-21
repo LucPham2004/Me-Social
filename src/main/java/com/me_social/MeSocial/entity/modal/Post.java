@@ -72,6 +72,9 @@ public class Post {
     @JsonManagedReference(value = "post_likes")
     private Set<Like> likes;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Favorite> favorites;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference(value = "post_comments")
     private Set<Comment> comments;
