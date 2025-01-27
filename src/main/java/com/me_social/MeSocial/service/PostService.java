@@ -113,8 +113,7 @@ public class PostService {
             post.setTags(tags);
         }
 
-        post.setUser(userService.findById(request.getUserId())
-            .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED)));
+        post.setUser(userService.findById(request.getUserId()));
         postRepository.save(post);
 
         if (request.getPublicIds() != null && request.getUrls() != null) {

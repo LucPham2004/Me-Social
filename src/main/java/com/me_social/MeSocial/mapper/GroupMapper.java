@@ -33,7 +33,7 @@ public class GroupMapper {
     public Group toGroup(GroupRequest request) {{
         Group group = new Group();
 
-        User user = userService.findById(request.getAdminId()).get();
+        User user = userService.findById(request.getAdminId());
 
         if(request.getGroupId() != null) {
             group.setId(request.getGroupId());

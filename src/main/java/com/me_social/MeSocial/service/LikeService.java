@@ -46,7 +46,7 @@ public class LikeService {
         Like like = likeRepository.findByUserIdAndPostId(userId, postId);
         if (like == null) {
             like = new Like();
-            like.setUser(userService.findById(userId).get());
+            like.setUser(userService.findById(userId));
             like.setPost(postRepository.findById(postId).get());
 
             return likeRepository.save(like);
@@ -64,7 +64,7 @@ public class LikeService {
         Like like = likeRepository.findByUserIdAndCommentId(userId, commentId);
         if (like == null) {
             like = new Like();
-            like.setUser(userService.findById(userId).get());
+            like.setUser(userService.findById(userId));
             like.setComment(commentRepository.findById(commentId).get());
             like.setCreatedAt(LocalDateTime.now());
             return likeRepository.save(like);

@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,12 +36,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserService {
+    static int USERS_PER_PAGE = 20;
     UserRepository userRepository;
     UserMapper userMapper;
     GroupRepository groupRepository;
     PasswordEncoder passwordEncoder;
-
-    static int USERS_PER_PAGE = 20;
 
     // GET
 
@@ -96,12 +96,13 @@ public class UserService {
     }
 
     // Get User by Id
-    public Optional<User> findById(Long id) {
+    public User findById(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isEmpty()) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        } else {
+            return optionalUser.get();
         }
-        return optionalUser;
     }
 
     public User getUser(Long id) {
@@ -153,7 +154,7 @@ public class UserService {
     // Edit user info
     @Transactional
     public User updateUser(UserUpdateRequest reqUser) {
-        User dbUser = this.findById(reqUser.getId()).get();
+        User dbUser = this.findById(reqUser.getId());
 
         if (reqUser.getFirstName() != null && !reqUser.getFirstName().isEmpty()
                 && !reqUser.getFirstName().equals(dbUser.getFirstName())) {
@@ -192,8 +193,7 @@ public class UserService {
 
     // DELETE
     public void deleteUserById(Long id) {
-        User dbUser = this.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ENTITY_NOT_EXISTED));
+        User dbUser = this.findById(id);
 
         userRepository.delete(dbUser);
     }
@@ -243,5 +243,22 @@ public class UserService {
         } else {
             throw new AppException(ErrorCode.EXPIRED_OTP);
         }
+    }
+
+//    public String getEmailFromToken(Jwt jwt) {
+//        return jwt.getClaim("email");
+//    }
+
+    public User findUserProfile(Jwt jwt) {
+        String email = jwt.getClaim("email");
+        if (email == null) {
+            throw new AppException(ErrorCode.INVALID_ACCESS_TOKEN);
+        }
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isEmpty()) {
+            throw new  AppException(ErrorCode.ENTITY_NOT_EXISTED);
+        }
+
+        return optionalUser.get();
     }
 }

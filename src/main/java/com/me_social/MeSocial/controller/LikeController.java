@@ -1,4 +1,4 @@
-package com.me_social.MeSocial.controller.restController;
+package com.me_social.MeSocial.controller;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

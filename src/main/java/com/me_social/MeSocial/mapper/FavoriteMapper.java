@@ -23,7 +23,7 @@ public class FavoriteMapper {
 
     public Favorite toFavorite(FavoriteRequest favoriteRequest) {
         Favorite favorite = new Favorite();
-        favorite.setUser(userService.findById(favoriteRequest.getUserId()).get());
+        favorite.setUser(userService.findById(favoriteRequest.getUserId()));
         favorite.setPost(postRepository.findById(favoriteRequest.getPostId()).get());
 
         return favorite;

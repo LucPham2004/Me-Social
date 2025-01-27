@@ -34,7 +34,7 @@ public class PostMapper {
         post.setContent(request.getContent());
         post.setPrivacy(request.getPrivacy());
 
-        post.setUser(userService.findById(request.getUserId()).get());
+        post.setUser(userService.findById(request.getUserId()));
         
         if(request.getGroupId() != null)
             post.setGroup(groupRepository.findById(request.getGroupId()).get());

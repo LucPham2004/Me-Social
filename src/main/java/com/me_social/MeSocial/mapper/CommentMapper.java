@@ -30,7 +30,7 @@ public class CommentMapper {
 
         comment.setContent(request.getContent());
         comment.setId(request.getId());
-        comment.setUser(userService.findById(request.getUserId()).get());
+        comment.setUser(userService.findById(request.getUserId()));
         comment.setPost(postRepository.findById(request.getPostId()).get());
 
         return comment;

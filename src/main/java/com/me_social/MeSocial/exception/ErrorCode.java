@@ -42,7 +42,13 @@ public enum ErrorCode {
 
     EXPIRED_OTP(1014, "OTP is expired", HttpStatus.BAD_REQUEST),
 
-    MEMBER_ALREADY_EXISTS(1015, "Member is already existed", HttpStatus.BAD_REQUEST);
+    MEMBER_ALREADY_EXISTS(1015, "Member is already existed", HttpStatus.BAD_REQUEST),
+
+    NOT_ADMIN(1016,"You are not an admin" , HttpStatus.BAD_REQUEST),
+
+    NOT_MEMBER(1017, "You are not a member of this group", HttpStatus.BAD_REQUEST),
+
+    CANT_DELETE(1018, "You can not delete other people's message", HttpStatus.BAD_REQUEST);
 
     private int code;
     private String message;

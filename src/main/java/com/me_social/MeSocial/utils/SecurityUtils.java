@@ -37,81 +37,14 @@ public class SecurityUtils {
 
     public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
     private final JwtEncoder jwtEncoder;
-
+    @Value("${me_social.jwt.refresh-token-validity-in-seconds}")
+    public Long refreshTokenExpiration;
     @Value("${me_social.jwt.base64-secret}")
     private String jwtKey;
-
     @Value("${me_social.jwt.access-token-validity-in-seconds}")
     private Long accessTokenExpiration;
 
-    @Value("${me_social.jwt.refresh-token-validity-in-seconds}")
-    public Long refreshTokenExpiration;
-
-    private SecretKey getSecretKey() {
-        byte[] keyBytes = Base64.from(jwtKey).decode();
-        return new SecretKeySpec(keyBytes, 0, keyBytes.length, JWT_ALGORITHM.getName());
-    }
-
-    public Jwt checkValidRefreshToken(String token) {
-        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(getSecretKey())
-                .macAlgorithm(JWT_ALGORITHM).build();
-        try {
-            return jwtDecoder.decode(token);
-        } catch (JwtException e) {
-            System.out.println(">>> JWT error: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    public String createAccessToken(String emailUsernamePhone, LoginResponse dto) {
-        LoginResponse.UserInsideToken userToken = new LoginResponse.UserInsideToken();
-        userToken.setId(dto.getUser().getId());
-        userToken.setEmail(dto.getUser().getEmail());
-        userToken.setUsername(dto.getUser().getUsername());
-
-        Instant now = Instant.now();
-        Instant validity = now.plus(accessTokenExpiration, ChronoUnit.SECONDS);
-
-        // hardcode permission for testing
-        List<String> listAuthority = new ArrayList<>();
-
-        listAuthority.add("ROLE_USER_CREATE");
-        listAuthority.add("ROLE_USER_UPDATE");
-
-        // @formatter:off
-          JwtClaimsSet claims = JwtClaimsSet.builder()
-          .issuedAt(now)
-          .expiresAt(validity)
-          .subject(emailUsernamePhone)
-          .claim("user", userToken).claim("user_id", dto.getUser().getId())
-          .claim("permission", listAuthority)
-          .build();
-          JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
-          return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
-     }
-
-     public String createRefreshToken(String emailUsernamPhone, LoginResponse dto) {
-        Instant now = Instant.now();
-        Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
-
-        LoginResponse.UserInsideToken userToken = new LoginResponse.UserInsideToken();
-        userToken.setId(dto.getUser().getId());
-        userToken.setEmail(dto.getUser().getEmail());
-        userToken.setUsername(dto.getUser().getUsername());
-        userToken.setLocation(dto.getUser().getLocation());
-
-        // @formatter:off
-        JwtClaimsSet claims = JwtClaimsSet.builder()
-        .issuedAt(now)
-        .expiresAt(validity)
-        .subject(emailUsernamPhone)
-        .claim("user", userToken)
-        .build();
-        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
-        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
-   }
-
-        /**
+    /**
      * Get the login of the current user.
      *
      * @return the login of the current user.
@@ -141,10 +74,73 @@ public class SecurityUtils {
      */
     public static Optional<String> getCurrentUserJWT() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
-        return Optional.ofNullable(securityContext.getAuthentication())
-            .filter(authentication -> authentication.getCredentials() instanceof String)
-            .map(authentication -> (String) authentication.getCredentials());
+        return Optional.ofNullable(securityContext.getAuthentication()).filter(authentication -> authentication.getCredentials() instanceof String).map(authentication -> (String) authentication.getCredentials());
     }
+
+    private SecretKey getSecretKey() {
+        byte[] keyBytes = Base64.from(jwtKey).decode();
+        return new SecretKeySpec(keyBytes, 0, keyBytes.length, JWT_ALGORITHM.getName());
+    }
+
+    public Jwt checkValidRefreshToken(String token) {
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(getSecretKey()).macAlgorithm(JWT_ALGORITHM).build();
+        try {
+            return jwtDecoder.decode(token);
+        } catch (JwtException e) {
+            System.out.println(">>> JWT error: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public String createAccessToken(String emailUsernamePhone, LoginResponse dto) {
+        LoginResponse.UserInsideToken userToken = new LoginResponse.UserInsideToken();
+        userToken.setId(dto.getUser().getId());
+        userToken.setEmail(dto.getUser().getEmail());
+        userToken.setUsername(dto.getUser().getUsername());
+
+        Instant now = Instant.now();
+        Instant validity = now.plus(accessTokenExpiration, ChronoUnit.SECONDS);
+
+        // hardcode permission for testing
+        List<String> listAuthority = new ArrayList<>();
+
+        listAuthority.add("ROLE_USER_CREATE");
+        listAuthority.add("ROLE_USER_UPDATE");
+
+        // @formatter:off
+          JwtClaimsSet claims = JwtClaimsSet.builder()
+                  .issuedAt(now)
+                  .expiresAt(validity)
+                  .subject(emailUsernamePhone)
+                  .claim("user", userToken)
+                  .claim("user_id", dto.getUser().getId())
+                  .claim("permission", listAuthority)
+                  .claim("email", dto.getUser().getEmail())
+          .build();
+          JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
+          return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+     }
+
+     public String createRefreshToken(String emailUsernamPhone, LoginResponse dto) {
+        Instant now = Instant.now();
+        Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
+
+        LoginResponse.UserInsideToken userToken = new LoginResponse.UserInsideToken();
+        userToken.setId(dto.getUser().getId());
+        userToken.setEmail(dto.getUser().getEmail());
+        userToken.setUsername(dto.getUser().getUsername());
+        userToken.setLocation(dto.getUser().getLocation());
+
+        // @formatter:off
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+        .issuedAt(now)
+        .expiresAt(validity)
+        .subject(emailUsernamPhone)
+        .claim("user", userToken)
+        .build();
+        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+   }
 
     /**
      * Check if a user is authenticated.

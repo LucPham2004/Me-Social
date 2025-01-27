@@ -52,8 +52,8 @@ public class FriendShipService {
             return friendship;
         }
         friendship = new Friendship();
-        friendship.setRequester(userService.findById(requesterId).get());
-        friendship.setRequestReceiver(userService.findById(receiverId).get());
+        friendship.setRequester(userService.findById(requesterId));
+        friendship.setRequestReceiver(userService.findById(receiverId));
         friendship.setStatus(FriendshipStatus.PENDING);
 
         return friendShipRepository.save(friendship);
@@ -101,7 +101,7 @@ public class FriendShipService {
 
     public Page<Friendship> getFriendRequestByUser(Long userId, Pageable pageable) {
 
-        if (this.userService.findById(userId).isEmpty()) {
+        if (this.userService.findById(userId) == null) {
             throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 

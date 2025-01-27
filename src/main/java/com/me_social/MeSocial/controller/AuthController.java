@@ -1,4 +1,4 @@
-package com.me_social.MeSocial.controller.restController;
+package com.me_social.MeSocial.controller;
 
 import java.time.Instant;
 
@@ -64,8 +64,6 @@ public class AuthController {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(), loginRequest.getPassword());
 
-        log.info("authenticationToken: {}", authenticationToken);
-
         // Authenticate the user
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         log.info("auth success");
@@ -119,10 +117,9 @@ public class AuthController {
                 .result(loginResponse)
                 .build();
 
-        // Build the response with the body and headers
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, resCookie.toString()) // Set the cookie in the response header
-                .body(apiResponse); // Return the body with the API response
+                .header(HttpHeaders.SET_COOKIE, resCookie.toString())
+                .body(apiResponse);
     }
 
     @GetMapping("/account")

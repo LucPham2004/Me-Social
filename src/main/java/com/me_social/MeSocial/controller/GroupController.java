@@ -1,4 +1,4 @@
-package com.me_social.MeSocial.controller.restController;
+package com.me_social.MeSocial.controller;
 
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

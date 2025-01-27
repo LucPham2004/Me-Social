@@ -1,4 +1,4 @@
-package com.me_social.MeSocial.controller.restController;
+package com.me_social.MeSocial.controller;
 
 import com.me_social.MeSocial.entity.modal.User;
 import com.turkraft.springfilter.boot.Filter;

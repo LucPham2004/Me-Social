@@ -1,4 +1,4 @@
-package com.me_social.MeSocial.controller.restController;
+package com.me_social.MeSocial.controller;
 
 import com.me_social.MeSocial.entity.dto.request.FavoriteRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
