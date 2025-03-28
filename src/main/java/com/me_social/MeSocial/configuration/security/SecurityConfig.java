@@ -32,27 +32,28 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    @Value("${me_social.jwt.base64-secret}")
-    private String jwtKey;
-
     String[] whiteList = {
             "/",
-            "/api/auth/login", "/api/auth/refresh", "/api/auth/register", "/api/auth/verify-otp", "/api/auth/logout"
+            "/api/auth/login", "/api/auth/refresh", "/api/auth/register", "/api/auth/verify-otp", "/api/auth/logout", "/ws/**"
     };
+    @Value("${me_social.jwt.base64-secret}")
+    private String jwtKey;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
-                        authz -> {  authz.requestMatchers(whiteList)
-                                        .permitAll()
-                                        .anyRequest().authenticated();
-                                    // authz.requestMatchers("/api/admin")
-                                    //     .hasRole("ADMIN")
-                                    //     .anyRequest().authenticated();
-                                    })
+                        auth -> {
+                            auth
+                                    .requestMatchers(whiteList).permitAll()
+                                    .requestMatchers("/ws/**").permitAll()
+                                    .anyRequest().authenticated();
+                            // auth.requestMatchers("/api/admin")
+                            //     .hasRole("ADMIN")
+                            //     .anyRequest().authenticated();
+                        })
                 .formLogin(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(
                         (oauth2) -> oauth2

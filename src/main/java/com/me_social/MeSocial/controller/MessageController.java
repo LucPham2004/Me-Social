@@ -2,8 +2,10 @@ package com.me_social.MeSocial.controller;
 
 import com.me_social.MeSocial.entity.dto.request.SendMessageRequest;
 import com.me_social.MeSocial.entity.dto.response.ApiResponse;
+import com.me_social.MeSocial.entity.dto.response.MessageResponse;
 import com.me_social.MeSocial.entity.modal.Message;
 import com.me_social.MeSocial.entity.modal.User;
+import com.me_social.MeSocial.mapper.ChatMapper;
 import com.me_social.MeSocial.service.MessageService;
 import com.me_social.MeSocial.service.UserService;
 import lombok.AccessLevel;
@@ -22,30 +24,31 @@ import java.util.List;
 public class MessageController {
     MessageService messageService;
     UserService userService;
+    ChatMapper chatMapper;
 
     @PostMapping("/create")
-    ApiResponse<Message> sendMessage(@RequestBody SendMessageRequest request, @AuthenticationPrincipal Jwt jwt) {
+    ApiResponse<MessageResponse> sendMessage(@RequestBody SendMessageRequest request, @AuthenticationPrincipal Jwt jwt) {
         User user = userService.findUserProfile(jwt);
         request.setUserId(request.getUserId());
         Message message = messageService.sendMessage(request);
 
-        return ApiResponse.<Message>builder()
+        return ApiResponse.<MessageResponse>builder()
                 .code(1000)
                 .message("send message successfully!")
-                .result(message)
+                .result(chatMapper.toMessageResponse(message))
                 .build();
     }
 
     @GetMapping("/chat/{chatId}")
-    ApiResponse<List<Message>> getChatsMessages(@PathVariable Long chatId, @AuthenticationPrincipal Jwt jwt) {
+    ApiResponse<List<MessageResponse>> getChatsMessages(@PathVariable Long chatId, @AuthenticationPrincipal Jwt jwt) {
         User user = userService.findUserProfile(jwt);
 
         List<Message> messages = messageService.getChatsMessages(chatId, user);
 
-        return ApiResponse.<List<Message>>builder()
+        return ApiResponse.<List<MessageResponse>>builder()
                 .code(1000)
                 .message("send message successfully!")
-                .result(messages)
+                .result(messages.stream().map(chatMapper::toMessageResponse).toList())
                 .build();
     }
 

@@ -220,7 +220,9 @@ public class AuthController {
                 ? SecurityUtils.getCurrentUserLogin().get()
                 : "";
 
-        if (emailUsernamePhone.equals("")) {
+        log.info("emailUsernamePhone >> {}", emailUsernamePhone);
+
+        if (emailUsernamePhone.isEmpty()) {
             throw new AppException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
 

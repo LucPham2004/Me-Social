@@ -131,4 +131,8 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
     @Query(value = "SELECT * FROM users u WHERE u.refresh_token = :token AND (u.email = :emailUsernamePhone OR u.username = :emailUsernamePhone OR u.phone = :emailUsernamePhone)", nativeQuery = true)
     Optional<User> findByRefreshTokenAndEmailOrUsernameOrPhone(@Param("token") String token,
                                                                @Param("emailUsernamePhone") String emailUsernamePhone);
+
+    @Query("select u from User u where u.username like %:query% or u.email like %:query%")
+    public List<User> searchUser(@Param("query") String query);
+
 }

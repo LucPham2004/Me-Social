@@ -28,4 +28,5 @@ public class GroupResponse {
     int memberNum;
     int adminNum;
     boolean isJoined;
+    boolean isAdmin;
 }

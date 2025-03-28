@@ -245,10 +245,6 @@ public class UserService {
         }
     }
 
-//    public String getEmailFromToken(Jwt jwt) {
-//        return jwt.getClaim("email");
-//    }
-
     public User findUserProfile(Jwt jwt) {
         String email = jwt.getClaim("email");
         if (email == null) {
@@ -256,9 +252,14 @@ public class UserService {
         }
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            throw new  AppException(ErrorCode.ENTITY_NOT_EXISTED);
+            throw new AppException(ErrorCode.ENTITY_NOT_EXISTED);
         }
 
         return optionalUser.get();
     }
+
+    public List<User> searchUser(String query) {
+        return userRepository.searchUser(query);
+    }
+
 }

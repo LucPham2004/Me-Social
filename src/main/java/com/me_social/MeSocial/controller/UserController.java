@@ -27,6 +27,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.awt.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -152,6 +153,18 @@ public class UserController {
                 .code(1000)
                 .message("Get suggested friends of the user with ID " + userId + " successfully!")
                 .result(friends)
+                .build();
+    }
+
+    @GetMapping("/search/{query}")
+    public ApiResponse<List<UserDTO>> searchUser(@PathVariable String query) {
+        List<User> users = userService.searchUser(query);
+        var userDTO = users.stream().map(userMapper::toUserDTO).toList();
+
+        return ApiResponse.<List<UserDTO>>builder()
+                .code(1000)
+                .message("querying")
+                .result(userDTO)
                 .build();
     }
 }

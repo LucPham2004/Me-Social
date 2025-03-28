@@ -108,15 +108,6 @@ public class User {
     @JsonBackReference(value = "groups_members")
     private Set<Group> memberGroups;
 
-    // Direct Messages
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "messages_sender")
-    private Set<DirectMessage> sendMessages;
-
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference(value = "messages_receiver")
-    private Set<DirectMessage> receiveMessages;
-
     // Friendships
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Friendship> friendRequestSent;

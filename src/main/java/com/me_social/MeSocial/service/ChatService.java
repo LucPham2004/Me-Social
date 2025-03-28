@@ -7,6 +7,7 @@ import com.me_social.MeSocial.exception.AppException;
 import com.me_social.MeSocial.exception.ErrorCode;
 import com.me_social.MeSocial.repository.ChatRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.stylesheets.LinkStyle;
 
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ChatService {
     private final ChatRepository chatRepository;
@@ -24,7 +26,8 @@ public class ChatService {
         Chat isChatExist = chatRepository.findSingleChatByUserIds(user, reqUser);
 
         if (isChatExist != null) {
-            return isChatExist;
+            log.info("isExisted");
+            return null;
         }
 
         Chat chat = new Chat();
@@ -33,7 +36,14 @@ public class ChatService {
         chat.getUsers().add(reqUser);
         chat.setGroup(false);
 
-        return chat;
+        return chatRepository.save(chat);
+    }
+
+    public Chat findChatBy2Users(Long userId1, Long userId2) {
+        var user1 = userService.findById(userId1);
+        var user2 = userService.findById(userId2);
+
+        return chatRepository.findSingleChatByUserIds(user1, user2);
     }
 
     public Chat findChatById(Long chatId) {
@@ -61,8 +71,9 @@ public class ChatService {
             User user = userService.findById(userId);
             group.getUsers().add(user);
         }
+        group.getUsers().add(reqUser);
 
-        return group;
+        return chatRepository.save(group);
     }
 
     public Chat addUserToGroup(Long userId, Long chatId, User reqUser) {

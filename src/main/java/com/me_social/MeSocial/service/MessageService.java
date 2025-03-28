@@ -33,7 +33,7 @@ public class MessageService {
         message.setContent(request.getContent());
         message.setTimestamp(LocalDateTime.now());
 
-        return message;
+        return messageRepository.save(message);
     }
 
     public List<Message> getChatsMessages(Long chatId, User reqUser) {
