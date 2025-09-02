@@ -1,5 +1,6 @@
 package com.me_social.MeSocial.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -70,4 +71,12 @@ public interface CommentRepository extends PagingAndSortingRepository<Comment, L
             SELECT COUNT(c) FROM Comment c
             """)
     int countAll();
+
+    @Query(
+            value = "SELECT DATE_FORMAT(c.created_at, '%Y-%m') AS month, COUNT(*) AS count " +
+                    "FROM comments c " +
+                    "GROUP BY DATE_FORMAT(c.created_at, '%Y-%m')",
+            nativeQuery = true
+    )
+    List<Object[]> countCommentsPerMonth();
 }

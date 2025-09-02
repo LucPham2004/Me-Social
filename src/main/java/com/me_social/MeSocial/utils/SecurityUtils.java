@@ -5,10 +5,14 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.me_social.MeSocial.entity.modal.Role;
+import com.me_social.MeSocial.entity.modal.User;
+import com.me_social.MeSocial.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -36,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityUtils {
 
     public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
+    private final UserService userService;
     private final JwtEncoder jwtEncoder;
     @Value("${me_social.jwt.refresh-token-validity-in-seconds}")
     public Long refreshTokenExpiration;
@@ -101,11 +106,9 @@ public class SecurityUtils {
         Instant now = Instant.now();
         Instant validity = now.plus(accessTokenExpiration, ChronoUnit.SECONDS);
 
-        // hardcode permission for testing
-        List<String> listAuthority = new ArrayList<>();
+        User user = userService.handleGetUserByUsernameOrEmailOrPhone(emailUsernamePhone);
 
-        listAuthority.add("ROLE_USER_CREATE");
-        listAuthority.add("ROLE_USER_UPDATE");
+        Set<Role> roles = user.getAuthorities();
 
         // @formatter:off
           JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -114,14 +117,14 @@ public class SecurityUtils {
                   .subject(emailUsernamePhone)
                   .claim("user", userToken)
                   .claim("user_id", dto.getUser().getId())
-                  .claim("permission", listAuthority)
+                  .claim("roles", roles)
                   .claim("email", dto.getUser().getEmail())
           .build();
           JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
           return jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
      }
 
-     public String createRefreshToken(String emailUsernamPhone, LoginResponse dto) {
+     public String createRefreshToken(String emailUsernamePhone, LoginResponse dto) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
 
@@ -135,7 +138,7 @@ public class SecurityUtils {
         JwtClaimsSet claims = JwtClaimsSet.builder()
         .issuedAt(now)
         .expiresAt(validity)
-        .subject(emailUsernamPhone)
+        .subject(emailUsernamePhone)
         .claim("user", userToken)
         .build();
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();

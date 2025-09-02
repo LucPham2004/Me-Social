@@ -135,4 +135,11 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
     @Query("select u from User u where u.username like %:query% or u.email like %:query%")
     public List<User> searchUser(@Param("query") String query);
 
+    @Query(
+            value = "SELECT DATE_FORMAT(u.created_at, '%Y-%m') AS month, COUNT(*) AS count " +
+                    "FROM users u " +
+                    "GROUP BY DATE_FORMAT(u.created_at, '%Y-%m')",
+            nativeQuery = true
+    )
+    List<Object[]> countUsersPerMonth();
 }

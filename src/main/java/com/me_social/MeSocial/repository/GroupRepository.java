@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +15,7 @@ import com.me_social.MeSocial.entity.modal.Group;
 import com.me_social.MeSocial.entity.modal.User;
 
 @Repository
-public interface GroupRepository extends PagingAndSortingRepository<Group, Long>{
+public interface GroupRepository extends JpaRepository<Group, Long> {
     Group save(Group group);
 
     void delete(Group group);

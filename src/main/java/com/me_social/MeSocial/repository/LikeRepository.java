@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import com.me_social.MeSocial.entity.modal.Like;
 
+import java.util.List;
+
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
     Like findByUserIdAndPostId(Long userId, Long postId);
@@ -30,4 +32,12 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     boolean existsByPostIdAndUserId(Long postId, Long userId);
 
     boolean existsByCommentIdAndUserId(Long commentId, Long userId);
+
+    @Query(
+            value = "SELECT DATE_FORMAT(l.created_at, '%Y-%m') AS month, COUNT(*) AS count " +
+                    "FROM likes l " +
+                    "GROUP BY DATE_FORMAT(l.created_at, '%Y-%m')",
+            nativeQuery = true
+    )
+    List<Object[]> countLikesPerMonth();
 }

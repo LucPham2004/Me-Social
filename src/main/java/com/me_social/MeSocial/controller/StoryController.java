@@ -33,11 +33,7 @@ public class StoryController {
     @PostMapping
     public ApiResponse<StoryResponse> createStory(@RequestBody StoryRequest request) {
         Story story = storyService.createStory(request);
-        return ApiResponse.<StoryResponse>builder()
-            .code(1000)
-            .message("Created story successfully")
-            .result(storyMapper.toResponse(story))
-            .build();
+        return ApiResponse.successOf(storyMapper.toResponse(story));
     }
 
     // Get story by id
